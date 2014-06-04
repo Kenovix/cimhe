@@ -1,0 +1,243 @@
+{% extends "AdminBundle::admin_layout.html.twig" %}
+
+{% block menu %}
+	{{ knp_menu_render('AdminBundle:Builder:adminMenu') }}
+{% endblock %}
+
+{% block rastro %}{{ wo_render_breadcrumbs() }}{% endblock %}
+
+{% block titulo %}Ingresar examenes del paciente {{ paciente.priNombre}} {{ paciente.priApellido }}{% endblock %}
+
+{% block msg %}
+	{% if app.session.flash('ok') %}
+	    <div class="success mensajes">
+	        <span>{{ app.session.flash('ok') }}</span>
+	    </div>
+	{% elseif app.session.flash('info') %}
+		<div class="info">
+	        <span>{{ app.session.flash('info') }}</span>
+	    </div>
+	{% elseif app.session.flash('error') %}
+		<div class="error">
+	        <span>{{ app.session.flash('error') }}</span>
+	    </div>
+	{% endif %}
+{% endblock %}
+
+{% block stylesheets %}
+	{{ parent() }}
+	
+	<link href="{{ asset('bundles/cahis/css/jquery-ui-1.8.23.custom.css') }}" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+
+
+
+{% block cuerpo %}
+
+	<form>
+		<div>
+    		<fieldset>
+    			<legend>Examenes solicitados</legend>
+    			
+    			<div id="ajaxMsgExamen"></div>
+    			
+    			<select id="examen" name="examen">
+	      			<option value="">Seleccione un examen</option>
+	       				{% for examenU in examenes %} 
+	         				<option value="{{ examenU.id }}">{{ examenU.codigo }} - {{ examenU.nombre }}</option>
+	       				{% endfor %}       
+	      		</select>
+    		</fieldset>
+    	</div>
+    	
+    	<div>
+    		<fieldset>
+    			<legend>Examenes presentados</legend>
+    		
+	    		<table>
+					<thead>
+				    	<tr>
+			                <th>Fecha realizado</th>
+			                <th>Nombre</th>
+			                <th>Resultado</td>
+			                <th>Opción</th>             
+				        </tr>
+				    </thead>
+				    <tbody>
+				    	{% for examen in exaPresentados %}            
+					    	<tr id="{{ examen.id }}">
+					            <td>{{ examen.fecha_r }}</td>
+					            <td>{{ examen.nombre}}</td>
+					            <td>{{ examen.resultado}}</td>
+					            <td>                
+					            	<a id="in-resul" title="{{ examen.id }}">Modificar</a>
+					    		</td>
+					        </tr>
+					    {% endfor %}
+				    </tbody>
+				</table>
+			</fieldset>
+    	</div>
+    	
+    	<div id="examen-edit" title="Resultado">			
+			<fieldset>
+				<legend>Resultado del examen</legend>
+	        	{{ form_widget(ex_form) }}
+			</fieldset>			
+		</div>
+	</form>   
+
+{% endblock %}
+
+{% block javascripts %}
+
+<script src="{{ asset('bundles/cahis/js/jquery-ui-1.8.23.custom.min.js') }}"></script>
+
+<script type="text/javascript" src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+<script type="text/javascript" src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
+
+<script type="text/javascript">
+
+	$("#examen").change(function(){
+
+     	var url="{{ path('hc_hcExamen') }}";
+
+     	var examen = $("#examen").val();
+     	var hc = {{ hc.id }};
+     	var factura = {{ factura.id }};
+
+     	if(examen == ""){
+			alert("Seleccione una opción valida");
+        }
+         
+         $.post(url,{
+                hc: hc,
+                examen: examen
+         },function(data){
+             if(data.responseCode==200 ){
+
+            	 var ruta = Routing.generate('hcExamen_new', { 'factura': factura });
+
+            	 window.location.href = ruta;
+ 				
+             }
+             else if(data.responseCode==400){
+             	$('#ajaxMsgExamen').html(data.msg);
+                $('#ajaxMsgExamen').css("color","red");
+             }
+             else{
+         	    alert("Ha ocurrido un error en el sistema.");
+             }
+        })
+	});
+
+
+	$(function() {
+
+		var examen = "";
+		
+		$( "#dialog:ui-dialog" ).dialog( "destroy" );
+
+		$( "#examen-edit" ).dialog({
+			autoOpen: false,
+			height: 350,
+			width: 500,
+			modal: true,
+			buttons: {
+				"Agregar": function() {
+
+					var url = "{{ path('hc_examen_upd_ajax') }}";
+
+					var dia = $("#newHcExamen_fecha_r_day").val();
+					var mes = $("#newHcExamen_fecha_r_month").val();
+					var anio = $("#newHcExamen_fecha_r_year").val();
+					
+					var resultado = $("#newHcExamen_resultado").val();
+
+					$.post(url,{
+		                examen: examen,
+		                dia: dia,
+		                mes: mes,
+		                anio: anio,
+		                resultado: resultado
+		            },function(data){
+		                if(data.responseCode==200 ){
+			                
+		                	$("#"+examen+" td:nth-child(1)").empty().append(data.fecha);
+		                	$("#"+examen+" td:nth-child(3)").empty().append(data.resultado);
+
+	                		$('#ajaxMsg').html(data.msg);
+		                    $('#ajaxMsg').css("color","green");
+
+		                 }
+		                 else if(data.responseCode==400){
+		                	$("#programacion").empty();
+		                  	$('#ajaxMsg').html(data.msg);
+		                    $('#ajaxMsg').css("color","red");
+		                 }
+		                 else{
+		             	    alert("Ha ocurrido un error en el sistema.");
+		                 }	
+
+						$( this ).dialog( "close" );
+					});
+				},
+				Cancelar: function() {
+					$( this ).dialog( "close" );
+				}
+			},
+			close: function() {
+				//allFields.val( "" ).removeClass( "ui-state-error" );
+			}
+		});
+	
+		$('a[id^="in-resul"]')
+			.button()
+			.click(function() {
+				examen = $( this ).attr("title");
+
+				var fecha = $("#"+examen+" td:nth-child(1)").text();
+            	var r = $("#"+examen+" td:nth-child(3)").text();
+
+            	fecha = fecha.split("-");
+
+				var dia = $("#newHcExamen_fecha_r_day").val(parseInt(fecha[2], 10));
+				var mes = $("#newHcExamen_fecha_r_month").val(parseInt(fecha[1], 10));
+				var anio = $("#newHcExamen_fecha_r_year").val(fecha[0]);
+				
+				var resultado = $("#newHcExamen_resultado").val(r);
+
+				$( "#examen-edit" ).dialog( "open" );
+			});
+	});
+
+	function delEx(id){
+		 
+		 var url = "{{ path('hc_delHcExamen') }}";		 
+
+
+		 $.post(url,{
+            examen: id             
+	      },function(data){
+	          if(data.responseCode==200 ){
+	              
+				  $("#ex"+id).empty();
+				  $("#exa"+id).empty();				  
+
+	        	  $('#ajaxMsgExamen').html(data.msg);
+		          $('#ajaxMsgExamen').css("color","green");
+	          }
+	          else if(data.responseCode==400){
+	          	$('#ajaxMsgExamen').html(data.msg);
+	            $('#ajaxMsgExamen').css("color","red");
+	          }
+	          else{
+	      	    alert("Ha ocurrido un error en el sistema.");
+	          }
+	     })
+	 }
+
+</script>
+
+{% endblock %}

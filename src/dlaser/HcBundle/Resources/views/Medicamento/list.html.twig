@@ -1,0 +1,77 @@
+{% extends "AdminBundle::admin_layout.html.twig" %}
+
+{% block menu %}
+	{{ knp_menu_render('AdminBundle:Builder:adminMenu') }}
+{% endblock %}
+
+{% block rastro %}{{ wo_render_breadcrumbs() }}{% endblock %}
+
+{% block titulo %}Listado de medicamentos{% endblock %}
+
+{% block msg %}
+	{% if app.session.flash('ok') %}
+	    <div class="success mensajes">
+	        <span>{{ app.session.flash('ok') }}</span>
+	    </div>
+	{% elseif app.session.flash('info') %}
+		<div class="info">
+	        <span>{{ app.session.flash('info') }}</span>
+	    </div>
+	{% elseif app.session.flash('error') %}
+		<div class="error">
+	        <span>{{ app.session.flash('error') }}</span>
+	    </div>
+	{% endif %}
+{% endblock %}
+
+
+
+
+{% block cuerpo %}
+
+<form action="{{ path('medicamento_search') }}" method="post" {{ form_enctype(form) }}>
+    <fieldset>
+    	<legend>Busqueda</legend>
+    	{{ form_widget(form) }}
+    </fieldset>
+    
+    <button class="action blue" type="submit">
+        <span class="label">Buscar</span>
+    </button>
+    <a href="{{ path('medicamento_list') }}" class="button left"><span class="label">Listar todo</span></a>
+            
+</form><br/><br/><br/>
+
+
+    <table class="records_list">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Principio activo</th>
+                <th>Concentracion</th>
+                <th>Presentacion</th>
+                <th>Posología</th>             
+                <th>Estado</th>                              
+            </tr>
+        </thead>
+        <tbody>
+        {% for entity in medicamentos %}
+            <tr>
+                <td><a href="{{ path('medicamento_edit', {'id':entity.id}) }}">{{ loop.index }}</a></td>
+                <td>{{ entity.principioActivo }}</td>
+                <td>{{ entity.concentracion }}</td>
+                <td>{{ entity.presentacion }}</td>
+                <td>{{ entity.dosisDia }}</td>
+                <td>{{ entity.estado }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    
+    {% if medicamentos %}
+		{{ simple_paginator_render('medicamento_list', null) }}
+    {% endif %}
+    
+    <a href="{{ path('medicamento_new') }}" class="button left"><span class="label">Nuevo medicamento</span></a>
+    
+{% endblock %}

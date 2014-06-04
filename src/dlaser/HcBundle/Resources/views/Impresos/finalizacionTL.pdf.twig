@@ -1,0 +1,58 @@
+{% extends "::simple.html.twig" %}
+
+{% block stylesheets %}
+<style>
+		
+	div p{
+    	text-align: justify;
+    	font-size: 10pt;
+    }
+    div  h1{
+    	text-align: center;
+    }
+</style>  
+{% endblock %}
+
+{% block space %}
+<h4 align="center">NIT. 900.260.604-8</h4><br />
+<h5 align="center">I.V.A RÉGIMEN COMÚN</h5><br /><br />
+{% endblock %}
+
+{% block body %}
+<div>
+<h1>FINALIZACION TRATAMIENTO LASER</h1>
+
+
+
+
+
+<p>El día, _____________________________________________________ finaliza tratamiento de depilación con láser. Se dan recomendaciones sobre rasurado y mantenimiento.</p> 
+
+
+
+<h3>RECOMENDACIONES:</h3> 
+<p>_________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________</p>
+
+
+<p>
+	<table>
+	  <tr>
+		  <td>Paciente:<br/></td>  
+		  <td>Médico Tratante:<br/></td>
+	  </tr>
+	  <tr>
+		  <td>____________________________________</td>
+		  <td>____________________________________</td>
+	  </tr>
+	  <tr>
+		  <td><strong>{{ paciente.priNombre }} {{ paciente.segNombre }} {{ paciente.priApellido }} {{ paciente.segApellido }}</strong></td>
+		  <td><strong>{{ usuario.nombre }} {{ usuario.apellido }}</strong></td>
+	  </tr>
+	  <tr>
+		  <td><strong>{{ paciente.identificacion }}</strong></td>
+		  <td><strong>{{ usuario.cc }}</strong></td>
+	  </tr>
+	</table>   
+</p>
+</div>
+{% endblock %}

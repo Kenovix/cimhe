@@ -1,0 +1,109 @@
+{% extends "::simple.html.twig" %}
+
+
+{% block stylesheets %}	
+	<link rel="stylesheet" type="text/css" href="{{ asset('bundles/dlaser/css/layout.css') }}" />
+	<link rel="stylesheet" type="text/css" href="{{ asset('bundles/dlaser/css/style1.css') }}" />
+	<link href="{{ asset('bundles/dlaser/css/css3-buttons.css') }}" rel="stylesheet" type="text/css" media="screen" />
+	
+	<script language="javascript" type="text/javascript" src="{{ asset('bundles/dlaser/js/jquery.js') }}"></script>
+	<script language="javascript" type="text/javascript" src="{{ asset('bundles/dlaser/js/jquery.easing.js') }}"></script>
+	<script language="javascript" type="text/javascript" src="{{ asset('bundles/dlaser/js/script.js') }}"></script>
+{% endblock %}
+
+
+
+{% block body %}
+
+<div id="container">
+    		<h1><strong>Imagenes del paciente:</strong> {{ paciente.priNombre }} {{ paciente.priApellido }}</h1>
+       
+ <p>
+	<strong> Informe: </strong> 
+    {% if estado == 'A' %}
+    	Información del paciente con imagenes <strong>antes de:</strong> <a href="{{ path('file_showImagens', {'estado': 'D',  'estetica': estetica.id}) }}">VER IMAGEN DESPUES DE-></a>
+    {% elseif estado == 'D' %}
+    	Información del paciente con imagenes <strong>despues de:</strong> <a href="{{ path('file_showImagens', {'estado': 'A',  'estetica': estetica.id}) }}">VER IMAGEN ANTES DE-></a>
+    {% else %}
+    	No hay informacion disponible
+    {% endif %}
+</p>       
+<!------------------------------------- THE CONTENT ------------------------------------------------->
+<div id="jslidernews1" class="lof-slidecontent" style="width:980px; height:340px;">
+	<div class="preload"><div></div></div>
+    		 <!-- MAIN CONTENT --> 
+             <div class="main-slider-content" style="width:980px; height:340px;">
+                <ul class="sliders-wrap-inner">
+                	{% if file %}
+                		{% for imagenes in file %}
+		                    <li>
+		                           <img src="{{ asset('uploads/documents/'~imagenes.img) }}" title="Newsflash 2" />           
+		                          <div class="slider-description">
+		                            <div class="slider-meta"><a target="_parent" title="Newsflash 1" href="#Category-1">/ Fecha Estetica: /</a> <i>  {{ estetica.fecha|date('Y-m-d-H:i:s') }}</i></div>
+		                            <h4>Informacion de la imagen</h4>
+		                            <p>{{ imagenes.nota }}
+		                            <a class="readmore" href="{{ path('file_edit', {'file': imagenes.id}) }}">Editar imagen</a>
+		                            </p>
+		                         </div>
+		                    </li> 
+		                 {% endfor %}
+		              {% endif %}                   
+                  </ul>  	
+             </div>
+ 		   <!-- END MAIN CONTENT --> 
+           <!-- NAVIGATOR -->
+           	<div class="navigator-content">
+                  <div class="button-next">Next</div>
+                  <div class="navigator-wrapper">
+                        <ul class="navigator-wrap-inner">
+                        {% if file %}
+                        	{% for imagenes in file %}
+                           		<li><img src="{{ asset('uploads/documents/'~imagenes.img) }}" /></li>
+                           	{% endfor %}
+                         {% endif %} 		
+                        </ul>
+                  </div>
+                  <div  class="button-previous">Previous</div>
+             </div> 
+          <!----------------- END OF NAVIGATOR --------------------->
+          <!-- BUTTON PLAY-STOP -->
+          <div class="button-control"><span></span></div>
+           <!-- END OF BUTTON PLAY-STOP -->
+          
+ </div> 
+
+
+<!------------------------------------- END OF THE CONTENT ------------------------------------------------->
+	<a href="{{ path('file_new', {'estetica': estetica.id}) }}" class="button left"><span class="label">Subir nueva</span></a>
+	<a href="{{ path('HcEstetica_edit', {'hc': estetica.hc.id}) }}" class="button left"><span class="label">Editar HcEstetica</span></a>
+	<div id="footer">
+ 		2012 Dermolaser - Con la tecnologia kenovix
+	</div>
+</div>
+    
+{% endblock %}
+
+
+
+{% block javascripts %}
+
+<script type="text/javascript">
+ $(document).ready( function(){	
+		// buttons for next and previous item						 
+		var buttons = { previous:$('#jslidernews1 .button-previous') ,
+						next:$('#jslidernews1 .button-next') };			
+		 $('#jslidernews1').lofJSidernews( { interval : 4000,
+											direction		: 'opacitys',	
+											easing			: 'easeInOutExpo',
+											duration		: 1200,
+											auto		 	: true,
+											maxItemDisplay  : 4,
+											navPosition     : 'horizontal', // horizontal
+											navigatorHeight : 32,
+											navigatorWidth  : 80,
+											mainWidth		: 980,
+											buttons			: buttons } );	
+	});
+</script>
+
+{% endblock %}

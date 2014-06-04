@@ -1,0 +1,58 @@
+{% extends "::simple.html.twig" %}
+
+{% block stylesheets %}
+<style>
+		
+	div p{
+    	text-align: justify;
+    	font-size: 10pt;
+    }
+    h1{
+    	text-align: center;
+    }
+</style>  
+{% endblock %}
+
+{% block space %}
+<h4 align="center">NIT. 900.260.604-8</h4><br />
+<h5 align="center">I.V.A RÉGIMEN COMÚN</h5><br /><br />
+{% endblock %}
+
+{% block body %}
+<div>
+<h1>CONSENTIMIENTO INFORMADO LASER</h1>
+
+<p>Yo, <strong>{{ paciente.priNombre }} {{ paciente.segNombre }} {{ paciente.priApellido }} {{ paciente.segApellido }}</strong> , mayor de edad, identificado con la cedula de ciudadanía <strong>{{ paciente.identificacion }}</strong>, por este medio me permito manifestar que a la fecha <strong> {{ fecha|date('d/m/Y') }}</strong> he recibido por parte del operador del equipo la siguiente información.<br/>
+El procedimiento conocido como LASER, consiste en trabajar con las diferentes piezas del láser: Reducción o eliminación de lesiones pigmentarias superficiales, lesiones vasculares superficiales, rejuvenecimientos no ablativos, reducción del vello, acné, psoriasis y vitíligo y micro tensado de piel. Con las piezas de mano laser se trabaja: rejuvenecimiento semi ablativo, líneas de expresión superficiales, cicatrices de acné o quirúrgicas, lesiones vasculares profundas, tatuajes, corte dermatológico. Entiendo que los resultados de estos tratamientos varían con cada persona y los tratamientos múltiples necesarios.</p>
+
+<p>El láser produce una ráfaga de luz intensa que es absorbida por las diferentes lesiones indicadas ya sea por la melanina de la piel, los vasos sanguíneos o el folículo piloso forma selectiva. Todo el personal de la sala debe tener protección ocular tanto el paciente como el operador del equipo para evitar daños producidos por esta luz intensa.</p>
+
+<p>La sensación de la luz es incomoda y puede sentirse como el pinchazo o una sensación de calor que permanece solamente durante algunos minutos los posibles riesgos del procedimiento son los siguientes: ampollas, enrojecimientos cicatrización, hipo pigmentación (aclaramiento de la piel) e hiperpigmentacion (oscurecimiento de la piel). Entiendo que no cumplir con las instrucciones del cuidado pos tratamiento puede aumentar mi posibilidad de sufrir complicaciones. El área debe ser tratada con delicadeza luego del tratamiento y no debe exponerse al sol mínimo 30 días.<br/>
+Se deben tener precauciones 15 días antes y 15 días después del tratamiento para evitar complicaciones, deberá aplicar bloqueador solar de amplio espectro (UVA/UVB) con SPF 30 o más alto. Durante la fase de curación el área tratada puede aplicarse humectantes varias veces al día para mantener el área hidratada. En caso de señales de infección (pus, dolor, fiebre) comunicarse con la oficina.<br/>
+Conozco las consecuencias en el evento de no realizar el procedimiento adecuado y declaro que he recibido la información requerida de manera clara y completa, por lo tanto autorizo al operador del equipo y a los asistentes de su elección, de la especialidad que se estime conveniente, para que realice el procedimiento denominado LASER, reconozco que en cualquier momento puedo revocar este consentimiento y lo comunicare oportunamente por el medio más expedito a la persona tratante. De igual manera reconozco que las obligaciones adquiridas por parte del médico son de medio y no de resultado y por lo tanto los resultados no pueden ser garantizados, entiendo que mi problema es únicamente de tipo cosmético y que el tratamiento mencionado se llevara a cabo porque así lo deseo.</p>
+
+<p>Doy fe con mi firma de que no sufro de ninguna enfermedad de la piel diagnosticada hasta hoy y exonero al centro de cualquier responsabilidad en caso de no informarla.</p>
+
+<p>En constancia de lo anterior firman en la ciudad de <strong>Buga</strong> a los <strong>{{ fecha|date('d') }}</strong> días del mes de <strong>{{ fecha|date('M') }}</strong> del año <strong>{{ fecha|date('Y') }}</strong>.<br/><br/><br/>
+	<table>
+	  <tr>
+		  <td>Paciente:<br/></td>  
+		  <td>Médico Tratante:<br/></td>
+	  </tr>
+	  <tr>
+		  <td>____________________________________</td>
+		  <td>____________________________________</td>
+	  </tr>
+	  <tr>
+		  <td><strong>{{ paciente.priNombre }} {{ paciente.segNombre }} {{ paciente.priApellido }} {{ paciente.segApellido }}</strong></td>
+		  <td><strong>{{ usuario.nombre }} {{ usuario.apellido }}</strong></td>
+	  </tr>
+	  <tr>
+		  <td><strong>{{ paciente.identificacion }}</strong></td>
+		  <td><strong>{{ usuario.cc }}</strong></td>
+	  </tr>
+	</table>               		
+</p>
+</div>
+
+{% endblock %}

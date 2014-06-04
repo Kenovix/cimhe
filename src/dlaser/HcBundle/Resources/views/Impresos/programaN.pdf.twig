@@ -1,0 +1,395 @@
+{% extends "::simple.html.twig" %}
+
+{% block stylesheets %}
+<style>
+		
+	div p{
+    	text-align: justify;
+    	font-size: 10pt;
+    }
+    div  h1{
+    	text-align: center;
+    }
+    
+
+</style>  
+{% endblock %}
+
+{% block space %}
+<h4 align="center">NIT. 900.260.604-8</h4><br />
+<h5 align="center">I.V.A RÉGIMEN COMÚN</h5><br /><br />
+{% endblock %}
+
+{% block body %}
+<div>
+	<h1>PROGRAMA DE NUTRICION</h1>
+	<div>
+		<table>
+			<tr>
+				<td>Nombre: <strong>{{ paciente.priNombre }} {{ paciente.segNombre }} {{ paciente.priApellido }} {{ paciente.segApellido }}</strong></td>
+				<td>Fecha: {{ fecha|date('d/m/Y') }}</td>
+				<td>Edad: {{ date('now') | date('Y-m-d') - paciente.fn | date('Y-m-d') }} Años</td>			
+			</tr>
+		</table>
+	</div>
+	<div>		
+		<table border="1" cellpadding="1" cellspacing="0">
+			<thead>
+				<tr style="background-color:#A5A5A5;color:#000000;">
+					<th>PESO ACTUAL</th>
+					<th>PESO USUAL</th>
+					<th>PESO REFERENCIA</th>
+					<th>PESO DESEADO</th>
+					<th>DIAGNOSTICO</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	
+	<h3>TIPO DE DIETA:</h3>
+	
+	<div>
+		<h1>PLAN DIARIO DE ALIMENTACION</h1>
+		<table  border="1" cellpadding="1" cellspacing="0">
+			<thead>
+				<tr style="background-color:#A5A5A5;color:#000000;">
+					<th>DESAYUNO</th>
+					<th>ALMUERZO</th>
+					<th>COMIDA</th>
+				
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Leche</td>
+					<td>Leche</td>
+					<td>Leche</td>			
+				</tr>
+				<tr>		
+					<td>Queso o sustituto</td>
+					<td>Carnes</td>
+					<td>Carnes o sustituto</td>			
+				</tr>
+				<tr>
+					<td>Cereal o Harina </td>
+					<td>Harina</td>
+					<td>Harina</td>			
+				</tr>
+				<tr>
+					<td>Frutas</td>
+					<td>Verduras</td>
+					<td>Verduras</td>			
+				</tr>
+				<tr>
+					<td>Azucares</td>
+					<td>Frutas</td>
+					<td>Frutas</td>			
+				</tr>
+				<tr>
+					<td>Grasas</td>
+					<td>Azucares</td>
+					<td>Azucares</td>			
+				</tr>
+				<tr>
+					<td></td>
+					<td>Grasas</td>
+					<td>Grasas</td>			
+				</tr>
+			</tbody>
+		</table>				
+	</div>
+	
+	<div>		
+		<table  border="1" cellpadding="1" cellspacing="0">
+			<thead>
+				<tr style="background-color:#A5A5A5;color:#000000;">
+					<th>DESAYUNO</th>
+					<th>ALMUERZO</th>
+					<th>COMIDA</th>				
+				</tr>			
+			</thead>
+			<tbody>
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	
+	<div>
+		<h3>Recomendaciones: </h3>
+		<p>			
+			<p>Establezca un horario para sus comidas, coma despacio y mastique bien.</p> 
+			<p>Tome agua diariamente y procure ½ hora de ejercicio, 3 veces por semana.</p> 
+			<p>No olvide realizar 5 comidas principales son básicas para la regulación de su metabolismo.</p>			
+		</p> 
+	</div>
+	
+	<div>
+		<table border="1" cellpadding="1" cellspacing="0">
+			<thead>
+				<tr style="background-color:#A5A5A5;color:#000000;">
+					<th colspan="3" align="center">LECHES</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Leche líquida 1 vaso pequeño.</td>
+					<td>Leche en polvo 1 cda sopera.</td>
+					<td>Yogurt 1 vaso pequeño.</td>					
+				</tr>
+			</tbody>
+		</table>
+		
+		<table border="1" cellpadding="1" cellspacing="0">
+			<thead>
+				<tr style="background-color:#A5A5A5;color:#000000;">
+					<th colspan="4" align="center">AZUCARES</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Azúcar 2 cda</td>
+					<td>Miel de abejas 2 cdas</td>
+					<td>Panela 1 trozo pequeño </td>
+					<td>Arequipe 1 cda</td>														
+				</tr>
+				<tr>
+					<td>Bocadillo 1 pequeño</td>
+					<td>Gelatina ½ pocillo</td>
+					<td>Mermelada 1 cda alta</td>
+					<td>Panelita 1 unidad</td>
+				</tr>
+				<tr>
+					<td>Galleta dulce 1 unidad</td>
+				</tr>
+			</tbody>
+		</table>
+		
+		<table border="1" cellpadding="1" cellspacing="0">
+			<thead>
+				<tr style="background-color:#A5A5A5;color:#000000;">
+					<th colspan="4" align="center">QUESO O SUSTITUTO</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Huevo 1 unidad </td>
+					<td>Huevo codorniz 3-4 unidades</td>
+					<td>Jamón común 1 tajada delgada</td>
+					<td>Queso amarillo 1 tajada delgada</td>										
+				</tr>
+				<tr>
+					<td>Queso blanco 1 tajada delgada </td>
+					<td>Mortadela común 1 tajada</td>
+					<td>Salchichón común 1 tajada</td>
+					<td>Salchicha 1 unidad</td>
+				</tr>
+			</tbody>
+		</table>
+		
+		<table border="1" cellpadding="1" cellspacing="0">
+			<thead>
+				<tr style="background-color:#A5A5A5;color:#000000;">
+					<th colspan="6" align="center">VERDURAS 1 POCILLO</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Zanahoria</td>
+					<td>Remolacha</td>
+					<td>Ahuyama</td>
+					<td>Victoria</td>
+					<td>Repollo</td>
+					<td>Habichuela</td>			
+				</tr>
+				<tr>
+					<td>Tomate</td>
+					<td>Pepino</td>
+					<td>Cebolla</td>
+					<td>Lechuga</td>
+					<td>Pimentón</td>
+					<td>Coliflor</td>			
+				</tr>
+				<tr>
+					<td>Espinaca</td>
+					<td>Acelgas</td>
+					<td>Champiñon</td>
+					<td>Rabano</td>
+					<td>Apio</td>
+					<td>Brocoli</td>			
+				</tr>
+			</tbody>
+		</table>
+		
+		<table border="1" cellpadding="1" cellspacing="0">
+			<thead>
+				<tr style="background-color:#A5A5A5;color:#000000;">
+					<th colspan="4" align="center">FRUTAS</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Banana común 1/2 unidad</td>
+					<td>Ciruela común 12 unidades</td>
+					<td>Ciruela Claudia 3 medianas</td>
+					<td>Curuba 2 unidades medianas</td>					
+				</tr>
+				<tr>
+					<td>Fresa 12 unidades</td>
+					<td>Granadilla 3 uní medianas</td>
+					<td>Guayaba 2 unidades medianas</td>
+					<td>Zapote 1 unidad</td>					
+				</tr>
+				<tr>
+					<td>Lulo 1 vaso pequeño</td>
+					<td>Mandarina 1 unidad peque</td>
+					<td>Mango 1 unidad pequeña</td>
+					<td>Manzana 1 unidad pequeña</td>					
+				</tr>
+				<tr>
+					<td>Maracuyá 2 unidades peque</td>
+					<td>Melón 1 trozo pequeño</td>
+					<td>Moras 12 unidades </td>
+					<td>Naranja 1 unidad mediana </td>					
+				</tr>
+				<tr>
+					<td>Jugo de naranja 1 vaso peque</td>
+					<td>Uvas 12 unidades</td>
+					<td>Papaya 1 tajada delgada</td>
+					<td>Papayuela 1 unid. Peque</td>					
+				</tr>
+				<tr>
+					<td>Piña 1 tajada delgada</td>
+					<td>Pitaya 1 unidad</td>
+					<td>Plátano murrapo 2 unidades</td>
+					<td>Sandia 1 trozo</td>					
+				</tr>
+				<tr>
+					<td>Tomate de árbol 2 unidades</td>				
+				</tr>
+			</tbody>
+		</table>
+		
+		<table border="1" cellpadding="1" cellspacing="0">
+			<thead>
+				<tr style="background-color:#A5A5A5;color:#000000;">
+					<th colspan="3" align="center">GRASAS</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Aceite 1 cdita dulcera </td>
+					<td>Margarita 1 cdita dulcera</td>
+					<td>Mayonesa 1 cdita dulcera</td>										
+				</tr>
+				<tr>
+					<td>Crema de leche 1cdita dulcera</td>
+					<td>Aguacate ¼ unidad pequeña</td>
+					<td>Tocineta 1 tira</td>
+				</tr>
+			</tbody>
+		</table>
+		
+		<table border="1" cellpadding="1" cellspacing="0">
+			<thead>
+				<tr style="background-color:#A5A5A5;color:#000000;">
+					<th colspan="4" align="center">HARINAS</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Arepa delgada 1 mediana</td>
+					<td>Arepa redonda 1 mediana</td>
+					<td>Arroz cocido 4 cucharaditas</td>
+					<td>Buñuelo 1 pequeño</td>					
+				</tr>
+				<tr>
+					<td>Chocolo ½ pequeña</td>
+					<td>Cereales 10 cdas</td>
+					<td>Galletas sal 2 unidades</td>
+					<td>Mazamorra 1-2 pocillo</td>					
+				</tr>
+				<tr>
+					<td>Pandequeso o pandebono 1 pequeño</td>
+					<td>Pan 1 peque – tajada</td>
+					<td>Pastas ½ pocillo</td>
+					<td>Tostada 1 unidad</td>					
+				</tr>
+				<tr>
+					<td>Papa común 1 mediana</td>
+					<td>Papa criolla 3 medianas</td>
+					<td>Plátano maduro ½  pequeño</td>
+					<td>Plátano verde ½ pequeño </td>					
+				</tr>
+				<tr>
+					<td>Yuca un trozo mediano</td>
+					<td>Harina integral 2 porciones</td>
+					<td></td>
+					<td></td>					
+				</tr>				
+			</tbody>
+		</table>
+		
+		<table border="1" cellpadding="1" cellspacing="0">
+			<thead>
+				<tr style="background-color:#A5A5A5;color:#000000;">
+					<th colspan="3" align="center">LEGUMINOSAS</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Alverja ½ pocillo </td>
+					<td>Frijol ½ pocillo </td>
+					<td>Garbanzo ½ pocillo</td>										
+				</tr>
+				<tr>
+					<td>Lentejas ½ pocillo</td>
+					<td>Soya ½ pocillo</td>
+					<td>Habas ½ pocillo</td>
+				</tr>
+			</tbody>
+		</table>
+		
+		<table border="1" cellpadding="1" cellspacing="0">
+			<thead>
+				<tr style="background-color:#A5A5A5;color:#000000;">
+					<th colspan="4" align="center">TOTAL PORCIONES DIA</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>FRUTAS</td>
+					<td>LECHE</td>
+					<td>HARINAS</td>	
+					<td>QUESO O SUSTITUTO</td>
+														
+				</tr>
+				<tr>
+					<td>VERDURAS</td>
+					<td>CARNE</td>
+					<td>GRASAS</td>
+					<td>LEGUMINOSAS</td>
+				</tr>
+			</tbody>
+		</table>		
+	</div>
+	
+	<div>
+		<p>
+			Es importante que cualquier duda sea comentada  a la doctor@, recuerde que su tratamiento es completamente personalizado, permitiendo así individualizar su caso y lograr el éxito del tratamiento. 
+		</p>
+	</div>
+</div>
+{% endblock %}

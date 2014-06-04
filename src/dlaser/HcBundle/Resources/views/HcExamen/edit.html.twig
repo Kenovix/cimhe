@@ -1,0 +1,16 @@
+{% extends "HcBundle::ajax.layout.html.twig" %}
+
+{% block cuerpo %}
+
+<fieldset id='field'>
+    	<legend>Resultado del examen</legend>
+<form>      	    	
+	{{ form_widget(edit_form) }}
+    	
+    <button id="updExamen" class="action blue" type="submit">
+        <span class="label">Modificar</span>
+    </button>        
+</form>    	
+</fieldset>
+
+{% endblock %}

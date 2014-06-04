@@ -1,0 +1,43 @@
+{% block body %}
+
+    {% block header %}{% endblock %}
+       
+    <section>
+        <header id="titulo" class="grid_16"><h1>{% block titulo %}{% endblock %}</h1></header>
+        
+        <nav id="menu" class="grid_3">
+            <ul>{% block menu %}{% endblock %}</ul>
+        </nav>
+        
+        <article id="cuerpo" class="grid_13">{% block cuerpo %}{% endblock %}</article>
+    </section>
+
+{% endblock %}
+
+{% block javascripts %}
+<script type="text/javascript">
+
+   		 var lista = document.getElementById('asignar');
+   		 var lista1 = document.getElementById('asignar1');
+   		 var lista2 = document.getElementById('asignar2');
+   		    		
+    	 lista.onchange = function() {
+        	var url = lista.options[lista.selectedIndex].getAttribute('data-url');
+       	 	window.location = url;
+    	  };
+    	  lista1.onchange = function() {
+          	var url = lista1.options[lista1.selectedIndex].getAttribute('data-url');
+         	 	window.location = url;
+      	  };
+      	lista2.onchange = function() {
+          	var url = lista2.options[lista2.selectedIndex].getAttribute('data-url');
+         	 	window.location = url;
+      	  };
+      	
+      	function frente() {
+      		el = document.getElementById("frente");
+      		el.style.visibility = (el.style.visibility == "visible") ? "hidden" : "visible";
+      	}
+      	
+</script>
+{% endblock %}

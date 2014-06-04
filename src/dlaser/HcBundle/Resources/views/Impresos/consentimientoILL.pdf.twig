@@ -1,0 +1,58 @@
+{% extends "::simple.html.twig" %}
+
+{% block stylesheets %}
+<style>
+		
+	div p{
+    	text-align: justify;
+    	font-size: 10pt;
+    }
+    h1{
+    	text-align: center;
+    }
+</style>  
+{% endblock %}
+
+{% block space %}
+<h4 align="center">NIT. 900.260.604-8</h4><br />
+<h5 align="center">I.V.A RÉGIMEN COMÚN</h5><br /><br />
+{% endblock %}
+
+{% block body %}
+<div>
+<h1>CONSENTIMIENTO INFORMADO LASERLIPOLISIS</h1>
+
+<p>Este documento se ha preparado para informarle sobre el procedimiento quirúrgico, sus riesgos y los tratamientos alternativos, tal como establece en Colombia la Ley 23 de 1981. Es importante que lea la información de forma cuidadosa y completa.</p>
+<p>La Técnica de Láser Lipólisis es un procedimiento desarrollado para remover la grasa localizada, en áreas que normalmente la dieta y el ejercicio  eliminan con dificultad.</p>
+<p>El calor generado por el láser de manera cuidadosamente controlado, rompe la membrana celular del adipocito (célula grasa), dejando aceite en el tejido celular subcutáneo, el cual se reabsorbe y elimina por mecanismos endógenos, y otra parte se extrae con presión negativa en el acto quirúrgico. Los efectos se observan de forma inmediata, sin tener el paciente que afrontar el traumatismo de los procedimientos convencionales y sus serios efectos adversos.</p>
+<h3>RIESGOS DEL PROCEDIMIENTO</h3>
+<p>Cualquier procedimiento quirúrgico posee ciertos riesgos y es importante comprenderlos antes de ser llevado al quirófano.</p>
+<p>Sangrado: Es posible que se presente un episodio de hemorragia durante o después de la cirugía,  aunque con la técnica láser lipólisis en los múltiples procedimientos realizados, no se han reportado casos.</p>
+<p>Infección: La infección después de este tipo de procedimiento es muy rara. Si ocurre puede ser necesario tratamiento adicional, incluyendo antibióticos o cirugía. </p>
+<p>Cambios en la sensibilidad cutánea: Pueden ocurrir cambios temporales en la sensibilidad cutánea que habitualmente se resuelven.</p>
+<p>Asimetrías e irregularidades en el contorno de la piel: Poco probable.</p>
+<p>Seroma: La acumulación de fluido ocurre de manera infrecuente, aunque puede eventualmente ser necesario un drenaje quirúrgico posterior.</p>
+<p>Reacciones alérgicas: En casos aislados se han descrito alergias locales al esparadrapo, material de sutura o preparados tópicos. Pueden ocurrir reacciones sistémicas que son más graves, frente a medicamentos usados durante la cirugía o prescritas después. Las reacciones alérgicas pueden requerir tratamiento adicional.</p>
+<p>Anestesia: La anestesia local como la regional o general implican un riesgo. Existe la posibilidad de complicaciones por cualquier forma de anestesia o sedación quirúrgica.</p>
+
+<p>Nombre del paciente: <strong>{{ paciente.priNombre }} {{ paciente.segNombre }} {{ paciente.priApellido }} {{ paciente.segApellido }}</strong> 
+Firma con cedula de ciudadanía: <strong>{{ paciente.identificacion }}</strong>   Fecha:  <strong> {{ fecha|date('d/m/Y') }}</strong> Firma:________________</p>
+
+<p>Efectos a largo plazo: Pueden ocurrir alteraciones posteriores en el contorno corporal como resultado del envejecimiento, pérdida o ganancia de peso, embarazo u otras circunstancias no relacionadas con el procedimiento.</p>
+<p>El paciente debe de comprometerse a seguir estrictamente las recomendaciones sobre dieta, asistir a las sesiones postoperatorias de ultrasonido y drenaje linfático y mantenerse en el peso que tenía antes de la intervención quirúrgica.</p>
+<p>He pedido y he recibido explicación adicional en detalle de:
+  <ul>
+    <li>a. El procedimiento o tratamiento</li>
+    <li>b. Otros procedimientos alternativos o métodos de tratamiento</li>
+    <li>c. Información acerca de los riesgos materiales del procedimiento o tratamiento</li>
+  </ul>
+</p>
+<p>SE ME HA PREGUNTADO SI QUIERO UNA INFORMACIÓN MÁS DETALLADA PERO ESTOY SATISFECHO (A) CON LA EXPLICACIÓN Y NO NECESITO MAS INFORMACIÓN.</p>
+<p><strong>CERTIFICO QUE EL PRESENTE DOCUMENTO HA SIDO LEÍDO Y ENTENDIDO POR MI EN SU TOTALIDAD Y POR ELLO DOY FE DE QUE LO FIRMO VOLUNTARIAMENTE EN COMPLETO USO DE MIS FACULTADES MENTALES Y SIN  QUE ME DEN COACCION.</strong></p>
+
+<h3>OBSERVACIONES:</h3>
+<p>________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
+Nombre del paciente: <strong>{{ paciente.priNombre }} {{ paciente.segNombre }} {{ paciente.priApellido }} {{ paciente.segApellido }}</strong> 
+Firma con cedula de ciudadanía: <strong>{{ paciente.identificacion }}</strong>  Fecha:   <strong> {{ fecha|date('d/m/Y') }}</strong> Firma:________________</p>
+</div>
+{% endblock %}

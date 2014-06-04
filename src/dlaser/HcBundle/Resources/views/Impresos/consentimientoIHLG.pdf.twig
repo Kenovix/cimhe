@@ -1,0 +1,84 @@
+{% extends "::simple.html.twig" %}
+
+{% block stylesheets %}
+<style>
+		
+	div p{
+    	text-align: justify;
+    	font-size: 10pt;
+    }
+    div p h1{
+    	text-align: center;
+    }
+    
+     table.paciente {
+    	font-size: 9pt;
+        border-bottom: 2px solid #000;
+        margin-top: 2%;
+    }
+</style>  
+{% endblock %}
+
+{% block head %}
+	<table class="paciente">
+		<tr>
+			<td colspan="5"><br /><br /></td>
+		</tr>
+		<tr>
+			<td width="130" align="center"><b>{{ paciente.tipoid }} - {{ paciente.identificacion }}</b></td>
+		  	<td width="200" align="center"><b>{{ paciente.prinombre|capitalize }} {{ paciente.segnombre|capitalize }} {{ paciente.priapellido|capitalize }} {{ paciente.segapellido|capitalize }}</b></td>
+		  	<td width="70" align="center"><b>{{ date('now') | date('Y-m-d') - paciente.fn | date('Y-m-d') }} Años</b></td>
+		  	<td width="180" align="center"> <b>{{ cliente.nombre }}</b></td>
+		  	<td width="90" align="center"><b>{{ fecha | date('d-m-y') }}</b></td>
+	 	</tr>
+	 </table>
+{% endblock %}
+
+{% block body %}
+<div>
+<p><h1>CONSENTIMIENTO INFORMADO HILOS DE LEVANTAMIENTO GLUTEO</h1></p>
+<p>Este documento se ha preparado para informarle sobre el procedimiento quirúrgico, sus riesgos y tratamientos alternativos, tal como lo establece la Ley 23 de 1981 en Colombia. Es importante que lea la información de forma cuidadosa y completa. En caso de que tenga dudas pregúntele directamente a su médico.</p>
+<p>La Técnica para pexia glútea o levantamiento de glúteos,  se realiza en dos tiempos con un intervalo de tres meses entre ellos.  Solo se utiliza anestesia local lo cual  evita el riesgo de la anestesia general; no hay  riesgo de mortalidad ni complicaciones respiratorias durante el procedimiento como tal. El médico previamente al procedimiento le pedirá exámenes como pruebas de coagulación, hemoleucograma para descartar anemia. Además de parcial de orina y pruebas hepáticas.</p>
+<p>Si tiene procedimientos previos como implante de glúteo el médico pedirá exámenes, como ecografías para saber dónde se encuentra ubicado el material y, electromiografía si sospecha compresión nerviosa.</p>
+<p>El material que se utiliza son los hilos Silhouette lift los cuales son hebras estériles no  absorbibles, miden 40.5 cm y  vienen sujetas a su aguja individual para su implante. La hebras están hechas de polipropileno el  cual  es un material  compatible con el cuerpo y en su trayecto tiene nudos recubiertos de unos conos, los cuales se reabsorben naturalmente hacia los tres meses de la implantación de los mismos, dejando la hebra fija en su  lugar para posterior tensado.</p>
+<p>Primer tiempo o tiempo de implantación: es aquel donde se inserta  los hilos en promedio 4 o 5 por glúteo.  Esto  se realiza a través de una incisión de 2 cm en la región donde nace la línea interglutea; previa anestesia para irse por debajo de la piel y salir a las marcaciones realizadas por el médico previamente en el  consultorio las cuales también estarán totalmente anestesiadas.</p> 
+<p>La hebra completa se deja dentro del paciente y se cierra hasta su posterior tensado.</p> 
+<p>En este primer tiempo se le tomaran las fotos del antes.</p>
+<p>El segundo tiempo o tiempo de tensado  se realiza  posterior a tres meses después de la implantación de las hebras; tiempo  durante el  cual los conos sobre los nudos de las hebras se reabsorben y se crea el anclaje del tejido a las hebras. Gracias a esto el  médico  reabre la incisión de 2cm de la primera ocasión; ordena las hebras, levanta  los glúteos con ayuda del  instrumentador y  finalmente las anuda entre sí.</p>
+<h4>RIESGOS DEL PROCEDIMIENTO</h4>
+<p>Cualquier procedimiento quirúrgico posee ciertos riesgos y es importante comprenderlos antes de ser llevado al quirófano.
+Nombre del paciente: <strong>{{ paciente.priNombre }} {{ paciente.segNombre }} {{ paciente.priApellido }} {{ paciente.segApellido }}</strong>
+Firma con cedula de ciudadanía: <strong>{{ paciente.identificacion }}</strong>  Fecha: <strong> {{ fecha|date('d/m/Y') }}</strong>  Firma:________________</p>
+
+<p>Sangrado: es mínimo pues es una sola incisión por donde no pasan  vasos mayores.</p>
+<p>Infección: como se trabaja en región glútea que es tan contaminada, debe seguir las indicaciones médicas y terminar el tratamiento antibiótico para disminuir las probabilidades de que esto suceda. Si ocurre, puede ser necesario un tratamiento adicional, incluyendo antibióticos  o  cirugía que corre por cuenta del paciente.</p>
+<p>Retracciones  glúteas: son zonas de hundimiento que se producen por la mala cicatrización del  paciente sobre las suturas, las cuales son definitivas.</p>
+<p>Elevación insatisfecha: concretar con el médico hasta donde se pueden elevar los glúteos ya que el procedimiento tiene limitantes, las cuales dependen de cuan caídos ellos estén, si hay procedimientos previos y cuanto  volumen glúteo se tiene.</p>
+<p>Fistulas: a pesar que las suturas están hechas de polipropileno, el cual es un material  amigable al cuerpo, puede haber rechazos a este, además de que el  riesgo aumente si la paciente tiene implantes de silicona, geles, microesferas, ácido Hialurónico o células expansibles.</p>
+<p>Pigmentaciones: se pueden pigmentar el  orificio de entrada, orificio de salida y trayecto recorrido por la sutura debido a reacciones inflamatorias, esto es  poco frecuente.</p>
+<p>Cambios en la sensibilidad cutánea: Pueden ocurrir cambios temporales en la sensibilidad cutánea que habitualmente se resuelven.</p>
+<p>Asimetrías e irregularidades en el contorno glúteo que depende de factores como  volumen  y procedimientos previos. Recuerde que nadie es totalmente simétrico.</p>
+<p>Reacciones alérgicas: En casos aislados se han descrito alergias locales al esparadrapo, material de sutura o preparados tópicos. Pueden ocurrir reacciones sistémicas que son más graves, frente a medicamentos usados durante la cirugía o prescritas después. Las reacciones alérgicas pueden requerir tratamiento adicional.</p>
+<p>Queloide: cicatriz antiestética en región interglutea por donde se accedió debido  al tipo de cicatrización del paciente.</p>
+<p>Anestesia: La anestesia local como la regional o general implican un riesgo. Existe la posibilidad de complicaciones por cualquier forma de anestesia o sedación quirúrgica.</p>
+<p>Efectos a largo plazo: Pueden ocurrir alteraciones posteriores en el contorno glúteo como resultado del envejecimiento, pérdida o ganancia de peso, embarazo u otras circunstancias no relacionadas con el procedimiento.</p>
+<p>El paciente debe de comprometerse a seguir estrictamente las recomendaciones  e indicaciones del médico. Cualquier incumplimiento exonera al médico de toda responsabilidad.
+Nombre del paciente: <strong>{{ paciente.priNombre }} {{ paciente.segNombre }} {{ paciente.priApellido }} {{ paciente.segApellido }}</strong>
+Firma con cedula de ciudadanía: <strong>{{ paciente.identificacion }}</strong>  Fecha: <strong> {{ fecha|date('d/m/Y') }}</strong>  Firma:________________</p>
+
+<p>Efectos a largo plazo: Pueden ocurrir alteraciones posteriores en el contorno corporal como resultado del envejecimiento, pérdida o ganancia de peso, embarazo u otras circunstancias no relacionadas con el procedimiento.</p>
+<p>El paciente debe de comprometerse a seguir estrictamente las recomendaciones sobre dieta, asistir a las sesiones postoperatorias de ultrasonido y drenaje linfático y mantenerse en el peso que tenía antes de la intervención quirúrgica.</p>
+<p>He pedido y he recibido explicación adicional en detalle de:<br/>
+a. El procedimiento o tratamiento<br/>
+b. Otros procedimientos alternativos o métodos de tratamiento<br/>
+c. Información acerca de los riesgos materiales del procedimiento o tratamiento</p>
+<p><strong>SE ME HA PREGUNTADO SI QUIERO UNA INFORMACIÓN MÁS DETALLADA PERO ESTOY SATISFECHO (A) CON LA EXPLICACIÓN Y NO NECESITO MAS INFORMACIÓN.
+CERTIFICO QUE EL PRESENTE DOCUMENTO HA SIDO LEÍDO Y ENTENDIDO POR MI EN SU TOTALIDAD Y POR ELLO DOY FE DE QUE LO FIRMO VOLUNTARIAMENTE EN COMPLETO USO DE MIS FACULTADES MENTALES Y SIN  QUE ME DEN COACCION.
+
+OBSERVACIONES:</strong>
+____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________<tcpdf method="AddPage" />
+
+Nombre del paciente: <strong>{{ paciente.priNombre }} {{ paciente.segNombre }} {{ paciente.priApellido }} {{ paciente.segApellido }}</strong>
+Firma con cedula de ciudadanía: <strong>{{ paciente.identificacion }}</strong>  Fecha: <strong> {{ fecha|date('d/m/Y') }}</strong>  Firma:________________</p>
+</div>
+{% endblock %}

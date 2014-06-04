@@ -1,0 +1,133 @@
+{% extends "AdminBundle::admin_layout.html.twig" %}
+
+{% block menu %}
+	{{ knp_menu_render('AdminBundle:Builder:adminMenu') }}
+{% endblock %}
+
+{% block rastro %}{{ wo_render_breadcrumbs() }}{% endblock %}
+
+{% block titulo %}Detalles de la historia clinica{% endblock %}
+
+{% block msg %}
+	{% if app.session.flash('ok') %}
+	    <div class="success mensajes">
+	        <span>{{ app.session.flash('ok') }}</span>
+	    </div>
+	{% elseif app.session.flash('info') %}
+		<div class="info">
+	        <span>{{ app.session.flash('info') }}</span>
+	    </div>
+	{% elseif app.session.flash('error') %}
+		<div class="error">
+	        <span>{{ app.session.flash('error') }}</span>
+	    </div>
+	{% endif %}
+{% endblock %}
+
+
+
+
+{% block cuerpo %}
+
+    <table>
+        <tbody>
+         <tr>
+            <th>Fecha</th>
+            <td>{{ entity.fecha|date('Y-m-d-H:i:s') }}</td>
+         </tr>
+         <tr>
+            <th>Sistole</th>
+            <td>{{ entity.sistole }}</td>
+         </tr>
+         <tr>
+            <th>Diastole</th>
+            <td>{{ entity.diastole }}</td>
+         </tr>
+         <tr>
+            <th>frecuencia Cardiaca</th>
+            <td>{{ entity.fC }}</td>
+         </tr>
+         <tr>
+            <th>frecuencia Repiratoria</th>
+            <td>{{ entity.fR }}</td>
+         </tr>
+         <tr>
+            <th>Peso</th>
+            <td>{{ entity.peso }}</td>
+         </tr>
+         <tr>
+            <th>Estatura</th>
+            <td>{{ entity.estatura }}</td>
+         </tr>
+         <tr>
+            <th>hta</th>
+            <td>{{ entity.hta }}</td>
+         </tr>
+         <tr>
+            <th>Diabetes</th>
+            <td>{{ entity.diabetes }}</td>
+         </tr>
+         <tr>
+            <th>Dislipidemia</th>
+            <td>{{ entity.dislipidemia }}</td>
+         </tr>
+         <tr>
+            <th>Tabaquismo</th>
+            <td>{{ entity.tabaquismo }}</td>
+         </tr>
+         <tr>
+            <th>Obesidad</th>
+            <td>{{ entity.obesidad }}</td>
+         </tr>
+         <tr>
+            <th>Ante Familiar</th>
+            <td>{{ entity.anteFamiliar }}</td>
+         </tr>
+         <tr>
+            <th>Sedentarismo</th>
+            <td>{{ entity.sedentarismo }}</td>
+         </tr>
+         <tr>
+            <th>Enfermedad</th>
+            <td>{{ entity.enfermedad }}</td>
+         </tr>
+         <tr>
+            <th>Rev Cardiovascular</th>
+            <td>{{ entity.revCardiovascular }}</td>
+         </tr>
+         <tr>
+            <th>Exa Fisico</th>
+            <td>{{ entity.exaFisico }}</td>
+         </tr>
+         <tr>
+            <th>Interconsulta</th>
+            <td>{{ entity.interconsulta }}</td>
+         </tr>
+         <tr>
+            <th>Motivo Inter</th>
+            <td>{{ entity.motivoInter }}</td>
+         </tr>
+         <tr>
+            <th>Manejo</th>
+            <td>{{ entity.manejo }}</td>
+         </tr>
+         <tr>
+            <th>Control</th>
+            <td>{{ entity.control }}</td>
+         </tr>
+         <tr>
+            <th>Ctrl Prioritario</th>
+            <td>{{ entity.ctrlPrioritario }}</td>
+         </tr>
+         <tr>
+            <th>Pos Fecha</th>
+            <td>{{ entity.postfecha }}</td>
+         </tr>         
+        </tbody>
+    </table>
+        
+    <a href="{{ path('hc_edit', { 'id': entity.id }) }}" class="button left"><span class="label">Modificar historia</span></a>
+    <a href="{{ path('hc_search') }}" class="button middle"><span class="label">Regresar al listado</span></a>
+        
+{% endblock %}
+    

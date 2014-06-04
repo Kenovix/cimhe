@@ -1,0 +1,92 @@
+{% extends "AdminBundle::admin_layout.html.twig" %}
+
+{% block menu %}
+	{{ knp_menu_render('AdminBundle:Builder:adminMenu') }}
+{% endblock %}
+
+{% block rastro %}{{ wo_render_breadcrumbs() }}{% endblock %}
+
+{% block titulo %}Buscar Historia Clinica{% endblock %}
+
+{% block msg %}
+	{% if app.session.flash('ok') %}
+	    <div class="success mensajes">
+	        <span>{{ app.session.flash('ok') }}</span>
+	    </div>
+	{% elseif app.session.flash('info') %}
+		<div class="info">
+	        <span>{{ app.session.flash('info') }}</span>
+	    </div>
+	{% elseif app.session.flash('error') %}
+		<div class="error">
+	        <span>{{ app.session.flash('error') }}</span>
+	    </div>
+	{% endif %}
+{% endblock %}
+
+
+
+
+{% block cuerpo %}
+
+
+
+<form action="{{ path('hc_list')}}" method="post" {{ form_enctype(form) }}>
+    <fieldset>
+    	<legend>Busqueda</legend>
+    	{{ form_widget(form) }}
+    </fieldset>
+    
+    <button class="action blue" type="submit">
+        <span class="label">Buscar</span>
+    </button>
+            
+</form><br/><br/><br/>
+  
+  {% if paciente != null %}
+  <h4>Historia clinica {{ paciente.priNombre}}  {{ paciente.priApellido}} {{ paciente.tipoId }} {{ paciente.identificacion }}</h4>
+  {% else %}
+  <h5 >Paciente no identificado en la base de datos.</h5>
+  {% endif %}
+  
+    <table class="records_list">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Fecha</th>
+                <th>Peso</th>
+                <th>Estatura</th>
+                <th>Obesidad</th>
+                <th>Diabetes</th>
+                <th>Opciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for entity in factura %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                {% if is_granted('ROLE_MEDICO') %}
+                <td><a href="{{ path('hc_edit', { 'id': entity.factura.id }) }}">{{ entity.fecha|date('Y-m-d') }}</a></td>
+                {% else %}
+                <td>{{ entity.fecha|date('Y-m-d') }}</td>
+                {% endif %}
+                
+                <td><strong>{{ entity.peso }}</strong></td>
+                <td>{{ entity.estatura }}</td> 
+                <td>{{ entity.obesidad }}</td>
+                <td>{{ entity.diabetes }}</td>
+                <td><a href="{{ path('hc_imprime', { 'factura': entity.factura.id }) }}" target="blank" class="button left"><span class="label">Ver info.</span></a></td>
+            </tr>
+         {% else %}
+         	<tr>
+         		<td colspan="10">No hay información disponible.</td>
+         	</tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if factura %}    	
+	   {{ simple_paginator_render('hc_paginator', null, {'routeParams' : {'id' : paciente.id}}) }}
+    {% endif %}
+{% endblock %}
+
+

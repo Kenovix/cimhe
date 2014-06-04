@@ -1,0 +1,86 @@
+{% extends "AdminBundle::admin_layout.html.twig" %}
+
+{% block menu %}
+	{{ knp_menu_render('AdminBundle:Builder:adminMenu') }}
+{% endblock %}
+
+{% block rastro %}{{ wo_render_breadcrumbs() }}{% endblock %}
+
+{% block titulo %}Listado de los examenes{% endblock %}
+
+{% block msg %}
+	{% if app.session.flash('ok') %}
+	    <div class="success mensajes">
+	        <span>{{ app.session.flash('ok') }}</span>
+	    </div>
+	{% elseif app.session.flash('info') %}
+		<div class="info">
+	        <span>{{ app.session.flash('info') }}</span>
+	    </div>
+	{% elseif app.session.flash('error') %}
+		<div class="error">
+	        <span>{{ app.session.flash('error') }}</span>
+	    </div>
+	{% endif %}
+{% endblock %}
+
+
+
+{% block cuerpo %}
+
+<table class="">
+     <tr> 
+     <td colspan="2">Agrege los examens:</td>
+       <td colspan="3">
+	      <select id="asignar">
+	      <option>Seleccione un examen</option>
+	       {% for examen in examenes %} 
+	         <option value="{{ examen.id }}" data-url="{{ path('examen_userExamen', { 'usuario': entity.id, 'examen': examen.id }) }}"> 
+	            {{ loop.index }} - {{ examen.nombre }} - {{ examen.codigo }}        
+	          </option>
+	       {% endfor %}       
+	      </select>
+      </td>     
+     </tr>
+</table>
+      
+      <br/><h4>Relacion entre usuarios y examenes</h4>
+      
+    <table class="records_list">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Codigo</th>
+                <th>Tipo</th>
+                <th>Opcion</th>                
+            </tr>
+        </thead>
+        <tbody>
+     
+{% for permiso in permisos %}            
+            <tr>
+                <td>{{ loop.index }}</td>                
+                <td>{{ permiso.nombre }}</td>                                
+                <td>{{ permiso.codigo }}</td>
+                <td>{{ permiso.tipo }}</td>
+                <td>               
+    			<a><a href="{{ path('examen_deleteUserExamen',{'usuario':entity.id,'examen':permiso.id}) }}" class="button left"><span class="label">Quitar</span></a>
+    			</td>
+            </tr>
+        {% endfor %} 
+      </tbody>
+    </table>
+    
+   <script type="text/javascript">
+   		 var lista = document.getElementById('asignar');
+   		    		
+    	 lista.onchange = function() {
+        	var url = lista.options[lista.selectedIndex].getAttribute('data-url');
+       	 	window.location = url;
+    	  };
+   </script>    
+    
+{% endblock %}
+    
+        

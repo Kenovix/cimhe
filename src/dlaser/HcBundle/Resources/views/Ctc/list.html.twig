@@ -1,0 +1,71 @@
+{% extends "AdminBundle::admin_layout.html.twig" %}
+
+{% block menu %}
+	{{ knp_menu_render('AdminBundle:Builder:adminMenu') }}
+{% endblock %}
+
+{% block rastro %}{{ wo_render_breadcrumbs() }}{% endblock %}
+
+{% block titulo %}Formatos NO POS de {{ entity.0.hc.factura.paciente.priNombre | capitalize }} {{ entity.0.hc.factura.paciente.segNombre | capitalize }} {{ entity.0.hc.factura.paciente.priApellido | capitalize }} {{ entity.0.hc.factura.paciente.segApellido | capitalize }} {% endblock %}
+
+{% block msg %}
+	{% if app.session.flash('ok') %}
+	    <div class="success mensajes">
+	        <span>{{ app.session.flash('ok') }}</span>
+	    </div>
+	{% elseif app.session.flash('info') %}
+		<div class="info">
+	        <span>{{ app.session.flash('info') }}</span>
+	    </div>
+	{% elseif app.session.flash('error') %}
+		<div class="error">
+	        <span>{{ app.session.flash('error') }}</span>
+	    </div>
+	{% endif %}
+{% endblock %}
+
+
+
+
+
+{% block cuerpo %}
+    <table>
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Medicamento</th>                
+                <th>Diagnostico</th>
+                <th>Imprimir</th>
+            </tr>
+        </thead>
+        <tbody>
+	{% if is_granted('ROLE_MEDICO') %}
+		{% for entities in entity %}            
+			<tr>
+	        	<td>{{ entities.fecha|date('d/m/y') }}</td>
+	            <td><a href="{{ path('ctc_edit', {'id':entities.id}) }}">{{ entities.medicamento.principioActivo }}</a></td>
+	            <td>{{ entities.cie.nombre }}</td>
+	            <td><a href="{{ path('ctc_imprimir', {'id': entities.id}) }}" class="button"><span class="icon icon153"></span></a></td>
+	    	</tr>
+	    
+	    	{% else %}
+	        	<td colspan="3">No hay información disponible.</td>
+	  	
+	    {% endfor %}
+	{% elseif is_granted('ROLE_AUX')%}
+		{% for entities in entity %}            
+			<tr>
+	        	<td>{{ entities.fecha|date('d/m/y') }}</td>
+	            <td>{{ entities.medicamento.principioActivo }}</td>
+	            <td>{{ entities.cie.nombre }}</td>
+	            <td><a href="{{ path('ctc_imprimir', {'id': entities.id}) }}" class="button"><span class="icon icon153"></span></a></td>
+	    	</tr>
+	    
+	    	{% else %}
+	        	<td colspan="3">No hay información disponible.</td>
+	  	
+	    {% endfor %}
+	{% endif %}
+      </tbody>
+    </table>     
+{% endblock %}
