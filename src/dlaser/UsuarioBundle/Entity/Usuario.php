@@ -157,35 +157,7 @@ class Usuario implements UserInterface, \Serializable
      */
     private $firma;
 
-    /**
-     * @var Cie
-     *
-     * @ORM\ManyToMany(targetEntity="dlaser\HcBundle\Entity\Cie")
-     * @ORM\JoinTable(name="cie_usuario",
-     *   joinColumns={
-     *     @ORM\JoinColumn(name="usuario_id", referencedColumnName="id")
-     *   },
-     *   inverseJoinColumns={
-     *     @ORM\JoinColumn(name="cie_id", referencedColumnName="id")
-     *   }
-     * )
-     */
-    private $cie;
-
-    /**
-     * @var Examen
-     *
-     * @ORM\ManyToMany(targetEntity="dlaser\HcBundle\Entity\Examen")
-     * @ORM\JoinTable(name="examen_usuario",
-     *   joinColumns={
-     *     @ORM\JoinColumn(name="usuario_id", referencedColumnName="id")
-     *   },
-     *   inverseJoinColumns={
-     *     @ORM\JoinColumn(name="examen_id", referencedColumnName="id")
-     *   }
-     * )
-     */
-    private $examen;
+    
 
     /**
      * @var Sede
@@ -195,9 +167,7 @@ class Usuario implements UserInterface, \Serializable
     private $sede;
 
     public function __construct()
-    {
-        $this->cie = new \Doctrine\Common\Collections\ArrayCollection();
-	    $this->examen = new \Doctrine\Common\Collections\ArrayCollection();
+    {        
 	    $this->sede = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
@@ -447,75 +417,7 @@ class Usuario implements UserInterface, \Serializable
     public function getFirma()
     {
         return $this->firma;
-    }
-
-    /**
-     * Add cie
-     *
-     * @param dlaser\HcBundle\Entity\Cie $cie
-     */
-    public function addCie(\dlaser\HcBundle\Entity\Cie $cie)
-    {
-    if (!$this->hasCie($cie)) {
-        	$this->cie[] = $cie;
-        	return true;
-        }
-        return false;
-    }
-
-    public function hasCie(\dlaser\HcBundle\Entity\Cie $cie)
-    {
-    	foreach ($this->cie as $value) {
-    		if ($value->getId() == $cie->getId()) {
-    			return true;
-    		}
-    	}
-    	return false;
-    }
-
-    /**
-     * Get cie
-     *
-     * @return dlaser\HcBundle\Entity\Cie 
-     */
-    public function getCie()
-    {
-        return $this->cie;
-    }
-
-    /**
-     * Add examen
-     *
-     * @param dlaser\HcBundle\Entity\Examen $examen
-     */
-    public function addExamen(\dlaser\HcBundle\Entity\Examen $examen)
-    {
-	if (!$this->hasExamen($examen)) {
-        	$this->examen[] = $examen;
-        	return true;
-        }
-        return false;
-    }
-
-    public function hasExamen(\dlaser\HcBundle\Entity\Examen $examen)
-    {
-    	foreach ($this->examen as $value) {
-    		if ($value->getId() == $examen->getId()) {
-    			return true;
-    		}
-    	}
-    	return false;
-    }
-
-    /**
-     * Get examen
-     *
-     * @return dlaser\HcBundle\Entity\Examen 
-     */
-    public function getExamen()
-    {
-        return $this->examen;
-    }
+    }    
 
     /**
      * Add sede

@@ -183,12 +183,6 @@ class Paciente
      */
     private $tipoAfi;
     
-    public function getEdad()
-    {
-    	list($Y,$m,$d) = explode("-",$this->getFN()->format('Y-m-d'));
-    	return( date("md") < $m.$d ? date("Y")-$Y-1 : date("Y")-$Y );
-    }
-    
     
     /**
      * Get id

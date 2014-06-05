@@ -88,9 +88,7 @@ class FacturaController extends Controller
             $em->persist($reserva);
             $em->flush();
             
-            $this->get('session')->setFlash('ok', 'La admisión ha sido registrada éxitosamente.');
-            
-            $this->autoSaveAction($entity->getId());
+            $this->get('session')->setFlash('ok', 'La admisión ha sido registrada éxitosamente.');            
 
             return $this->redirect($this->generateUrl('factura_show',array("id"=>$entity->getId())));        
         }
@@ -101,99 +99,8 @@ class FacturaController extends Controller
                 'form'   => $form->createView()
         ));
         
-    }
-    
-    private function autoSaveAction($id)
-    {
-    	$entity  = new Hc();
-    
-    	$em = $this->getDoctrine()->getEntityManager();
-    	$factura = $em->getRepository('ParametrizarBundle:Factura')->find($id);
-    	$existe = $em->getRepository('HcBundle:Hc')->findByFactura($id);
-    		
-    	if(!$factura || $existe)
-    	{
-    		throw $this->createNotFoundException('La factura relacionada ya esta en uso o no existe.');
-    	}
-    		
-    	$paciente = $factura->getPaciente();
-    	$cargo = $factura->getCargo();
-    
-    	// buscar la ultima hc del paciente y relacionar los datos principales a la nueva hc si no tiene hc esta se generara automaticamente.
-    	$HC = $em->getRepository('HcBundle:Hc')->findLastHc($paciente->getIdentificacion());
-    		
-    		
-    	//----- asignar los datos de la ultima historia clinica si el paciente aun no tiene hc entonces se le creare una nueva.
-    	if($HC)
-    	{
-    		$entity->setEnfermedad($HC->getEnfermedad());
-    		$entity->setExaFisico($HC->getExaFisico());
-    		$entity->setRevSistema($HC->getRevSistema());
-    		$entity->setAntecedentes($HC->getAntecedentes());
-    		$entity->setManejo($HC->getManejo());
-    		$entity->setMotivo($HC->getMotivo());
-    		$entity->setControl($HC->getControl());
-    		$entity->setCtrlPrioritario($HC->getCtrlPrioritario());
-    		$entity->setPostfecha($HC->getPostfecha());
-    
-    		$entity->setFecha(new \DateTime('now'));
-    		$entity->setFactura($factura);
-    
-    		$em->persist($entity);
-    		$em->flush();
-    
-    		// Verifica si de los examenes solicitados alguno fue hecho en ccv(empresa) y trae conclusión
-    		$cxAnt = $em->getRepository('ParametrizarBundle:Factura')->findCheckExm($paciente,$cargo);
-
-    		if(count($cxAnt) > 1){
-    			// trae la informacion de la hc con respecto al id de la factura de la consulta anterior
-    			$hc_ant = $em->getRepository('HcBundle:Hc')->findOneBy(array('factura' => $cxAnt[1]['id']));
-    
-    			// trae la informacion de los examenes que tienen $hc_ant asociado genera los examenes presentados.
-    			$exaPresentados = $em->getRepository('HcBundle:HcExamen')->findHcExamPresent($hc_ant->getId());
-    
-    		}else {
-    			$exaPresentados = null;
-    		}
-    
-    		$medi_hc = $em->getRepository('HcBundle:HcMedicamento')->findByHc($HC->getId());
-    		$cie_hc = $HC->getCie();
-    
-    		$HC = $em->getRepository('HcBundle:Hc')->findLastHc($paciente->getIdentificacion());
-    			
-    		foreach ($medi_hc as $medicamentos){
-    
-    			$entity  = new HcMedicamento();
-    			$entity->setEstado('R');
-    			$entity->setHc($HC);
-    			$entity->setMedicamento($medicamentos->getMedicamento());
-    
-    			$em->persist($entity);
-    			$em->flush();
-    		}
-    
-    		foreach ($cie_hc as $cies){
-    
-    			if($HC->addCie($cies)){
-    					
-    				$em->persist($HC);
-    				$em->flush();
-    			}
-    		}
-    	}
-    	else{
-    		$entity->setFactura($factura);
-    		$entity->setFecha(new \DateTime('now'));
-    		$em->persist($entity);
-    		$em->flush();
-    
-    		$this->get('session')->setFlash('info',
-    				'El paciente no registra visitas anteriores en el sistema.');
-    
-    		return $this->redirect($this->generateUrl('factura_search'));
-    	}
-    }
-    
+    }   
+        
     public function searchAction()
     {
     	$breadcrumbs = $this->get("white_october_breadcrumbs");

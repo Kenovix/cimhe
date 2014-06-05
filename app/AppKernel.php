@@ -26,8 +26,7 @@ class AppKernel extends Kernel
             new dlaser\AdminBundle\AdminBundle(),
             new dlaser\ParametrizarBundle\ParametrizarBundle(),
             new dlaser\AgendaBundle\AgendaBundle(),
-            new dlaser\UsuarioBundle\UsuarioBundle(),
-            new dlaser\HcBundle\HcBundle(),
+            new dlaser\UsuarioBundle\UsuarioBundle(),            
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
