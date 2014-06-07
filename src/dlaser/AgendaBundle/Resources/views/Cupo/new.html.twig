@@ -96,6 +96,7 @@
 {% block javascripts %}
 
 <script src="{{ asset('bundles/dlaser/js/jquery-ui-1.8.23.custom.min.js') }}"></script>
+<script src="{{ asset('bundles/dlaser/js/jquery.loadmask.min.js') }}"></script>
 
 <script type="text/javascript">
 
@@ -381,8 +382,6 @@
             },function(data){
                 if(data.responseCode==200 ){
 
-                	$('#ajaxMsg').html('');
-
             		var select = $('#Cupo_hora');
             		if(select.prop) {
             		  var options = select.prop('options');
@@ -399,20 +398,9 @@
             		});
             		
             		select.val('');
-            		                    
+            		                            		                    
                 }
                 else if(data.responseCode==400){
-
-                	var select = $('#Cupo_hora');
-            		if(select.prop) {
-            		  var options = select.prop('options');
-            		}
-            		else {
-            		  var options = select.attr('options');
-            		}
-            		$('option', select).remove();
-                    
-                	$('#ajaxMsg').html('');
                 	$('#ajaxMsg').html(data.msg);
                     $('#ajaxMsg').css("color","red");
                 }
@@ -421,7 +409,7 @@
                 }
             });
             
-        });    
+        });        
     });
 </script>    
 {% endblock %}

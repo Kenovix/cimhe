@@ -22,7 +22,7 @@ class AgendaController extends Controller
         $query = $em->createQuery(' SELECT a
                 FROM AgendaBundle:Agenda a
                 WHERE a.fechaFin > :fi
-                ORDER BY a.fechaInicio ASC');
+                ORDER BY a.fechaInicio ASC');        
         
         $query->setParameter('fi', new \DateTime('now'));        
         $agenda = $query->getResult();
@@ -70,6 +70,21 @@ class AgendaController extends Controller
                        
             $em->persist($entity);
             $em->flush();
+                       
+            /*$ncupos = ((($entity->getFechaFin()->getTimestamp() - $entity->getFechaInicio()->getTimestamp()) / 60) / $entity->getIntervalo());
+            
+            $turno = $entity->getFechaInicio();
+            
+            for($i = 0; $i < $ncupos; $i++ ){
+
+                $cupo = new Cupo();                
+                $cupo->setHora($turno);
+                $cupo->setAgenda($entity);
+                $cupo->setEstado('L');
+                $em->persist($cupo);
+                $em->flush();
+                $turno->add(new \DateInterval('PT'.$entity->getIntervalo().'M'));                
+            }*/
     
             $this->get('session')->setFlash('ok', 'La agenda ha sido creada éxitosamente.');    
             return $this->redirect($this->generateUrl('agenda_show', array("id" => $entity->getId())));    
@@ -126,151 +141,42 @@ class AgendaController extends Controller
                 'edit_form'   => $editForm->createView(),
         ));
     }
-
-
-    public function updateAction($id) {
-    	$em = $this->getDoctrine()->getEntityManager();
     
-    	$entity = $em->getRepository('AgendaBundle:Agenda')->find($id);
+    public function updateAction($id)
+    {
+        $em = $this->getDoctrine()->getEntityManager();
     
-    	if (!$entity) {
-    		throw $this->createNotFoundException('La agenda solicitada no existe.');
-    	}
+        $entity = $em->getRepository('AgendaBundle:Agenda')->find($id);
     
-    	$fiv = $entity->getFechaInicio();
-    	$ffv = $entity->getFechaFin();
+        if (!$entity) {
+            throw $this->createNotFoundException('La agenda solicitada no existe.');
+        }
     
-    	$editForm = $this->createForm(new AgendaType(), $entity);
-    	$request = $this->getRequest();    
-    	$editForm->bindRequest($request);
+        $editForm   = $this->createForm(new AgendaType(), $entity);    
+        $request = $this->getRequest();    
+        $editForm->bindRequest($request);
     
-    	if ($editForm->isValid()) {
+        if ($editForm->isValid()) {
     
-    		if (($fiv->getTimestamp()!= $entity->getFechaInicio()->getTimestamp())|| ($ffv->getTimestamp()!= $entity->getFechaFin()->getTimestamp()))
-    		{
+            $em->persist($entity);
+            $em->flush();
     
-    			//Ampliar hacia arriba
-    			if (($fiv->getTimestamp() > $entity->getFechaInicio()->getTimestamp())&& ($ffv->getTimestamp()== $entity->getFechaFin()->getTimestamp()))
-    			{
-    				$em->persist($entity);
-    				$em->flush();
+            $this->get('session')->setFlash('ok', 'La agenda ha sido modificada éxitosamente.');    
+            return $this->redirect($this->generateUrl('agenda_edit', array('id' => $id)));
+        }
+        
+        $breadcrumbs = $this->get("white_october_breadcrumbs");
+        $breadcrumbs->addItem("Inicio", $this->get("router")->generate("agenda_list"));
+        $breadcrumbs->addItem("Agenda", $this->get("router")->generate("agenda_list"));                
+        $breadcrumbs->addItem("Detalle",$this->get("router")->generate("agenda_show",array("id" => $id)));
+        $breadcrumbs->addItem("Modificar");
     
-    				//Ampliar hacia abajo
-    			} elseif (($fiv->getTimestamp()	== $entity->getFechaInicio()->getTimestamp())
-    					&& ($ffv->getTimestamp() < $entity->getFechaFin()->getTimestamp())) {
+        return $this->render('AgendaBundle:Agenda:edit.html.twig', array(
+                'entity'      => $entity,
+                'edit_form'   => $editForm->createView()
+        ));
+    }
     
-    				$em->persist($entity);
-    				$em->flush();
-    
-    				//Ampliar hacia arriba y hacia abajo
-    			} elseif (($fiv->getTimestamp()	> $entity->getFechaInicio()->getTimestamp())
-    					&& ($ffv->getTimestamp() < $entity->getFechaFin()->getTimestamp())) {
-    
-    				$em->persist($entity);
-    				$em->flush();
-    
-    				//Desplazar bloque hacia abajo
-    			} elseif (($fiv->getTimestamp()	< $entity->getFechaInicio()->getTimestamp())
-    					&& ($ffv->getTimestamp() < $entity->getFechaFin()->getTimestamp())) {
-    
-    				$diff_fi = ($entity->getFechaInicio()->getTimestamp() - $fiv->getTimestamp());
-    				$diff_ff = ($entity->getFechaFin()->getTimestamp() - $ffv->getTimestamp());
-    
-    				if ($diff_fi == $diff_ff) {
-    
-    					$query = $em->createQuery('select
-														c
-												   from
-														cahis\AgendaBundle\Entity\Cupo c
-													where
-														c.agenda = :agenda');
-    
-    					$query->setParameter('agenda', $entity->getId());
-    
-    					$iterableResult = $query->iterate();
-    
-    					$batchSize = 10;
-    					$i = 0;
-    
-    					foreach ($iterableResult AS $row) {
-    						$cupo = $row[0];
-    
-    						$hora = new \DateTime($cupo->getHora()->format('Y-m-d H:i:s'));
-    
-    						$hora->add(new \DateInterval('PT' . $diff_fi . 'S'));
-    
-    						$cupo->setHora($hora);
-    
-    						if (($i % $batchSize) === 0) {
-    							$em->flush(); // Executes all updates.
-    							$em->clear(); // Detaches all objects from Doctrine!
-    						}
-    						++$i;
-    					}
-    					$em->flush();
-    				}
-    				//Desplazar bloque hacia arriba
-    			} elseif (($fiv->getTimestamp()	> $entity->getFechaInicio()->getTimestamp())
-    					&& ($ffv->getTimestamp() > $entity->getFechaFin()->getTimestamp())) {
-    
-    				$diff_fi = ($fiv->getTimestamp() - $entity->getFechaInicio()->getTimestamp());
-    				$diff_ff = ($ffv->getTimestamp() - $entity->getFechaFin()->getTimestamp());
-    
-    				if ($diff_fi == $diff_ff) {
-    
-    					$query = $em->createQuery(' select
-														c
-													from
-														cahis\AgendaBundle\Entity\Cupo c
-													where
-														c.agenda = :agenda');
-    
-    					$query->setParameter('agenda', $entity->getId());
-    
-    					$iterableResult = $query->iterate();
-    
-    					$batchSize = 10;
-    					$i = 0;
-    
-    					foreach ($iterableResult AS $row) {
-    						$cupo = $row[0];
-    
-    						$hora = ($cupo->getHora()->getTimestamp() - $diff_fi);
-    
-    						$fecha = new \DateTime();
-    
-    						$fecha->setTimestamp($hora);
-    
-    						$cupo->setHora($fecha);
-    
-    						if (($i % $batchSize) === 0) {
-    							$em->flush(); // Executes all updates.
-    							$em->clear(); // Detaches all objects from Doctrine!
-    						}
-    						++$i;
-    					}
-    					$em->flush();
-    				}
-    			}
-    		} else {
-    			$em->persist($entity);
-    			$em->flush();
-    		}
-    
-    		$this->get('session')->setFlash('info', 'La información de la agenda ha sido modificada éxitosamente.');
-    
-    		return $this->redirect($this->generateUrl('agenda_edit', array('id' => $id)));
-    	}
-    	
-    	$breadcrumbs = $this->get("white_october_breadcrumbs");
-    	$breadcrumbs->addItem("Inicio", $this->get("router")->generate("agenda_list"));
-    	$breadcrumbs->addItem("Agenda", $this->get("router")->generate("agenda_list"));
-    	$breadcrumbs->addItem("Detalle",$this->get("router")->generate("agenda_show",array("id" => $id)));
-    	$breadcrumbs->addItem("Modificar");
-    
-    	return $this->render('AgendaBundle:Agenda:edit.html.twig', array('entity' => $entity,
-    			'edit_form' => $editForm->createView()));
-    }    
     
     
     public function ajaxBuscarAction(){

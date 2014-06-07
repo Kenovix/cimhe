@@ -76,6 +76,7 @@
 
 <script type="text/javascript" src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
 <script type="text/javascript" src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
+<script src="{{ asset('bundles/dlaser/js/jquery.loadmask.min.js') }}"></script>
 
 <script type="text/javascript">
 
@@ -97,12 +98,16 @@
             if($("#codigo").is(':checked')) parametro = $("#codigo").val();
 
             if(valor){
+
+            	$("#mascara").mask("Waiting...");
             
                 $.post(url,{
                        valor: valor,
                        parametro: parametro
                 },function(data){
                     if(data.responseCode==200 ){
+
+                    	$("#mascara").unmask();
                     	
                     	$.each(data.cupo, function(i, val) {
 
@@ -130,6 +135,7 @@
                     }
                     else if(data.responseCode==400){
                             	           	            	
+                    	$("#mascara").unmask();
                     	$('#ajaxMsg').html(data.msg);
                         $('#ajaxMsg').css("color","red");
                     }

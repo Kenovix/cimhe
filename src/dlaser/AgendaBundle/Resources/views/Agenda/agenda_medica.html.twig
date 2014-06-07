@@ -24,6 +24,9 @@
 	{% endif %}
 {% endblock %}
 
+
+
+
 {% block cuerpo %}
 
     <div>
@@ -72,9 +75,7 @@
                 
                 	$.each(data.agenda, function(i, val) {        	
                         	
-                		var ruta = "";
-
-                		ruta = Routing.generate('hc_edit', { 'id': val.id });
+                		var ruta = "";                		
                 		                        
                         tr += '<tr class="'+ val.estado +'">';
                         tr += '<td>'+val.hora+'</td>';

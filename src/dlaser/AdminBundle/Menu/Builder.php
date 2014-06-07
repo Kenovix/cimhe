@@ -44,39 +44,14 @@ class Builder extends ContainerAware
 				$menu['Facturación']->addChild('Cliente', array('route' => 'factura_cliente_list'));
 				$menu['Facturación']->addChild('Informes', array('uri' => '#'));
 				$menu['Facturación']['Informes']->addChild('Honorarios', array('route' => 'factura_reporte_medico'));
-				
-			$menu->addChild('Historia Clínica', array('uri' => '#'));
-				$menu['Historia Clínica']->addChild('Consultar', array('route' => 'hc_search'));
-				$menu['Historia Clínica']->addChild('Diagnostico', array('uri' => '#'));
-					$menu['Historia Clínica']['Diagnostico']->addChild('Listado', array('route' => 'dx_userDx'));
-					$menu['Historia Clínica']['Diagnostico']->addChild('Nuevo', array('route' => 'dx_new'));
-				$menu['Historia Clínica']->addChild('Medicamento', array('uri' => '#'));
-					$menu['Historia Clínica']['Medicamento']->addChild('Listado', array('route' => 'medicamento_list'));
-					$menu['Historia Clínica']['Medicamento']->addChild('Nuevo', array('route' => 'medicamento_new'));
-				$menu['Historia Clínica']->addChild('Examen', array('uri' => '#'));
-					$menu['Historia Clínica']['Examen']->addChild('Listado', array('route' => 'examen_list'));
-					$menu['Historia Clínica']['Examen']->addChild('Nuevo', array('route' => 'examen_new'));
-				$menu['Historia Clínica']->addChild('CTC', array('uri' => '#'));
-					$menu['Historia Clínica']['CTC']->addChild('Consultar', array('route' => 'ctc_search'));
+							
 		
 		}elseif($securityContext->isGranted('ROLE_MEDICO')){
 			
 			$menu->addChild('Agendamiento', array('uri' => '#'));
 				$menu['Agendamiento']->addChild('Agenda', array('route' => 'agenda_medica_list'));
 			
-			$menu->addChild('Historia Clínica', array('uri' => '#'));
-				$menu['Historia Clínica']->addChild('Consultar', array('route' => 'hc_search'));
-				$menu['Historia Clínica']->addChild('Diagnostico', array('uri' => '#'));
-					$menu['Historia Clínica']['Diagnostico']->addChild('Listado', array('route' => 'dx_userDx'));
-					$menu['Historia Clínica']['Diagnostico']->addChild('Nuevo', array('route' => 'dx_new'));
-				$menu['Historia Clínica']->addChild('Medicamento', array('uri' => '#'));
-					$menu['Historia Clínica']['Medicamento']->addChild('Listado', array('route' => 'medicamento_list'));
-					$menu['Historia Clínica']['Medicamento']->addChild('Nuevo', array('route' => 'medicamento_new'));
-				$menu['Historia Clínica']->addChild('Examen', array('uri' => '#'));
-					$menu['Historia Clínica']['Examen']->addChild('Listado', array('route' => 'examen_list'));
-					$menu['Historia Clínica']['Examen']->addChild('Nuevo', array('route' => 'examen_new'));
-				$menu['Historia Clínica']->addChild('CTC', array('uri' => '#'));
-				$menu['Historia Clínica']['CTC']->addChild('Consultar', array('route' => 'ctc_search'));
+			
 		}else{
 			
 			$menu->addChild('Agendamiento', array('uri' => '#'));

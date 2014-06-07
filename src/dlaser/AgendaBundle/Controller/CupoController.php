@@ -51,39 +51,48 @@ class CupoController extends Controller
                 'form'   => $form->createView(),
         		'form_afil' => $form_afil->createView()
         ));
-    }
-    
-    public function saveAction() {
-    	$em = $this->getDoctrine()->getEntityManager();
-    
-    	$form = $this->createForm(new CupoType());
-    	$request = $this->getRequest();
-    	$entity = $request->get($form->getName());
-    
-    	$cupo = new Cupo();
-    	$paciente = $em->getRepository('ParametrizarBundle:Paciente')->findOneBy(array('identificacion' => $entity['paciente']));
-    	$cargo = $em->getRepository('ParametrizarBundle:Cargo')->find($entity['cargo']);
-    	$agenda = $em->getRepository('AgendaBundle:Agenda')->find($entity['agenda']);
-    
-    	$user = $this->get('security.context')->getToken()->getUser();// Usuario que asigna la cita
-    
-    	$hora = new \DateTime($entity['hora']);
-    
-    	$cupo->setRegistra($user->getId());
-    	$cupo->setPaciente($paciente);
-    	$cupo->setCargo($cargo);
-    	$cupo->setAgenda($agenda);
-    	$cupo->setEstado('A');
-    	$cupo->setNota($entity['nota']);
-    	$cupo->setCliente($entity['cliente']);
-    	$cupo->setHora($hora);
-    
-    	$em->persist($cupo);
-    	$em->flush();
-    
-    	$this->get('session')->setFlash('info', 'La reserva ha sido creada exitosamente.');
-    
-    	return $this->redirect($this->generateUrl('cupo_show', array('id' => $cupo->getId())));
+    }    
+
+    public function saveAction()
+    {
+        $cupo = new Cupo();
+                
+        $form = $this->createForm(new CupoType(), $cupo);
+        $request = $this->getRequest();
+        $entity = $request->get($form->getName());
+        
+        $em = $this->getDoctrine()->getEntityManager();
+
+        $agenda = $em->getRepository('AgendaBundle:Agenda')->find($entity['agenda']);
+        $paciente = $em->getRepository('ParametrizarBundle:Paciente')->findOneBy(array('identificacion' => $entity['paciente']));
+        $cargo = $em->getRepository('ParametrizarBundle:Cargo')->find($entity['cargo']);        
+        $user = $this->get('security.context')->getToken()->getUser();
+        
+        if($agenda)
+        {
+        	$hora = new \DateTime($entity['hora']);
+        	
+        	$cupo->setHora($hora);
+        	$cupo->setRegistra($user->getId());
+        	$cupo->setPaciente($paciente);
+        	$cupo->setCargo($cargo);
+        	$cupo->setEstado('A');
+        	$cupo->setAgenda($agenda);
+        	$cupo->setNota($entity['nota']);
+        	$cupo->setCliente($entity['cliente']);
+        	
+        	$em->persist($cupo);
+        	$em->flush();
+        	
+        	$this->get('session')->setFlash('ok', 'La reserva ha sido creada éxitosamente.');
+        	
+        	return $this->redirect($this->generateUrl('cupo_show', array('id' => $cupo->getId())));
+        }else{
+        	$this->get('session')->setFlash('info', 'Hay informacion incompleta para la reserva del cupo.');        		
+        	return $this->redirect($this->generateUrl('cupo_new'));
+        }
+        
+        
     }
 
     public function showAction($id)
@@ -140,61 +149,59 @@ class CupoController extends Controller
     public function updateAction($id)
     {
         $em = $this->getDoctrine()->getEntityManager();
-        
-        $form = $this->createForm(new CupoType());
-        $request = $this->getRequest();
-        $entity = $request->get($form->getName());
-        
-        if($id != $entity['hora']){
-            
-            $cupo = $em->getRepository('AgendaBundle:Cupo')->find($id);
-            
-            if($cupo){
-                
-                $cupo->setEstado('L');
-                
-                $em->persist($cupo);
-                $em->flush();
-                
-                $cupo = $em->getRepository('AgendaBundle:Cupo')->find($entity['hora']);
-                $paciente = $em->getRepository('ParametrizarBundle:Paciente')->findOneBy(array('identificacion' => $entity['paciente']));
-                $cargo = $em->getRepository('ParametrizarBundle:Cargo')->find($entity['cargo']);
-                
-                $user = $this->get('security.context')->getToken()->getUser();
-                
-                $cupo->setRegistra($user->getId());
-                $cupo->setPaciente($paciente);
-                $cupo->setCargo($cargo);
-                $cupo->setEstado('A');
-                $cupo->setNota($entity['nota']);
-                $cupo->setCliente($entity['cliente']);
-                
-                $em->persist($cupo);
-                $em->flush();
-                
-            }
-        }else{
-            
-            $cupo = $em->getRepository('AgendaBundle:Cupo')->find($id);            
-            $paciente = $em->getRepository('ParametrizarBundle:Paciente')->findOneBy(array('identificacion' => $entity['paciente']));
-            $cargo = $em->getRepository('ParametrizarBundle:Cargo')->find($entity['cargo']);
-            
-            $user = $this->get('security.context')->getToken()->getUser();
-            
-            $cupo->setRegistra($user->getId());
-            $cupo->setPaciente($paciente);
-            $cupo->setCargo($cargo);
-            $cupo->setEstado('A');
-            $cupo->setNota($entity['nota']);
-            $cupo->setCliente($entity['cliente']);
-            
-            $em->persist($cupo);
-            $em->flush();
-        }
-        
-        $this->get('session')->setFlash('ok', 'La reserva ha sido modificada éxitosamente.');
-    
-        return $this->redirect($this->generateUrl('cupo_show', array('id' => $cupo->getId())));
+
+		$form = $this->createForm(new CupoType());
+		$request = $this->getRequest();
+		$entity = $request->get($form->getName());
+
+		if ($id != $entity['hora']) {
+
+			$cupo = $em->getRepository('AgendaBundle:Cupo')->find($id);
+
+			if ($cupo) {
+				
+				$paciente = $em->getRepository('ParametrizarBundle:Paciente')->findOneBy(array('identificacion' => $entity['paciente']));
+				$cargo = $em->getRepository('ParametrizarBundle:Cargo')->find($entity['cargo']);
+				$agenda = $em->getRepository('AgendaBundle:Agenda')->find($entity['agenda']);
+
+				$user = $this->get('security.context')->getToken()->getUser();
+				
+				$hora = new \DateTime($entity['hora']);
+				$cupo->setRegistra($user->getId());
+				$cupo->setPaciente($paciente);
+				$cupo->setCargo($cargo);
+				$cupo->setAgenda($agenda);
+				$cupo->setEstado('A');
+				$cupo->setNota($entity['nota']);
+				$cupo->setCliente($entity['cliente']);
+				$cupo->setHora($hora);
+
+				$em->persist($cupo);
+				$em->flush();
+
+			}
+		} else {
+
+			$cupo = $em->getRepository('AgendaBundle:Cupo')->find($id);
+			$paciente = $em->getRepository('ParametrizarBundle:Paciente')->findOneBy(array('identificacion' => $entity['paciente']));
+			$cargo = $em->getRepository('ParametrizarBundle:Cargo')->find($entity['cargo']);
+
+			$user = $this->get('security.context')->getToken()->getUser();
+
+			$cupo->setRegistra($user->getId());
+			$cupo->setPaciente($paciente);
+			$cupo->setCargo($cargo);
+			$cupo->setEstado('A');
+			$cupo->setNota($entity['nota']);
+			$cupo->setCliente($entity['cliente']);
+
+			$em->persist($cupo);
+			$em->flush();
+		}
+
+		$this->get('session')->setFlash('ok', 'La información de la reserva ha sido modificada éxitosamente.');
+
+		return $this->redirect($this->generateUrl('cupo_show', array('id' => $cupo->getId())));
         
     }
     
@@ -239,9 +246,10 @@ class CupoController extends Controller
     	return $this->render('AgendaBundle:Cupo:search.html.twig');
     }
 
-	public function ajaxBuscarAction() {
-
-		$request = $this->get('request');
+    public function ajaxBuscarAction()
+    {
+    
+    $request = $this->get('request');
 
 		$paciente = $request->request->get('paciente');
 		$agenda = $request->request->get('agenda');
@@ -295,7 +303,7 @@ class CupoController extends Controller
 			return new Response($return, 200,
 					array('Content-Type' => 'application/json'));
 		}
-	}
+    }
 
     public function ajaxListarAction(){
     
@@ -353,105 +361,105 @@ class CupoController extends Controller
      *
      * @param ninguno
      */
-    public function ajaxBuscarCupoAction() {
-    
-    	$request = $this->get('request');
-    	$parametro=$request->request->get('parametro');
-    	$valor=$request->request->get('valor');
-    
-    	$em = $this->getDoctrine()->getEntityManager();
-    
-    	$fecha=new \DateTime('now');
-    
-    	if($parametro == 'codigo'){
-    		$query = $em->createQuery(' SELECT c.id,
-    				c.hora,
-    				c.nota,
-    				c.registra,
-    				c.verificacion,
-    				p.priNombre,
-    				p.segNombre,
-    				p.priApellido,
-    				p.segApellido,
-    				car.nombre
-    				FROM AgendaBundle:Cupo c
-    				LEFT JOIN c.paciente p
-    				LEFT JOIN c.cargo car
-    				WHERE c.verificacion = :codigo
-    				AND c.hora >= :fecha
-    				ORDER BY c.hora ASC');
-    
-    		$query->setParameter('fecha', $fecha->format('Y-m-d 00:00:00'));
-    		$query->setParameter('codigo', $valor);
-    		$reserva = $query->getArrayResult();
-    	}
+public function ajaxBuscarCupoAction() {
 
-    	if($parametro == 'identificacion'){
-    
-    		$query = $em->createQuery(" SELECT c.id,
-    				c.hora,
-    				c.nota,
-    				c.registra,
-    				c.verificacion,
-    				p.priNombre,
-    				p.segNombre,
-    				p.priApellido,
-    				p.segApellido,
-    				car.nombre as cargo,
-    				s.nombre as sede
-    				FROM AgendaBundle:Cupo c
-    				LEFT JOIN c.paciente p
-    				LEFT JOIN c.cargo car
-    				LEFT JOIN c.agenda a
-    				LEFT JOIN a.sede s
-    				WHERE 
-    					p.identificacion = :identificacion AND
-    					c.estado = 'A' AND
-    					c.hora >= :fechaI
-    				ORDER BY c.hora ASC");
+		$request = $this->get('request');
+		$parametro = $request->request->get('parametro');
+		$valor = $request->request->get('valor');
 
-    		$query->setParameter('fechaI', $fecha->format('Y-m-d 00:00:00'));
-    		$query->setParameter('identificacion', $valor);
-    		$reserva = $query->getArrayResult();
-    	}
+		$em = $this->getDoctrine()->getEntityManager();
 
-    	if($parametro == 'nombre'){
-    
-    		$query = $em->createQuery(" SELECT c.id,
-    				c.hora,
-    				c.nota,
-    				c.registra,
-    				c.verificacion,
-    				p.priNombre,
-    				p.segNombre,
-    				p.priApellido,
-    				p.segApellido,
-    				car.nombre
-    				FROM AgendaBundle:Cupo c
-    				LEFT JOIN c.paciente p
-    				LEFT JOIN c.cargo car
-    				WHIT p.priNombre LIKE '%hernan%'");
-    
-    
-    		$query->setParameter('nombre', $valor);
-    		$reserva = $query->getArrayResult();
-    	}
-    
-    	if (!$reserva){
-    		$response=array("responseCode"=>400, "msg"=>"No existen reservas para los parametros de consulta ingrasados.");
-    	}else{
-    
-    		$response=array("responseCode"=>200);
-    
-    		foreach($reserva as $key => $value)
-    		{
-    			$response['cupo'][$key] = $value;
-    		}
-    
-    	}
-    
-    	$return=json_encode($response);
-    	return new Response($return,200,array('Content-Type'=>'application/json'));
-    
-    }
+		$fecha = new \DateTime('now');
+
+		if ($parametro == 'codigo') {
+			$query = $em->createQuery(' SELECT c.id,
+						    				c.hora,
+						    				c.nota,
+						    				c.registra,
+						    				c.verificacion,
+						    				p.priNombre,
+						    				p.segNombre,
+						    				p.priApellido,
+						    				p.segApellido,
+						    				car.nombre
+					    				FROM 
+											AgendaBundle:Cupo c
+					    				LEFT JOIN c.paciente p
+					    				LEFT JOIN c.cargo car
+					    				WHERE 
+											c.verificacion = :codigo AND 
+											c.hora >= :fecha
+					    				ORDER BY c.hora ASC');
+
+			$query->setParameter('fecha', $fecha->format('Y-m-d 00:00:00'));
+			$query->setParameter('codigo', $valor);
+			$reserva = $query->getArrayResult();
+		}
+
+		if ($parametro == 'identificacion') {
+
+			$query = $em->createQuery(" SELECT c.id,
+						    				c.hora,
+						    				c.nota,
+						    				c.registra,
+						    				c.verificacion,
+						    				p.priNombre,
+						    				p.segNombre,
+						    				p.priApellido,
+						    				p.segApellido,
+						    				car.nombre as cargo,
+						    				s.nombre as sede
+					    				FROM AgendaBundle:Cupo c
+					    				LEFT JOIN c.paciente p
+					    				LEFT JOIN c.cargo car
+					    				LEFT JOIN c.agenda a
+					    				LEFT JOIN a.sede s
+					    				WHERE 
+					    					p.identificacion = :identificacion AND
+					    					c.estado = 'A' AND
+					    					c.hora >= :fechaI
+					    				ORDER BY c.hora ASC");
+
+			$query->setParameter('fechaI', $fecha->format('Y-m-d 00:00:00'));
+			$query->setParameter('identificacion', $valor);
+			$reserva = $query->getArrayResult();
+		}
+
+		if ($parametro == 'nombre') {
+
+			$query = $em->createQuery(" SELECT c.id,
+						    				c.hora,
+						    				c.nota,
+						    				c.registra,
+						    				c.verificacion,
+						    				p.priNombre,
+						    				p.segNombre,
+						    				p.priApellido,
+						    				p.segApellido,
+						    				car.nombre
+					    				FROM AgendaBundle:Cupo c
+					    				LEFT JOIN c.paciente p
+					    				LEFT JOIN c.cargo car
+					    				WHIT p.priNombre LIKE '%hernan%'");
+
+			$query->setParameter('nombre', $valor);
+			$reserva = $query->getArrayResult();
+		}
+
+		if (!$reserva) {
+			$response = array("responseCode" => 400, "msg" => "No existen reservas para los parametros de consulta ingrasados.");
+		} else {
+
+			$response = array("responseCode" => 200);
+
+			foreach ($reserva as $key => $value) {
+				$response['cupo'][$key] = $value;
+			}
+
+		}
+
+		$return = json_encode($response);
+		return new Response($return, 200, array('Content-Type' => 'application/json'));
+
+	}
 }

@@ -7,7 +7,6 @@
 	            <li><a href="{{ path('factura_search') }}" class="bundle">Facturar</a></li>
 	            <li><a href="{{ path('usuario_list') }}" class="bundle">Usuarios</a></li>
 	            <li><a href="{{ path('th_buscar') }}" class="bundle sel">Informes</a></li>
-	            <li><a href="{{ path('hc_search') }}" class="bundle">Historia clinica</a></li>
 	         </ul>
 	     </nav>
 	 {% elseif is_granted('ROLE_MEDICO') %}
@@ -15,7 +14,6 @@
 	        <ul>
 	            <li><a href="{{ path('agenda_medica_list') }}" class="bundle">Agenda</a></li>
 	            <li><a href="{{ path('th_buscar') }}" class="bundle sel">Informes</a></li>
-	            <li><a href="{{ path('hc_search') }}" class="bundle">Historia clinica</a></li>
 	         </ul>
 	     </nav>
 	{% elseif is_granted('ROLE_AUX') %}
@@ -25,7 +23,6 @@
 	            <li><a href="{{ path('cupo_new') }}" class="bundle">Reserva</a></li>
 	            <li><a href="{{ path('factura_search') }}" class="bundle">Facturar</a></li>
 	            <li><a href="{{ path('th_buscar') }}" class="bundle sel">Informes</a></li>
-	            <li><a href="{{ path('hc_search') }}" class="bundle">Historia clinica</a></li>
 	         </ul>
 	     </nav>		
 	{% endif %}

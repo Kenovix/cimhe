@@ -6,10 +6,6 @@ AdminBundle:
     resource: "@AdminBundle/Resources/config/routing.yml"
     prefix:   /admin
 
-HcBundle:
-    resource: "@HcBundle/Resources/config/routing.yml"
-    prefix:   /HistoriaClinica
-
 AgendaBundle:
     resource: "@AgendaBundle/Resources/config/routing.yml"
     prefix:   /agenda

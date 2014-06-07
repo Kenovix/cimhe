@@ -6,16 +6,14 @@
 	            <li><a href="{{ path('agenda_list') }}" class="bundle sel">Agenda</a></li>
 	            <li><a href="{{ path('factura_search') }}" class="bundle">Facturar</a></li>
 	            <li><a href="{{ path('usuario_list') }}" class="bundle">Usuarios</a></li>
-	            <li><a href="{{ path('th_buscar') }}" class="bundle">Informes</a></li>	            
-	            <li><a href="{{ path('hc_search') }}" class="bundle">Historia clinica</a></li>
+	            <li><a href="{{ path('th_buscar') }}" class="bundle">Informes</a></li>       
 	         </ul>
 	     </nav>
 	{% elseif is_granted('ROLE_MEDICO') %}
 		<nav id="menu_main" class="grid_11">
 	        <ul>
 	            <li><a href="{{ path('agenda_list') }}" class="bundle sel">Agenda</a></li>
-	            <li><a href="{{ path('th_buscar') }}" class="bundle">Informes</a></li>
-	            <li><a href="{{ path('hc_search') }}" class="bundle">Historia clinica</a></li>
+	            <li><a href="{{ path('th_buscar') }}" class="bundle">Informes</a></li>	            
 	         </ul>
 	     </nav>
 	{% elseif is_granted('ROLE_AUX') %}
@@ -25,7 +23,6 @@
 	            <li><a href="{{ path('cupo_new') }}" class="bundle">Reserva</a></li>
 	            <li><a href="{{ path('factura_search') }}" class="bundle">Facturar</a></li>
 	            <li><a href="{{ path('th_buscar') }}" class="bundle">Informes</a></li>	            
-	            <li><a href="{{ path('hc_search') }}" class="bundle">Historia clinica</a></li>
 	         </ul>
 	     </nav>		
 	{% endif %}
