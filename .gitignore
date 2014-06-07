@@ -14,3 +14,12 @@ app/config/parameters.yml
 
 # Composer
 composer.phar
+
+# IDE
+/.DS_Store
+/.classpath
+/.project
+/.settings
+/.metadata/
+/.buildpath
+/.externalToolBuilders
