@@ -108,7 +108,6 @@
         });    	
     }
 
-
     function buscarPaciente(){
     	var parametro = $("#Cupo_paciente").val();
 
@@ -168,7 +167,6 @@
             alert("Por favor ingrese un valor valido.")
         }
     }
-
 
     function buscarAgenda(cliente, sede, cargo, agenda){
 
@@ -238,7 +236,7 @@
         		if(cupo) options[options.length] = new Option('{{ entity.hora | date('H:i') }}', '{{ entity.id }}');
 
         		$.each(data.cupo, function(val, text) {
-        		    options[options.length] = new Option(text, val);
+        			options[options.length] = new Option(text, data.fecha+' '+text+':00');
         		});
         		
         		select.val(cupo);
@@ -255,7 +253,6 @@
 
     }
 
-
     $(document).ready(function() {
         idpaciente = {{ entity.paciente.id }};
         $("#Cupo_sede").val('{{ entity.agenda.sede.id }}');
@@ -265,6 +262,9 @@
         buscarCargo({{ entity.cliente }}, {{ entity.agenda.sede.id }});
         buscarAgenda({{ entity.cliente }}, {{ entity.agenda.sede.id }}, {{ entity.cargo.id }}, {{ entity.agenda.id }});
         buscarCupo({{ entity.cargo.id }}, {{ entity.agenda.id }}, {{ entity.id }});
+        $("#Cupo_nota").val('{{ entity.nota }}');
+
+        
 
         $("#btnAjax").click(function(){
 
@@ -388,7 +388,6 @@
             
         });
 
-
         $("#Cupo_agenda").change(function(){
 
         	var url="{{ path('cupo_buscar') }}";
@@ -412,16 +411,27 @@
             		}
             		$('option', select).remove();
 
-            		options[options.length] = new Option('Seleccione agenda', '');
+            		options[options.length] = new Option('Seleccione hora', '');            		
 
             		$.each(data.cupo, function(val, text) {
-            		    options[options.length] = new Option(text, val);
+            		    options[options.length] = new Option(text, data.fecha+' '+text+':00');
             		});
             		
             		select.val('');
             		                    
                 }
                 else if(data.responseCode==400){
+
+                	var select = $('#Cupo_hora');
+            		if(select.prop) {
+            		  var options = select.prop('options');
+            		}
+            		else {
+            		  var options = select.attr('options');
+            		}
+            		$('option', select).remove();
+                    
+                	$('#ajaxMsg').html('');
                 	$('#ajaxMsg').html(data.msg);
                     $('#ajaxMsg').css("color","red");
                 }

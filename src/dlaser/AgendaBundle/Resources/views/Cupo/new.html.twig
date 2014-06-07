@@ -96,6 +96,7 @@
 {% block javascripts %}
 
 <script src="{{ asset('bundles/dlaser/js/jquery-ui-1.8.23.custom.min.js') }}"></script>
+<script src="{{ asset('bundles/dlaser/js/jquery.loadmask.min.js') }}"></script>
 
 <script type="text/javascript">
 
@@ -390,14 +391,14 @@
             		}
             		$('option', select).remove();
 
-            		options[options.length] = new Option('Seleccione cupo', '');
+            		options[options.length] = new Option('Seleccione hora', '');
 
             		$.each(data.cupo, function(val, text) {
-            		    options[options.length] = new Option(text, val);
+            		    options[options.length] = new Option(text, data.fecha+' '+text+':00');
             		});
             		
             		select.val('');
-            		                    
+            		                            		                    
                 }
                 else if(data.responseCode==400){
                 	$('#ajaxMsg').html(data.msg);

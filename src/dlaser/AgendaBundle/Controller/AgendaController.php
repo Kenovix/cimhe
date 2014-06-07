@@ -22,7 +22,7 @@ class AgendaController extends Controller
         $query = $em->createQuery(' SELECT a
                 FROM AgendaBundle:Agenda a
                 WHERE a.fechaFin > :fi
-                ORDER BY a.fechaInicio ASC');
+                ORDER BY a.fechaInicio ASC');        
         
         $query->setParameter('fi', new \DateTime('now'));        
         $agenda = $query->getResult();
