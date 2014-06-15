@@ -19,10 +19,14 @@ web/bundles/dlaser/images/*
 app/config/parameters.ini
 app/config/parameters.yml
 
-#IDE
+# Composer
+composer.phar
+
+# IDE
 /.DS_Store
 /.classpath
 /.project
 /.settings
 /.metadata/
 /.buildpath
+/.externalToolBuilders
