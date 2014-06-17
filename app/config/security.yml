@@ -34,6 +34,7 @@ security:
         - { path: ^/admin/.*, roles: ROLE_ADMIN }
         
         - { path: ^/agenda/cupo/.*, roles: ROLE_AUX }
+        - { path: ^/agenda/lista$, roles: ROLE_AUX }
         - { path: ^/agenda/medica/.*, roles: ROLE_MEDICO }
         - { path: ^/agenda/aux/list, roles: ROLE_AUX }
         - { path: ^/agenda/aux/buscar$, roles: ROLE_AUX }
