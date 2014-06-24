@@ -59,7 +59,7 @@
             {{ form_label(form.cliente) }}
             {{ form_errors(form.cliente) }}
             {{ form_widget(form.cliente) }}
-        	<a id="create-user">Agregar cliente</a>        
+        	<a id="create-user" style="display:none">Agregar cliente</a>        
         </div>
         
         <div id="dialog-form" title="Agregar cliente" style="display:none">		
@@ -255,7 +255,10 @@
 
                     	$("#ajaxMsg").empty();
                     	$('#btnNewPaciente').css("display","none");
-                    	$('#NewCliente').css("display","none");            	    	
+                    	$('#NewCliente').css("display","none");
+
+                    	$('#NewCliente').css("display","inline");
+                		$('#create-user').css("display","inline-block");                    	            	    	
                     	
                         idpaciente = data.id;
 
@@ -284,8 +287,7 @@
                 		
                 		select.val('');
 
-                		$('#NewCliente').css("display","inline");
-                		$('#create-user').css("display","inline-block");         		                    
+                		         		                    
                     }
                     else if(data.responseCode==400){
                     	$("#nombre").empty();

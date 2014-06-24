@@ -3,102 +3,90 @@
 {% block stylesheets %}
 <style>
 		
-	table.paciente {
+	table.cliente {
     	font-size: 9pt;
-        border-bottom: 2px solid #000;
     }
     
-    table.detalle {
+    table.descripcion {
     	font-size: 9pt;
         
     }
     
-    table.pie{
-    	font-size:7pt;
+    table.valores{
+    	font-size:9pt;
     }
 </style>     
 {% endblock %}
 
 
 {% block space %}
-<b><h1><p align="center">Recibo de caja</p></h1></b>
+<b><h1><p align="center">Factura de venta</p></h1></b>
     {% endblock %}
 
 {% block body %}
-
- 	<table cellpadding="2" cellspacing="2">
+	<table border="1" CELLPADDING="5" class="cliente">
  		<tbody>
             <tr>
-            <td width="530">Fecha: {{ entity.fecha|date('d-m-Y') }}</td>                
-            <td width="170"><b>Recibo de caja No.{{ entity.id }}</b></td>                
+            	<td width="20%">FECHA:</td>                
+            	<td width="63%">{{ entity.fecha|date('d-m-Y') }}</td>
+            	<td width="17%" rowspan="5" align="center">FACTURA DE VENTA<br /><br />N°  <strong>CC{{ entity.id }}</strong></td>                
+            </tr>
+            <tr>
+            	<td width="20%">EMPRESA:</td>                
+            	<td width="63%">{{ entity.cliente.razon }}</td>
+            </tr>
+            <tr>
+            	<td width="20%">NIT:</td>                
+            	<td width="63%">{{ entity.cliente.nit }}</td>
+            </tr>
+            <tr>
+            	<td width="20%">DIRECCIÓN:</td>                
+            	<td width="63%">{{ entity.cliente.direccion }}</td>
+            </tr>
+            <tr>
+            	<td width="20%">TELEFONO:</td>                
+            	<td width="63%">{{ entity.cliente.telefono }}</td>
+            </tr>
+        </tbody>             
+	</table>
+	
+	<br /><br />
+		
+	<table border="1" CELLPADDING="5" class="descripcion">
+ 		<tbody>
+            <tr>
+            	<td width="3%" colspan="2"></td>                
+            	<td width="80%" align="center"><strong>CONCEPTO</strong></td>
+            	<td width="17%" align="center"><strong>VALOR</strong></td>                
+            </tr>
+            <tr>           
+            	<td width="3%"><img src="{{ asset('bundles/dlaser/images/rd.png') }}" border="0" /></td> 
+            	<td height="550" width="80%">
+            		<br /><br /><br /><br /><br /><br />{{ entity.cargo.nombre }}
+            		
+            	</td>
+            	<td width="17%" align="center"><br /><br /><br /><br /><br /><br />${{ entity.valor|number_format(0) }}</td>                
             </tr>            
         </tbody>             
 	</table>
-
-	<table class="paciente">
-		<tr>
-			<td width="150" align="left"><b>{{ paciente.tipoid }}</b> - {{ paciente.identificacion }}</td>
-		  	<td width="240" align="left"><b>Nombre:</b> {{ paciente.prinombre }} {{ paciente.segnombre }} {{ paciente.priapellido }} {{ paciente.segapellido }}</td>
-		  	<td width="120" align="left"><b>Edad: </b>{{ date('now') | date('Y-m-d') - paciente.fn | date('Y-m-d') }} Años</td>
-		  	<td width="200" align="left"><b>Fecha_Nacimiento:</b> {{ paciente.fn | date('d-m-Y') }}</td>
-	 	</tr>
-	 	<tr>
-			<td width="150" align="left"><b>Sexo:</b> {{ paciente.sexo }} </td>
-		  	<td width="240" align="left"><b>Telefono:</b> {{ paciente.movil }} </td>
-		  	<td width="120" align="left"><b>Rango:</b>{{ paciente.rango }}</td>
-		  	<td width="200" align="left"><b>Afiliacion:</b>{{ paciente.tipoafi}}</td>
-	 	</tr>
-	 	
-	 	<tr>                         
-            <td><b>Auroizacion: {{ entity.Autorizacion }}</b></td>
-            <td><b>Cliente:</b> {{ entity.cliente.nombre }}</td>
-            </tr>	 	
-	 </table><br/>
-	 
-	 <table class="detalle" border="1" width="538">
-		<tr>
-			<th width="180"><b>Cups</b></th>
-		  	<th width="530" align="center"><b>Actividad</b></th>
-		  	
-	 	</tr>
-	 	<tr>
-			<td align="left">{{ entity.cargo.cups}} </td>
-		  	<td align="left">{{ entity.cargo.nombre }} </td>
-		  	
-		</tr>		 	
-	 </table><br/><br/>
-	 
-	  <table  width="538">
-		
-	 	<tr>
-	 		<td width="540"></td>			
-			<td width="90"><b>Copago:</b></td>
-			<td width="80">${{ entity.copago}}</td>			
-	 	</tr>
-	 	<tr>
-	 		<td width="540"></td>
-			<td width="90"><b>Descuento:</b></td>
-			<td width="80">${{ entity.descuento}}</td>			
-	 	</tr>
-	 	<tr>
-	 		<td width="540"></td>
-			<td width="90"><b>Total a Cobrar:</b></td>
-			<td width="80">${{ entity.valor-entity.copago-entity.descuento }}</td>			
-	 	</tr>		 	
-	 </table><br/>
-	 
-	 <table class="pie">
-		<tbody>
-			<tr>
-				<td width="710" align="center">{{ entity.sede.direccion }}-{{ entity.sede.ciudad }}</td>							
-			</tr>
-			<tr>
-				<td width="710" align="center">
-				{{ entity.sede.telefono }}-{{ entity.sede.movil }}-{{ entity.sede.email }}
-				</td>			
-			</tr>
-		</tbody>
-	</table>
-	<br /><br />	
-	 	 
+	
+	<table border="1" CELLPADDING="5" class="valores">
+ 		<tbody>
+            <tr>
+            	<td width="60%" rowspan="3">Entrega:</td>                
+            	<td width="23%" align="center">SUBTOTAL</td>
+            	<td width="17%" align="center">${{ entity.valor|number_format(0) }}</td>                
+            </tr>
+            <tr>
+            	               
+            	<td width="23%" align="center">I.V.A</td>
+            	<td width="17%" align="center">${{ entity.valor|number_format(0) }}</td>                
+            </tr>
+            <tr>
+            	                
+            	<td width="23%" align="center">TOTAL</td>
+            	<td width="17%" align="center">${{ (entity.valor)|number_format(0) }}</td>                
+            </tr>            
+        </tbody>             
+	</table>	 	 
 {% endblock %}
