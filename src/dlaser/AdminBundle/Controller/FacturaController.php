@@ -287,25 +287,24 @@ class FacturaController extends Controller
 	public function imprimirAction($id)
     {
     	$em = $this->getDoctrine()->getEntityManager();
-    
+
     	$entity = $em->getRepository('ParametrizarBundle:Factura')->find($id);
-    	
+
     	if (!$entity) {
     		throw $this->createNotFoundException('La factura a imprimir no esta disponible.');
     	}    
-    	
+
     	$paciente = $entity->getPaciente();
     	$cliente = $entity->getCliente();
     	$sede = $entity->getSede();
-    		
+
     	$html = $this->renderView('AdminBundle:Factura:factura.pdf.twig',
     			array('entity' 	=> $entity,    				  
     				  'paciente' => $paciente,
     				  'cliente'	=> $cliente,
     				  'sede'=>$sede
     			));
-    	
-    	
+
     	$this->get('io_tcpdf')->dir = $sede->getDireccion();
     	$this->get('io_tcpdf')->ciudad = $sede->getCiudad();
     	$this->get('io_tcpdf')->tel = $sede->getTelefono();
@@ -314,12 +313,11 @@ class FacturaController extends Controller
     	$this->get('io_tcpdf')->sede = $sede->getnombre();
     	$this->get('io_tcpdf')->empresa = $sede->getEmpresa()->getNombre();
 
-    	
-    	
-
     	return $this->get('io_tcpdf')->quick_pdf($html, 'factura.pdf', 'I');
+
 	}
-    
+
+
     public function updateEstadoAction($id, $estado)
     {
     	$em = $this->getDoctrine()->getEntityManager();
