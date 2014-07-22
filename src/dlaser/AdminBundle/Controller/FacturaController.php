@@ -16,11 +16,56 @@ use dlaser\AdminBundle\Form\FacturacionType;
 use dlaser\AdminBundle\Form\AdmisionType;
 use dlaser\HcBundle\Entity\Hc;
 use dlaser\HcBundle\Entity\HcMedicamento;
+use Symfony\Component\Validator\Constraints\Date;
 
 class FacturaController extends Controller
 {
     
-    public function newAction($cupo)
+	public function listAction()
+	{
+		$em = $this->getDoctrine()->getEntityManager();
+		$paginador = $this->get('ideup.simple_paginator');
+		$paginador->setItemsPerPage(20);
+	
+		$dql = $em->createQuery("SELECT
+						    		f.id,
+						    		f.fecha,
+						    		p.priNombre,
+						    		p.segNombre,
+						    		p.priApellido,
+						    		p.segApellido,
+						    		c.nombre,
+									cli.nombre as cliente,
+						    		f.valor,
+						    		f.copago,
+						    		f.estado,
+									s.nombre as sede
+					    		FROM
+					    			ParametrizarBundle:Factura f
+					    		JOIN
+					    			f.cargo c
+					    		JOIN
+					    			f.paciente p
+					    		JOIN
+					    			f.cliente cli
+								JOIN
+									f.sede s
+					    		ORDER BY
+					    			f.id ASC");
+		
+		$facturas = $paginador->paginate($dql->getResult())->getResult();
+	
+		$breadcrumbs = $this->get("white_october_breadcrumbs");
+		$breadcrumbs->addItem("Inicio", $this->get("router")->generate("empresa_list"));
+		$breadcrumbs->addItem("Factura", $this->get("router")->generate("factura_list"));
+		$breadcrumbs->addItem("Listar");
+	
+		return $this->render('AdminBundle:Factura:list.html.twig', array(
+				'entities'  => $facturas
+		));
+	}
+	
+	public function newAction($cupo)
     {
         $entity = new Factura();
         $form   = $this->createForm(new FacturaType(), $entity);
@@ -305,13 +350,8 @@ class FacturaController extends Controller
     				  'sede'=>$sede
     			));
 
-    	$this->get('io_tcpdf')->dir = $sede->getDireccion();
-    	$this->get('io_tcpdf')->ciudad = $sede->getCiudad();
-    	$this->get('io_tcpdf')->tel = $sede->getTelefono();
-    	$this->get('io_tcpdf')->mov = $sede->getMovil();
-    	$this->get('io_tcpdf')->mail = $sede->getEmail();
-    	$this->get('io_tcpdf')->sede = $sede->getnombre();
-    	$this->get('io_tcpdf')->empresa = $sede->getEmpresa()->getNombre();
+    	$this->get('io_tcpdf')->formato = 'P5';
+    	$this->get('io_tcpdf')->orientacion = 'L';
 
     	return $this->get('io_tcpdf')->quick_pdf($html, 'factura.pdf', 'I');
 
@@ -529,20 +569,123 @@ class FacturaController extends Controller
     			'entity' => $entity,
     			'sede' => $sede
     	));
-    	
-    	$this->get('io_tcpdf')->dir = $sede->getDireccion();
-    	$this->get('io_tcpdf')->ciudad = $sede->getCiudad();
-    	$this->get('io_tcpdf')->tel = $sede->getTelefono();
-    	$this->get('io_tcpdf')->mov = $sede->getMovil();
-    	$this->get('io_tcpdf')->mail = $sede->getEmail();
-    	$this->get('io_tcpdf')->sede = $sede->getnombre();
-    	$this->get('io_tcpdf')->empresa = $sede->getEmpresa()->getNombre();
-    	
-    	$this->get('io_tcpdf')->SetMargins(3, 10, 3);
-    	 
+
     	return $this->get('io_tcpdf')->quick_pdf($html, 'Arqueo de Caja '.$fecha->format('d-m-Y').' Sede '.$sede->getNombre().'.pdf', 'I');
     }
     
+    
+    public function consultarArqueoAction()
+    {
+    	$em = $this->getDoctrine()->getEntityManager();
+    	$usuario = $this->get('security.context')->getToken()->getUser();
+    	$usuario = $em->getRepository('UsuarioBundle:Usuario')->find($usuario->getId());
+    	$sedes = $usuario->getSede();
+    	 
+    	if(!$usuario)
+    	{
+    		throw $this->createNotFoundException('El usuario no existe no esta identificado.');
+    	}
+    	 
+    	$breadcrumbs = $this->get("white_october_breadcrumbs");
+    	$breadcrumbs->addItem("Inicio", $this->get("router")->generate("factura_arqueo"));
+    	$breadcrumbs->addItem("Factura", $this->get("router")->generate("factura_list"));
+    	$breadcrumbs->addItem("Consultar cierre de caja");
+    	 
+    	return $this->render('AdminBundle:Factura:consultar_arqueo.html.twig', array(
+    			'sedes' => $sedes,
+    			'usuario' => $sedes
+    	));
+    	 
+    }
+    
+
+    public function gstConsultarArqueoAction()
+    {
+    
+    	$request = $this->get('request');
+    
+    	$sede = $request->request->get('sede');
+    	$dia = $request->request->get('dia');
+    	$mes = $request->request->get('mes');
+    	$ano = $request->request->get('ano');
+    	 
+    	$url_retorno = 'factura_consultar_arqueo';
+    
+    	if(trim($dia) && trim($mes) && trim($ano)){
+    
+    		if(!checkdate($mes,$dia,$ano)){
+    			$this->get('session')->setFlash('info', 'La fecha ingresada es incorrecta.');
+    			return $this->redirect($this->generateUrl($url_retorno));
+    		}
+    	}else{
+    		$this->get('session')->setFlash('info', 'La fecha no puede estar en blanco.');
+    		return $this->redirect($this->generateUrl($url_retorno));
+    	}
+
+    	$em = $this->getDoctrine()->getEntityManager();
+    	
+    	$str = $ano.'-'.$mes.'-'.$dia;
+		$fecha = \DateTime::createFromFormat('Y-m-d', $str);
+		
+		$sede  = $em->getRepository('ParametrizarBundle:Sede')->find($sede);
+		 
+		if (!$sede) {
+			throw $this->createNotFoundException('La sede no existe no esta identificado.');
+		}
+
+    
+    	$dql= " SELECT 
+    				f.id,
+    				c.cups,
+    				f.autorizacion,
+    				p.identificacion,
+    				p.priNombre,
+                    p.segNombre,
+                    p.priApellido,
+                    p.segApellido,
+                    cli.id as cliente,
+                    cli.nombre,
+                    f.valor,
+                    f.copago,
+                    f.descuento,
+                    f.estado
+    			FROM 
+    				ParametrizarBundle:Factura f
+    			JOIN
+    				f.cargo c
+    			JOIN
+    				f.paciente p
+    			JOIN
+    				f.cliente cli
+    			WHERE 
+    				f.fecha > :inicio AND 
+    				f.fecha <= :fin AND 
+    				f.sede = :id 
+    			ORDER BY 
+    				f.fecha ASC";
+    	
+    	$query = $em->createQuery($dql);
+
+    	$query->setParameter('inicio', $fecha->format('Y-m-d 00:00:00'));
+    	$query->setParameter('fin', $fecha->format('Y-m-d 23:59:00'));
+    	$query->setParameter('id', $sede);
+    	
+    	$entity = $query->getResult();
+    	 
+    	$breadcrumbs = $this->get("white_october_breadcrumbs");
+    	$breadcrumbs->addItem("Inicio", $this->get("router")->generate("agenda_list"));
+    	$breadcrumbs->addItem("Factura", $this->get("router")->generate("factura_search"));
+    	$breadcrumbs->addItem("Reporte ",$this->get("router")->generate("factura_reporte_medico"));
+    	$breadcrumbs->addItem("Actividad medico");
+    
+    	
+    	$html = $this->renderView('AdminBundle:Factura:imprimir_arqueo.pdf.twig', array(
+    			'entity' => $entity,
+    			'sede' => $sede
+    	));
+
+    	return $this->get('io_tcpdf')->quick_pdf($html, 'Arqueo de Caja '.$fecha->format('d-m-Y').' Sede '.$sede->getNombre().'.pdf', 'I');
+    }
     
     
     public function listadoClienteAction()
@@ -795,6 +938,7 @@ class FacturaController extends Controller
 			    	p.segNombre,
 			    	p.priApellido,
 			    	p.segApellido,
+    				cli.nombre,
 			    	c.cups,
 			    	f.valor,
 			    	f.copago,
@@ -806,6 +950,8 @@ class FacturaController extends Controller
     				f.cargo c
     			JOIN
     				f.paciente p
+    			JOIN
+    				f.cliente cli
     			JOIN
     				f.cupo cp
     			JOIN
@@ -1310,7 +1456,7 @@ class FacturaController extends Controller
     		
     		$fecha = new \DateTime($value['fecha']);
     		
-    		fwrite($gestor, "".$factura.",761110730901,".$value['tipoId'].",".$value['id'].",".$fecha->format('d/m/Y').",".$value['autorizacion'].",".$value['cups'].",1,1,1,,,,,".$value['valor']."\r\n");
+    		fwrite($gestor, "".$factura.",768340706001,".$value['tipoId'].",".$value['id'].",".$fecha->format('d/m/Y').",".$value['autorizacion'].",".$value['cups'].",1,1,1,,,,,".$value['valor']."\r\n");
     	}
     	 
     	return count($entity);
@@ -1365,7 +1511,7 @@ class FacturaController extends Controller
     
     		$fecha = new \DateTime($value['fecha']);
     
-    		fwrite($gestor, "".$factura.",761110730901,".$value['tipoId'].",".$value['id'].",".$fecha->format('d/m/Y').",".$value['autorizacion'].",".$value['cups'].",10,15,,,,,1,".$value['valor'].".00,".$value['copago'].".00,".($value['valor']-$value['copago']).".00\r\n");
+    		fwrite($gestor, "".$factura.",768340706001,".$value['tipoId'].",".$value['id'].",".$fecha->format('d/m/Y').",".$value['autorizacion'].",".$value['cups'].",10,15,,,,,1,".$value['valor'].".00,".$value['copago'].".00,".($value['valor']-$value['copago']).".00\r\n");
     	}
     
     	return count($entity);
@@ -1448,7 +1594,7 @@ class FacturaController extends Controller
     		$num_consulta++;
     	}
     	
-    	fwrite($gestor, "".$factura.",761110730901,01,".$num_consulta.",,".($val_consulta-$copago_consulta).".00\r\n");
+    	fwrite($gestor, "".$factura.",768340706001,01,".$num_consulta.",,".($val_consulta-$copago_consulta).".00\r\n");
     	
     	$num_px = 0;
     	$val_px = 0;
@@ -1459,7 +1605,7 @@ class FacturaController extends Controller
     		$num_px++;
     	}	
     	 
-    	fwrite($gestor, "".$factura.",761110730901,02,".$num_px.",,".($val_px-$copago_px).".00\r\n");
+    	fwrite($gestor, "".$factura.",768340706001,".$num_px.",,".($val_px-$copago_px).".00\r\n");
     
     	return 2;
     }
@@ -1504,7 +1650,7 @@ class FacturaController extends Controller
     	
     	$contrato = $em->getRepository("ParametrizarBundle:Contrato")->findOneBy(array('cliente' => $cliente->getId(), 'sede' => $obj_sede->getId()));
     
-    	fwrite($gestor, "761110730901,CENTRO CARDIOLOGICO DEL VALLE,NI,900260604,".$factura.",".$fecha->format('d/m/Y').",".$inicio->format('d/m/Y').",".$fin->format('d/m/Y').",".$cliente->getCodEps().",".$cliente->getRazon().",,ISS 2001 + ".$contrato->getPorcentaje()."%,,".$entity[0]['copago'].".00,0.00,0.00,".($entity[0]['valor']-$entity[0]['copago']).".00\r\n");
+    	fwrite($gestor, "768340706001,CENTRO DE IMAGENES Y HEMODINAMIA CIMHE IPS,NI,900225202,".$factura.",".$fecha->format('d/m/Y').",".$inicio->format('d/m/Y').",".$fin->format('d/m/Y').",".$cliente->getCodEps().",".$cliente->getRazon().",,ISS 2001 + ".$contrato->getPorcentaje()."%,,".$entity[0]['copago'].".00,0.00,0.00,".($entity[0]['valor']-$entity[0]['copago']).".00\r\n");
     
     	return count($entity);
     }
@@ -1601,7 +1747,7 @@ class FacturaController extends Controller
     	$entity->setInicio($f_inicio);
     	$entity->setFin($f_fin);
     	$entity->setSedes($sedes);
-    	$entity->setConcepto("Por servicios integrales de cardiologia en la toma e interpretación de imagenes diagnosticas en le mes de");
+    	$entity->setConcepto();
     	$entity->setSubtotal($valor['valor'] - $valor['copago']);
     	$entity->setIva(0);
     	

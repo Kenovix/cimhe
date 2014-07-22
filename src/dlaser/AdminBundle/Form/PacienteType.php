@@ -17,7 +17,7 @@ class PacienteType extends AbstractType
         ->add('seg_nombre', 'text', array('required' => false, 'label' => 'Segundo nombre', 'attr' => array('placeholder' => 'Ingrese segundo nombre')))
         ->add('pri_apellido', 'text', array('required' => true, 'label' => 'Primer apellido', 'attr' => array('placeholder' => 'Ingrese primer apellido')))
         ->add('seg_apellido', 'text', array('required' => false, 'label' => 'Segundo apellido', 'attr' => array('placeholder' => 'Ingrese segundo apellido')))
-        ->add('f_n', 'date', array('required' => true, 'label' => 'Fecha de nacimiento', 'format' => 'dd-MMM-yyyy', 'empty_value' => array('year' => 'Año', 'month' => 'Mes', 'day' => 'Día'), 'years' => range(1900, 2012)))
+        ->add('f_n', 'date', array('required' => true, 'label' => 'Fecha de nacimiento', 'format' => 'dd-MMM-yyyy', 'empty_value' => array('year' => 'Año', 'month' => 'Mes', 'day' => 'Día'), 'years' => range(1900, 2015)))
         ->add('sexo', 'choice', array('required' => true, 'choices' => array('F' => 'Femenino','M' => 'Masculino')))
         ->add('depto', 'choice', array('required' => true, 'choices' => array('24' => 'VALLE')))
         ->add('mupio', 'choice', array('required' => true, 'choices' => array('' => '--')))

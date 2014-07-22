@@ -38,7 +38,11 @@ class Builder extends ContainerAware
 					$menu['Agendamiento']['Citas']->addChild('Facturar', array('route' => 'factura_search'));
 					
 			$menu->addChild('Facturación', array('uri' => '#'));
-				$menu['Facturación']->addChild('Cierre de caja', array('route' => 'factura_arqueo'));
+				$menu['Facturación']->addChild('Facturas', array('uri' => '#'));
+					$menu['Facturación']['Facturas']->addChild('Listar', array('route' => 'factura_list'));
+				$menu['Facturación']->addChild('Cierre de caja', array('uri' => '#'));
+					$menu['Facturación']['Cierre de caja']->addChild('Generar', array('route' => 'factura_arqueo'));
+					$menu['Facturación']['Cierre de caja']->addChild('Consultar', array('route' => 'factura_consultar_arqueo'));
 				$menu['Facturación']->addChild('Admisión', array('uri' => '#'));
 					$menu['Facturación']['Admisión']->addChild('Consultar', array('route' => 'factura_admision_search'));
 				$menu['Facturación']->addChild('Cliente', array('route' => 'factura_cliente_list'));

@@ -1,0 +1,49 @@
+{% extends "AdminBundle::admin_layout.html.twig" %}
+
+{% block menu %}
+	{{ knp_menu_render('AdminBundle:Builder:adminMenu') }}
+{% endblock %}
+
+{% block rastro %}{{ wo_render_breadcrumbs() }}{% endblock %}
+
+{% block titulo %}Consultar cierre de caja{% endblock %}
+
+{% block msg %}
+	{% if app.session.flash('ok') %}
+	    <div class="success mensajes">
+	        <span>{{ app.session.flash('ok') }}</span>
+	    </div>
+	{% elseif app.session.flash('info') %}
+		<div class="info">
+	        <span>{{ app.session.flash('info') }}</span>
+	    </div>
+	{% elseif app.session.flash('error') %}
+		<div class="error">
+	        <span>{{ app.session.flash('error') }}</span>
+	    </div>
+	{% endif %}
+{% endblock %}
+
+
+{% block cuerpo %}
+	<form action="{{ path('factura_consultado_arqueo') }}" method="post">
+	    <div>
+	    	<label for="sede">Sede</label>
+		    	<select id="sede" name="sede">
+		    	    <option value="">Seleccione una sede</option>
+		    	    {% for sede in sedes %} 
+		      			<option value="{{ sede.id }}">{{ sede.nombre }}</option>
+		       		{% endfor %}       
+		      	</select>
+	    </div>	
+	    
+	    <div>
+	    	<label for="fecha">Fecha</label>
+	    		<input type="text" name="dia" id="dia" size="1" placeholder="DD" /> - <input type="text" name="mes" id="mes" size="1" placeholder="MM" /> -
+	    		<input type="text" name="ano" id="ano" size="2" placeholder="AAAA" />
+	    </div>
+	    
+	    <button class="action blue"><span class="label">Consultar</span></button>
+	</form>	      		
+	      		
+{% endblock %}

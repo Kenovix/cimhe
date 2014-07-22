@@ -269,6 +269,10 @@ afiliacion_ajax_save:
     
 #************** Factura ***************#
 
+factura_list:
+    pattern:  /factura/list
+    defaults: { _controller: AdminBundle:Factura:list }
+
 factura_new:
     pattern:  /factura/new/{cupo}
     defaults: { _controller: AdminBundle:Factura:new }
@@ -308,6 +312,16 @@ factura_buscar:
 factura_arqueo:
     pattern:  /factura/arqueo
     defaults: { _controller: AdminBundle:Factura:arqueo }
+    
+factura_consultar_arqueo:
+    pattern:  /factura/consultar/arqueo
+    defaults: { _controller: AdminBundle:Factura:consultarArqueo }
+    
+factura_consultado_arqueo:
+    pattern:  /factura/resultado/consulta/arqueo
+    defaults: { _controller: AdminBundle:Factura:gstConsultarArqueo }
+    requirements:
+        _method:  POST
     
 factura_arqueo_imprimir:
     pattern:  /factura/{sede}/imprimirArqueo
