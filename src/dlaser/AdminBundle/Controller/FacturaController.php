@@ -119,7 +119,7 @@ class FacturaController extends Controller
             }
 
             $entity->setFecha(new \DateTime('now'));
-            $entity->setEstado('P');
+            $entity->setEstado('I');
             $entity->setCargo($reserva->getCargo());
             $entity->setValor($valor);
             $entity->setCliente($cliente);
@@ -671,6 +671,11 @@ class FacturaController extends Controller
     	$query->setParameter('id', $sede);
     	
     	$entity = $query->getResult();
+    	
+    	if (!$entity) {
+    		$this->get('session')->setFlash('info', 'No hay informacion facturada el dia '.$fecha->format('d-m-Y').'.');
+    		return $this->redirect($this->generateUrl('factura_consultar_arqueo'));
+    	}
     	 
     	$breadcrumbs = $this->get("white_october_breadcrumbs");
     	$breadcrumbs->addItem("Inicio", $this->get("router")->generate("agenda_list"));
@@ -1173,7 +1178,7 @@ class FacturaController extends Controller
 			    	p.segNombre,
 			    	p.priApellido,
 			    	p.segApellido,
-			    	c.cups,
+			    	c.nombre,
 			    	f.valor,
 			    	f.copago,
 			    	f.descuento,
@@ -1747,7 +1752,7 @@ class FacturaController extends Controller
     	$entity->setInicio($f_inicio);
     	$entity->setFin($f_fin);
     	$entity->setSedes($sedes);
-    	$entity->setConcepto();
+    	$entity->setConcepto('Concepto por defecto');
     	$entity->setSubtotal($valor['valor'] - $valor['copago']);
     	$entity->setIva(0);
     	
@@ -1913,6 +1918,163 @@ class FacturaController extends Controller
     	ob_clean();
     	flush();
     	readfile( $abririps );
+    }
+    
+    public function reporteFacturaAction()
+    {
+    	$em = $this->getDoctrine()->getEntityManager();
+    	 
+    	$sedes = $em->getRepository("ParametrizarBundle:Sede")->findAll();
+    	$clientes = $em->getRepository("ParametrizarBundle:Cliente")->findAll();
+    	 
+    	$plantilla = 'AdminBundle:Factura:reporte_factura.html.twig';
+    	 
+    	$breadcrumbs = $this->get("white_october_breadcrumbs");
+    	$breadcrumbs->addItem("Inicio", $this->get("router")->generate("factura_arqueo"));
+    	$breadcrumbs->addItem("Factura", $this->get("router")->generate("factura_search"));
+    	$breadcrumbs->addItem("Generar Reporte");
+    
+    	return $this->render($plantilla, array(
+    			'sedes' => $sedes,
+    			'clientes' => $clientes
+    	));
+    }
+    
+    
+    /**
+     * @uses Muestra el listado generado a partir de los parametros de consultas definidos.
+     *
+     * @param Pasados por POST.
+     */
+    public function gstReporteFacturaAction()
+    {
+    	 
+    	$request = $this->get('request');
+    	 
+    	$sede = $request->request->get('sede');
+    	$cliente = $request->request->get('cliente');
+    	$f_inicio = $request->request->get('f_inicio');
+    	$f_fin = $request->request->get('f_fin');
+    	
+    	$url = 'factura_genera_reporte';
+    	 
+    	if(trim($f_inicio)){
+    		$desde = explode('/',$f_inicio);
+    
+    		if(!checkdate($desde[1],$desde[0],$desde[2])){
+    			$this->get('session')->setFlash('info', 'La fecha de inicio ingresada es incorrecta.');
+    			return $this->redirect($this->generateUrl($url));
+    		}
+    	}else{
+    		$this->get('session')->setFlash('info', 'La fecha de inicio no puede estar en blanco.');
+    		return $this->redirect($this->generateUrl($url));
+    	}
+    	 
+    	if(trim($f_fin)){
+    		$hasta = explode('/',$f_fin);
+    
+    		if(!checkdate($hasta[1],$hasta[0],$hasta[2])){
+    			$this->get('session')->setFlash('info', 'La fecha de finalización ingresada es incorrecta.');
+    			return $this->redirect($this->generateUrl($url));
+    		}
+    	}else{
+    		$this->get('session')->setFlash('info', 'La fecha de finalización no puede estar en blanco.');
+    		return $this->redirect($this->generateUrl($url));
+    	}
+    	 
+    	$em = $this->getDoctrine()->getEntityManager();
+    	 
+    	if(is_numeric(trim($sede))){
+    		$obj_sede = $em->getRepository("ParametrizarBundle:Sede")->find($sede);
+    	}else{
+    		$obj_sede['nombre'] = 'Todas las sedes.';
+    		$obj_sede['id'] = '';
+    	}
+    	 
+    	if(is_numeric(trim($cliente))){
+    		$obj_cliente = $em->getRepository("ParametrizarBundle:Cliente")->find($cliente);
+    	}else{
+    		$obj_cliente['nombre'] = 'Todos los clientes.';
+    		$obj_cliente['id'] = '';
+    	}    	
+    	 
+    	if(!$obj_cliente){
+    		$this->get('session')->setFlash('info', 'El cliente seleccionado no existe.');
+    		return $this->redirect($this->generateUrl($url));
+    	}
+    	 
+    	if(is_object($obj_sede)){
+    		$con_sede = "AND f.sede =".$sede;
+    	}else{
+    		$con_sede = "";
+    	}
+    	
+    	if(is_object($obj_cliente)){
+    		$con_cliente = "AND f.cliente =".$cliente;
+    	}else{
+    		$con_cliente = "";
+    	}
+    	 
+    	$dql= " SELECT
+			    	f.id,
+			    	p.id as paciente,
+			    	p.tipoId,
+			    	p.identificacion,
+			    	f.fecha,
+			    	f.autorizacion,
+			    	p.priNombre,
+			    	p.segNombre,
+			    	p.priApellido,
+			    	p.segApellido,
+			    	c.cups,
+			    	f.valor,
+			    	f.copago,
+			    	f.descuento,
+			    	f.estado
+    			FROM
+    				ParametrizarBundle:Factura f
+    			JOIN
+    				f.cargo c
+    			JOIN
+    				f.paciente p
+    			JOIN
+    				f.cliente cli
+    			WHERE
+			    	f.fecha > :inicio AND
+			    	f.fecha <= :fin ".
+			    		$con_cliente." ".
+    			    	$con_sede."
+		    	ORDER BY
+		    		f.fecha ASC";
+    
+    	$query = $em->createQuery($dql);
+    	 
+    	$query->setParameter('inicio', $desde[2]."/".$desde[1]."/".$desde[0].' 00:00:00');
+    	$query->setParameter('fin', $hasta[2]."/".$hasta[1]."/".$hasta[0].' 23:59:00');
+    	$query->setParameter('cliente', $cliente);
+    	 
+    	$entity = $query->getResult();
+    	 
+    	$user = $this->get('security.context')->getToken()->getUser();
+    	 
+    	if($user->getPerfil() == 'ROLE_ADMIN') {
+    		$plantilla = 'AdminBundle:Factura:actividades_cliente.html.twig';
+    	}else {
+    		$plantilla = 'AdminBundle:Reporte:actividades_cliente.html.twig';
+    	}
+    	 
+    	$breadcrumbs = $this->get("white_october_breadcrumbs");
+    	$breadcrumbs->addItem("Inicio", $this->get("router")->generate("factura_arqueo"));
+    	$breadcrumbs->addItem("Factura", $this->get("router")->generate("factura_search"));
+    	$breadcrumbs->addItem("Actividades");
+    
+    	return $this->render($plantilla, array(
+    			'entities' => $entity,
+    			'sede' => $obj_sede,
+    			'cliente' => $obj_cliente,
+    			'f_i' => $desde[2]."/".$desde[1]."/".$desde[0],
+    			'f_f' => $hasta[2]."/".$hasta[1]."/".$hasta[0]
+    	));
     }
     
 }

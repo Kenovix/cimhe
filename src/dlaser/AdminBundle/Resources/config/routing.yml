@@ -392,3 +392,13 @@ factura_final_imprimir:
 factura_final_rips:
     pattern:  /factura/final/rips/{id}
     defaults: { _controller: AdminBundle:Factura:facturacionRips }
+    
+factura_genera_reporte:
+    pattern:  /factura/generar/reporte
+    defaults: { _controller: AdminBundle:Factura:reporteFactura }
+        
+factura_gst_reporte:
+    pattern:  /factura/gst/reporte
+    defaults: { _controller: AdminBundle:Factura:gstReporteFactura }
+    requirements:
+        _method:  POST

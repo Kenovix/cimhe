@@ -40,6 +40,8 @@ class Builder extends ContainerAware
 			$menu->addChild('Facturación', array('uri' => '#'));
 				$menu['Facturación']->addChild('Facturas', array('uri' => '#'));
 					$menu['Facturación']['Facturas']->addChild('Listar', array('route' => 'factura_list'));
+					$menu['Facturación']['Facturas']->addChild('Consultar', array('route' => 'factura_list'));
+					$menu['Facturación']['Facturas']->addChild('Generar reporte', array('route' => 'factura_genera_reporte'));
 				$menu['Facturación']->addChild('Cierre de caja', array('uri' => '#'));
 					$menu['Facturación']['Cierre de caja']->addChild('Generar', array('route' => 'factura_arqueo'));
 					$menu['Facturación']['Cierre de caja']->addChild('Consultar', array('route' => 'factura_consultar_arqueo'));

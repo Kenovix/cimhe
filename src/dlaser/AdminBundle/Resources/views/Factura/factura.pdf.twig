@@ -25,14 +25,16 @@
  		<tbody>
             <tr>
             	<td width="15%"><strong>FECHA:</strong></td>                
-            	<td width="65%" colspan="3">{{ entity.fecha|date('d-m-Y') }}</td>
+            	<td width="35%">{{ entity.fecha|date('d-m-Y') }}</td>
+            	<td width="13%"><strong>CEDULA O NIT:</strong></td>                
+            	<td width="17%">{{ entity.paciente.tipoId }} - {{ entity.paciente.identificacion }}</td>
             	<td width="20%"><strong>FACTURA DE VENTA No</strong>.</td>            	
             </tr>
             <tr>
             	<td width="15%"><strong>NOMBRE:</strong></td>
             	<td width="35%">{{ entity.paciente.priNombre }} {{ entity.paciente.segNombre }} {{ entity.paciente.priApellido }} {{ entity.paciente.segApellido }}</td>                
-            	<td width="13%"><strong>CEDULA O NIT:</strong></td>                
-            	<td width="17%">{{ entity.paciente.identificacion }}</td>
+            	<td width="13%"><strong>F. NACIMIENTO:</strong></td>                
+            	<td width="17%">{{ entity.paciente.fN | date('d-m-Y') }}</td>
             	<td width="20%" rowspan="2" align="center"><br /><br />{{ entity.id }}</td>            	            	
             </tr>
             <tr>
@@ -90,11 +92,11 @@
             <tr>
             	<td width="30%" height="60">Recibi Conforme:</td>
             	<td width="30%" height="60">Entrega:</td>                
-            	<td width="20%" align="center" height="60">Valor Total</td>
-            	<td width="20%" align="center" height="60">${{ ((entity.valor - entity.copago)-entity.descuento)|number_format(0) }}</td>                
+            	<td width="20%" align="center" height="60">Copago<br /><br />Valor Total</td>
+            	<td width="20%" align="center" height="60">${{ entity.copago }}<br /><br />${{ ((entity.valor - entity.copago)-entity.descuento)|number_format(0) }}</td>                
             </tr>                    	       
         </tbody>             
 	</table>
 	
-	<span style="font-size: 18px; text-align:center">Resol. DIAN 210000045558 2014/06/16 del 1 al 10000</span>
+	<span style="font-size: 18px; text-align:center">Resol. DIAN 210000045558 2014/06/16 del 1 al 10000 - Factura impresa por computador.</span>
 {% endblock %}
