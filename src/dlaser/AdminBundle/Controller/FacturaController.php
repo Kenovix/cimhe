@@ -1126,6 +1126,8 @@ class FacturaController extends Controller
     
     public function imprimirCtaCobroAction()
     {
+    	set_time_limit(0);
+    	
     	$request = $this->get('request');
     	
     	$sede = $request->request->get('sede');
@@ -1358,7 +1360,7 @@ class FacturaController extends Controller
     	
     	$dql= " SELECT
     				DISTINCT
-    					p.identificacion AS id,
+    				p.identificacion AS id,
 			    	p.tipoId,			    	
 			    	p.priApellido,
 			    	p.segApellido,
@@ -1380,7 +1382,7 @@ class FacturaController extends Controller
 			    	f.fecha > :inicio AND
 			    	f.fecha <= :fin AND
 			    	f.estado = :estado AND
-			    	f.cliente = :cliente 
+			    	f.cliente = :cliente
 		    	ORDER BY
 		    		f.fecha ASC";
     	
@@ -1411,7 +1413,7 @@ class FacturaController extends Controller
     	return count($entity);
     }
     
-    private function fileAP($cliente, $f_inicio, $f_fin, $factura){
+    private function fileAP($cliente, $f_inicio, $f_fin, $factura, $obj_sede){
     	 
     	$dir = $this->container->getParameter('dlaser.directorio.rips');
     	 
@@ -1435,7 +1437,8 @@ class FacturaController extends Controller
 			    	f.fecha <= :fin AND
 			    	f.estado = :estado AND
 			    	f.cliente = :cliente AND
-			    	c.cups != '890202'
+			    	c.cups != '890202' AND
+    				f.sede = :sede
 		    	ORDER BY
 		    		f.fecha ASC";
     	 
@@ -1445,6 +1448,7 @@ class FacturaController extends Controller
     	$query->setParameter('fin', $f_fin.' 23:59:00');
     	$query->setParameter('cliente', $cliente->getId());
     	$query->setParameter('estado', 'I');
+    	$query->setParameter('sede', $obj_sede->getId());
     
     	$entity = $query->getArrayResult();
     	 
@@ -1520,13 +1524,13 @@ class FacturaController extends Controller
     	return count($entity);
     }
     
-    private function fileAD($cliente, $f_inicio, $f_fin, $factura){
+    private function fileAD($cliente, $f_inicio, $f_fin, $factura, $obj_sede){
     
     	$dir = $this->container->getParameter('dlaser.directorio.rips');
     
     	$em = $this->getDoctrine()->getEntityManager();
     
-    	$dql= " SELECT
+    	/*$dql= " SELECT
 			    	f.id,
 			    	c.cups,
 			    	f.valor,
@@ -1552,7 +1556,7 @@ class FacturaController extends Controller
     	$query->setParameter('cliente', $cliente->getId());
     	$query->setParameter('estado', 'I');
     
-    	$entity = $query->getArrayResult();
+    	$entity = $query->getArrayResult();*/
     	
     	$dql= " SELECT
 			    	c.cups,
@@ -1569,7 +1573,8 @@ class FacturaController extends Controller
 			    	f.fecha <= :fin AND
 			    	f.estado = :estado AND
 			    	f.cliente = :cliente AND
-			    	c.cups != '890202'
+			    	c.cups != '890202' AND
+    				f.sede = :sede
     	";
     	
     	$query = $em->createQuery($dql);
@@ -1578,6 +1583,7 @@ class FacturaController extends Controller
     	$query->setParameter('fin', $f_fin.' 23:59:00');
     	$query->setParameter('cliente', $cliente->getId());
     	$query->setParameter('estado', 'I');
+    	$query->setParameter('sede', $obj_sede->getId());
     	
     	$entity2 = $query->getArrayResult();
 
@@ -1588,7 +1594,7 @@ class FacturaController extends Controller
     		return $this->redirect($this->generateUrl('factura_rips_search'));
     	}
     	
-		$num_consulta = 0;
+		/*$num_consulta = 0;
 		$val_consulta = 0;
 		$copago_consulta = 0; 
     	foreach ($entity as $value){
@@ -1597,7 +1603,7 @@ class FacturaController extends Controller
     		$num_consulta++;
     	}
     	
-    	fwrite($gestor, "".$factura.",768340706001,01,".$num_consulta.",,".($val_consulta-$copago_consulta).".00\r\n");
+    	fwrite($gestor, "".$factura.",768340706001,01,".$num_consulta.",,".($val_consulta-$copago_consulta).".00\r\n");*/
     	
     	$num_px = 0;
     	$val_px = 0;
@@ -1628,7 +1634,8 @@ class FacturaController extends Controller
 			    	f.fecha > :inicio AND
 			    	f.fecha <= :fin AND
 			    	f.estado = :estado AND
-			    	f.cliente = :cliente
+			    	f.cliente = :cliente AND
+    				f.sede = :sede
 		";
     
     	$query = $em->createQuery($dql);
@@ -1637,6 +1644,7 @@ class FacturaController extends Controller
     	$query->setParameter('fin', $f_fin.' 23:59:00');
     	$query->setParameter('cliente', $cliente->getId());
     	$query->setParameter('estado', 'I');
+    	$query->setParameter('sede', $obj_sede->getId());
     
     	$entity = $query->getArrayResult();
     
@@ -1671,11 +1679,11 @@ class FacturaController extends Controller
 			
     	$fecha = new \DateTime('now');
     	
-    	fwrite($gestor, "761110730901,".$fecha->format('d/m/Y').",US,".$us."\r\n");
-    	fwrite($gestor, "761110730901,".$fecha->format('d/m/Y').",AF,".$af."\r\n");
-    	fwrite($gestor, "761110730901,".$fecha->format('d/m/Y').",AD,".$ad."\r\n");
-    	fwrite($gestor, "761110730901,".$fecha->format('d/m/Y').",AC,".$ac."\r\n");
-    	fwrite($gestor, "761110730901,".$fecha->format('d/m/Y').",AP,".$ap."\r\n");
+    	fwrite($gestor, "768340706001,".$fecha->format('d/m/Y').",US,".$us."\r\n");
+    	fwrite($gestor, "768340706001,".$fecha->format('d/m/Y').",AF,".$af."\r\n");
+    	fwrite($gestor, "768340706001,".$fecha->format('d/m/Y').",AD,".$ad."\r\n");
+    	fwrite($gestor, "768340706001,".$fecha->format('d/m/Y').",AC,".$ac."\r\n");
+    	fwrite($gestor, "768340706001,".$fecha->format('d/m/Y').",AP,".$ap."\r\n");
     	 
     	return true;
     }
@@ -1846,6 +1854,8 @@ class FacturaController extends Controller
     
     public function facturacionImprimirAction($id)
     {
+    	set_time_limit(0);
+    	
     	$em = $this->getDoctrine()->getEntityManager();
     
     	$entity = $em->getRepository('ParametrizarBundle:Factura')->find($id);
@@ -1897,9 +1907,9 @@ class FacturaController extends Controller
     	exec("rm -rf ".$dir."*.tar.gz ".$dir."*.txt");
     
     	$us = $this->fileUS($cliente, $f_inicio, $f_fin);
-    	$ap = $this->fileAP($cliente, $f_inicio, $f_fin, $factura);
+    	$ap = $this->fileAP($cliente, $f_inicio, $f_fin, $factura, $obj_sede);
     	$ac = $this->fileAC($cliente, $f_inicio, $f_fin, $factura);
-    	$ad = $this->fileAD($cliente, $f_inicio, $f_fin, $factura);
+    	$ad = $this->fileAD($cliente, $f_inicio, $f_fin, $factura, $obj_sede);
     	$af = $this->fileAF($cliente, $f_inicio, $f_fin, $factura, $obj_sede);
     	 
     	$this->fileCt($us, $ap, $ac, $ad, $af);
