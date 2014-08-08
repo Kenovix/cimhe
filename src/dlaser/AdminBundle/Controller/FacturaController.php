@@ -1882,13 +1882,13 @@ class FacturaController extends Controller
     {
     	$em = $this->getDoctrine()->getEntityManager();
     	
-    	$entity = $em->getRepository("ParametrizarBundle:Facturacion")->find($id);
+    	$entity = $em->getRepository("ParametrizarBundle:Factura")->find($id);
     	
     	$f_inicio = $entity->getInicio()->format("Y-m-d");
     	$f_fin = $entity->getFin()->format("Y-m-d");
     	
     	$cliente = $entity->getCliente();
-    	$factura = "CC".$entity->getId();
+    	$factura = $entity->getId();
     	$obj_sede = $entity->getSede();
     	 
     	$dir = $this->container->getParameter('dlaser.directorio.rips');
