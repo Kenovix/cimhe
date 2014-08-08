@@ -4,8 +4,6 @@ namespace dlaser\AdminBundle\Controller;;
 
 use Io\TcpdfBundle\Helper\Tcpdf;
 
-use dlaser\ParametrizarBundle\Entity\Facturacion;
-
 use dlaser\AdminBundle\Form\AdmisionAuxType;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -353,7 +351,7 @@ class FacturaController extends Controller
     	$this->get('io_tcpdf')->formato = 'P5';
     	$this->get('io_tcpdf')->orientacion = 'L';
 
-    	return $this->get('io_tcpdf')->quick_pdf($html, 'factura.pdf', 'I');
+    	return $this->get('io_tcpdf')->quick_pdf($html, 'factura_venta'.$entity->getId().'.pdf', 'I');
 
 	}
 
@@ -1747,13 +1745,13 @@ class FacturaController extends Controller
     	if($con_sede=="") $sedes = 0;
     	else $sedes = $obj_sede->getId();
     	
-    	$entity = new Facturacion();
+    	$entity = new Factura();
     	
     	$entity->setInicio($f_inicio);
     	$entity->setFin($f_fin);
     	$entity->setSedes($sedes);
-    	$entity->setConcepto('Concepto por defecto');
-    	$entity->setSubtotal($valor['valor'] - $valor['copago']);
+    	$entity->setConcepto('');
+    	$entity->setValor($valor['valor'] - $valor['copago']);
     	$entity->setIva(0);
     	
     	$form   = $this->createForm(new FacturacionType(), $entity);
@@ -1776,7 +1774,7 @@ class FacturaController extends Controller
     
     public function facturacionSaveAction($cliente, $sede)
     {
-    	$entity  = new Facturacion();
+    	$entity  = new Factura();
     
     	$request = $this->getRequest();
     	$form    = $this->createForm(new FacturacionType(), $entity);
@@ -1798,6 +1796,8 @@ class FacturaController extends Controller
     		$entity->setInicio($inicio);
     		$entity->setFin($fin);
     		$entity->setEstado('G');
+    		$entity->setTipo('F');
+    		$entity->setCopago(0);
     		$entity->setCliente($cliente);
     		$entity->setSede($sede);
     		   
@@ -1826,7 +1826,7 @@ class FacturaController extends Controller
     {
     	$em = $this->getDoctrine()->getEntityManager();
     
-    	$factura = $em->getRepository('ParametrizarBundle:Facturacion')->find($id);
+    	$factura = $em->getRepository('ParametrizarBundle:Factura')->find($id);
     
     
     	if (!$factura) {
@@ -1847,7 +1847,7 @@ class FacturaController extends Controller
     {
     	$em = $this->getDoctrine()->getEntityManager();
     
-    	$entity = $em->getRepository('ParametrizarBundle:Facturacion')->find($id);
+    	$entity = $em->getRepository('ParametrizarBundle:Factura')->find($id);
     	 
     	if (!$entity) {
     		throw $this->createNotFoundException('La factura a imprimir no esta disponible.');
@@ -1870,8 +1870,11 @@ class FacturaController extends Controller
     	$this->get('io_tcpdf')->mail = $sede->getEmail();
     	$this->get('io_tcpdf')->sede = $sede->getnombre();
     	$this->get('io_tcpdf')->empresa = $sede->getEmpresa()->getNombre();
+    	
+    	$this->get('io_tcpdf')->formato = 'P5';
+    	$this->get('io_tcpdf')->orientacion = 'L';
     
-    	return $this->get('io_tcpdf')->quick_pdf($html, 'factura.pdf', 'I');
+    	return $this->get('io_tcpdf')->quick_pdf($html, 'factura_venta_'.$entity->getId().'.pdf', 'I');
     }
     
     

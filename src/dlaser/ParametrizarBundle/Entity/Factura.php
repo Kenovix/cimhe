@@ -29,6 +29,27 @@ class Factura
      * @ORM\Column(name="fecha", type="datetime", nullable=false)
      */
     private $fecha;
+    
+    /**
+     * @var datetime $inicio
+     *
+     * @ORM\Column(name="inicio", type="datetime", nullable=true)
+     */
+    private $inicio;
+    
+    /**
+     * @var datetime $fin
+     *
+     * @ORM\Column(name="fin", type="datetime", nullable=true)
+     */
+    private $fin;
+    
+    /**
+     * @var integer $sedes
+     *
+     * @ORM\Column(name="sedes", type="integer", nullable=true)
+     */
+    private $sedes;
 
     /**
      * @var datetime $fR
@@ -43,6 +64,27 @@ class Factura
      * @ORM\Column(name="autorizacion", type="string", length=30, nullable=true)
      */
     private $autorizacion;
+    
+    /**
+     * @var string $concepto
+     *
+     * @ORM\Column(name="concepto", type="text", nullable=true)
+     */
+    private $concepto;
+    
+    /**
+     * @var integer $iva
+     *
+     * @ORM\Column(name="iva", type="integer", nullable=true)
+     */
+    private $iva;
+    
+    /**
+     * @var string $tipo
+    
+     * @ORM\Column(name="tipo", type="string", length=1, nullable=true)
+     */
+    private $tipo;
 
     /**
      * @var integer $valor
@@ -84,7 +126,7 @@ class Factura
      *
      * @ORM\ManyToOne(targetEntity="dlaser\AgendaBundle\Entity\Cupo")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="cupo_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="cupo_id", referencedColumnName="id", nullable="true")
      * })
      */
     private $cupo;
@@ -94,7 +136,7 @@ class Factura
      *
      * @ORM\ManyToOne(targetEntity="dlaser\ParametrizarBundle\Entity\Cargo")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="cargo_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="cargo_id", referencedColumnName="id", nullable="true")
      * })
      */
     private $cargo;
@@ -114,7 +156,7 @@ class Factura
      *
      * @ORM\ManyToOne(targetEntity="dlaser\ParametrizarBundle\Entity\Paciente")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="paciente_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="paciente_id", referencedColumnName="id", nullable="true")
      * })
      */
     private $paciente;
@@ -160,6 +202,66 @@ class Factura
     {
         return $this->fecha;
     }
+    
+    /**
+     * Set inicio
+     *
+     * @param datetime $inicio
+     */
+    public function setInicio($inicio)
+    {
+    	$this->inicio = $inicio;
+    }
+    
+    /**
+     * Get inicio
+     *
+     * @return datetime
+     */
+    public function getInicio()
+    {
+    	return $this->inicio;
+    }
+    
+    /**
+     * Set fin
+     *
+     * @param datetime $fin
+     */
+    public function setFin($fin)
+    {
+    	$this->fin = $fin;
+    }
+    
+    /**
+     * Get fin
+     *
+     * @return datetime
+     */
+    public function getFin()
+    {
+    	return $this->fin;
+    }
+    
+    /**
+     * Set sedes
+     *
+     * @param integer $sedes
+     */
+    public function setSedes($sedes)
+    {
+    	$this->sedes = $sedes;
+    }
+    
+    /**
+     * Get sedes
+     *
+     * @return integer
+     */
+    public function getSedes()
+    {
+    	return $this->sedes;
+    }
 
     /**
      * Set fR
@@ -199,6 +301,66 @@ class Factura
     public function getAutorizacion()
     {
         return $this->autorizacion;
+    }
+    
+    /**
+     * Set concepto
+     *
+     * @param string $concepto
+     */
+    public function setConcepto($concepto)
+    {
+    	$this->concepto = $concepto;
+    }
+    
+    /**
+     * Get concepto
+     *
+     * @return string
+     */
+    public function getConcepto()
+    {
+    	return $this->concepto;
+    }
+    
+    /**
+     * Set iva
+     *
+     * @param integer $iva
+     */
+    public function setIva($iva)
+    {
+    	$this->iva = $iva;
+    }
+    
+    /**
+     * Get iva
+     *
+     * @return integer
+     */
+    public function getIva()
+    {
+    	return $this->iva;
+    }
+    
+    /**
+     * Set tipo
+     *
+     * @param string $tipo
+     */
+    public function setTipo($tipo)
+    {
+    	$this->tipo = $tipo;
+    }
+    
+    /**
+     * Get tipo
+     *
+     * @return string
+     */
+    public function getTipo()
+    {
+    	return $this->tipo;
     }
 
     /**

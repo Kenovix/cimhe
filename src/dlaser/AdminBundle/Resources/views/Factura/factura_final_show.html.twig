@@ -48,7 +48,7 @@
             </tr>
             <tr>
             	<th><b>Subtotal:</b></th>
-                <td>{{ entity.subtotal }}</td>
+                <td>{{ entity.valor }}</td>
             </tr>
             <tr>
             	<th><b>Iva:</b></th>
@@ -56,11 +56,11 @@
             </tr>
             <tr>
             	<th><b>Total:</b></th>
-                <td>{{(entity.subtotal+entity.iva)|number_format(0)}}</td>
+                <td>{{(entity.valor+entity.iva)|number_format(0)}}</td>
             </tr>            
             <tr>
             	<th><b>Nota:</b></th>
-                <td>{{entity.nota}}</td>
+                <td>{{entity.observacion}}</td>
              </tr>
         </tbody>
     </table>
