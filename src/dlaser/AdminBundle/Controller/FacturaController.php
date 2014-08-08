@@ -1352,7 +1352,7 @@ class FacturaController extends Controller
         readfile( $abririps );
     }
 
-    private function fileUS($cliente, $f_inicio, $f_fin){
+    private function fileUS($cliente, $f_inicio, $f_fin, $obj_sede){
     	
     	$dir = $this->container->getParameter('dlaser.directorio.rips');
     	
@@ -1382,7 +1382,8 @@ class FacturaController extends Controller
 			    	f.fecha > :inicio AND
 			    	f.fecha <= :fin AND
 			    	f.estado = :estado AND
-			    	f.cliente = :cliente
+			    	f.cliente = :cliente AND
+    				f.sede = :sede
 		    	ORDER BY
 		    		f.fecha ASC";
     	
@@ -1392,6 +1393,7 @@ class FacturaController extends Controller
     	$query->setParameter('fin', $f_fin.' 23:59:00');
     	$query->setParameter('cliente', $cliente->getId());
     	$query->setParameter('estado', 'I');
+    	$query->setParameter('sede', $obj_sede->getId());
     	 
     	$entity = $query->getArrayResult();
     	
@@ -1906,7 +1908,7 @@ class FacturaController extends Controller
     	 
     	exec("rm -rf ".$dir."*.tar.gz ".$dir."*.txt");
     
-    	$us = $this->fileUS($cliente, $f_inicio, $f_fin);
+    	$us = $this->fileUS($cliente, $f_inicio, $f_fin, $obj_sede);
     	$ap = $this->fileAP($cliente, $f_inicio, $f_fin, $factura, $obj_sede);
     	$ac = $this->fileAC($cliente, $f_inicio, $f_fin, $factura);
     	$ad = $this->fileAD($cliente, $f_inicio, $f_fin, $factura, $obj_sede);
