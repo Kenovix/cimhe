@@ -68,7 +68,13 @@
          	</tr>
         {% endfor %}
         	<tr>
-        		<td colspan="8"><br /><br />TOTAL: <b>${{ (valor-copago)|number_format(0) }}</b><br />Favor consignar en Banco cuenta de ahorros No.####### A Nombre de: Centro de Imagenes y Hemodinamia CIMHE IPS LTDA. - NIT. 900.225.202-2</td>
+        		<td colspan="8"><br /><br />VALOR ACTIVIDADES: <b>${{ (valor)|number_format(0) }}</b></td>
+        	</tr>
+        	<tr>
+        		<td colspan="8"><br /><br />COPAGOS: <b>${{ (copago)|number_format(0) }}</b></td>
+        	</tr> 
+        	<tr>
+        		<td colspan="8"><br /><br />TOTAL A COBRAR: <b>${{ (valor-copago)|number_format(0) }}</b><br />Favor consignar en Banco cuenta de ahorros No.####### A Nombre de: Centro de Imagenes y Hemodinamia CIMHE IPS LTDA. - NIT. 900.225.202-2</td>
         	</tr>        
         </tbody>
     </table>

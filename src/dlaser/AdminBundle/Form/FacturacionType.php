@@ -13,6 +13,7 @@ class FacturacionType extends AbstractType
         ->add('inicio', 'hidden', array('required' => true))
         ->add('fin', 'hidden', array('required' => true))
         ->add('sedes', 'hidden', array('required' => true))
+        ->add('copago', 'hidden', array('required' => false))
         ->add('concepto', 'textarea', array('label' => 'Concepto', 'required' => true, 'attr' => array('autofocus'=>'autofocus')))
         ->add('observacion', 'textarea', array('required' => false))
         ->add('valor', 'integer', array('required' => true))

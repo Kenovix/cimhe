@@ -1751,7 +1751,8 @@ class FacturaController extends Controller
     	$entity->setFin($f_fin);
     	$entity->setSedes($sedes);
     	$entity->setConcepto('');
-    	$entity->setValor($valor['valor'] - $valor['copago']);
+    	$entity->setValor($valor['valor']);
+    	$entity->setCopago($valor['copago']);
     	$entity->setIva(0);
     	
     	$form   = $this->createForm(new FacturacionType(), $entity);
@@ -1797,7 +1798,7 @@ class FacturaController extends Controller
     		$entity->setFin($fin);
     		$entity->setEstado('G');
     		$entity->setTipo('F');
-    		$entity->setCopago(0);
+    		$entity->setCopago($registro->getCopago());
     		$entity->setCliente($cliente);
     		$entity->setSede($sede);
     		   
