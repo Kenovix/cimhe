@@ -57,6 +57,14 @@ class Cargo
      */
     private $valor;
     
+    /**
+     * @var string $tipo
+     *
+     * @ORM\Column(name="tipo", type="string", length=2, nullable=true)
+     * @Assert\MaxLength(limit=2, message="El valor ingresado debe tener máximo {{ limit }} caracteres.")
+     */
+    private $tipo;
+    
     public function __toString()
     {
         return $this->getNombre();
@@ -151,5 +159,25 @@ class Cargo
     public function getValor()
     {
         return $this->valor;
+    }
+    
+    /**
+     * Set tipo
+     *
+     * @param string $tipo
+     */
+    public function setTipo($tipo)
+    {
+    	$this->tipo = $tipo;
+    }
+    
+    /**
+     * Get tipo
+     *
+     * @return string
+     */
+    public function getTipo()
+    {
+    	return $this->tipo;
     }
 }

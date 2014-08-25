@@ -12,6 +12,7 @@ class CargoType extends AbstractType
         ->add('cups', 'text', array('label' => 'Código', 'required' => true, 'attr' => array('placeholder' => 'Código cups de la actividad', 'autofocus'=>'autofocus')))
         ->add('nombre', 'text', array('required' => true, 'attr' => array('placeholder' => 'Nombre de la actividad')))
         ->add('indicacion', 'textarea', array('required' => false, 'label' => 'Indicación', 'attr' => array('placeholder' => 'Indicación de la actividad')))
+        ->add('tipo', 'choice', array('required' => true, 'choices' => array('RX' => 'Rayos X', 'EC' => 'Ecografia')))
         ->add('valor', 'integer', array('required' => false, 'attr' => array('placeholder' => 'Valor de la actividad')))
         ;
     }

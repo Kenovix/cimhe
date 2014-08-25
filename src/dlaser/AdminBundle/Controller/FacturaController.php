@@ -696,7 +696,7 @@ class FacturaController extends Controller
     	$em = $this->getDoctrine()->getEntityManager();
     	
     	$sedes = $em->getRepository("ParametrizarBundle:Sede")->findAll();
-    	$clientes = $em->getRepository("ParametrizarBundle:Cliente")->findAll();
+    	$clientes = $em->getRepository("ParametrizarBundle:Cliente")->findBy(array(), array('nombre' => 'ASC'));
     	
     	if($this->get('security.context')->isGranted('ROLE_ADMIN')) {
     		$plantilla = 'AdminBundle:Factura:listar_cliente.html.twig';
@@ -729,6 +729,7 @@ class FacturaController extends Controller
     	$cliente = $request->request->get('cliente');
     	$f_inicio = $request->request->get('f_inicio');
     	$f_fin = $request->request->get('f_fin');
+    	$tipo = $request->request->get('tipo');
     	
     	if(trim($f_inicio)){
     		$desde = explode('/',$f_inicio);
@@ -781,6 +782,12 @@ class FacturaController extends Controller
     		$con_sede = "";
     	}
     	
+    	if(trim($tipo)){
+    		$con_tipo = "AND c.tipo ='".$tipo."'";
+    	}else{
+    		$con_tipo = "";
+    	}
+    	
     	$dql= " SELECT
 			    	f.id,
 			    	p.id as paciente,
@@ -809,7 +816,8 @@ class FacturaController extends Controller
 			    	f.fecha > :inicio AND
 			    	f.fecha <= :fin AND			    	
 			    	f.cliente = :cliente ".
-			    	$con_sede."
+			    	$con_sede." ".
+			    	$con_tipo."
 		    	ORDER BY
 		    		f.fecha ASC";
     	 
@@ -839,7 +847,8 @@ class FacturaController extends Controller
     			'sede' => $obj_sede,
     			'cliente' => $obj_cliente,
     			'f_i' => $desde[2]."/".$desde[1]."/".$desde[0],
-    			'f_f' => $hasta[2]."/".$hasta[1]."/".$hasta[0]
+    			'f_f' => $hasta[2]."/".$hasta[1]."/".$hasta[0],
+    			'tipo' => $tipo
     	));
     }
     
@@ -1134,6 +1143,7 @@ class FacturaController extends Controller
     	$cliente = $request->request->get('cliente');
     	$f_inicio = $request->request->get('f_inicio');
     	$f_fin = $request->request->get('f_fin');
+    	$tipo = $request->request->get('tipo');
 
     	$em = $this->getDoctrine()->getEntityManager();
     	
@@ -1167,6 +1177,12 @@ class FacturaController extends Controller
     		$con_sede = "";
     	}
     	
+    	if(trim($tipo)){
+    		$con_tipo = "AND c.tipo ='".$tipo."'";
+    	}else{
+    		$con_tipo = "";
+    	}
+    	
     	$dql= " SELECT
 			    	f.id,
 			    	p.id as paciente,
@@ -1196,7 +1212,8 @@ class FacturaController extends Controller
 			    	f.fecha <= :fin AND			    	
 			    	f.estado = :estado AND
 			    	f.cliente = :cliente ".
-			    	$con_sede."
+			    	$con_sede.
+			    	$con_tipo."
 		    	ORDER BY
 		    		f.fecha ASC";
     	 
@@ -1227,7 +1244,7 @@ class FacturaController extends Controller
     	 
     	$this->get('io_tcpdf')->SetMargins(3, 10, 3);
     
-    	return $this->get('io_tcpdf')->quick_pdf($html, 'Arqueo de Caja Sede '.$obj_sede->getNombre().'.pdf', 'I');
+    	return $this->get('io_tcpdf')->quick_pdf($html, 'Cta_Cobro_'.$obj_sede->getNombre().'.pdf', 'I');
     }
     
 	public function buscarRipsAction()
@@ -1352,11 +1369,17 @@ class FacturaController extends Controller
         readfile( $abririps );
     }
 
-    private function fileUS($cliente, $f_inicio, $f_fin, $obj_sede){
+    private function fileUS($cliente, $f_inicio, $f_fin, $obj_sede, $tipo){
     	
     	$dir = $this->container->getParameter('dlaser.directorio.rips');
     	
     	$em = $this->getDoctrine()->getEntityManager();
+    	
+    	if(trim($tipo)){
+    		$con_tipo = "AND c.tipo ='".$tipo."'";
+    	}else{
+    		$con_tipo = "";
+    	}
     	
     	$dql= " SELECT
     				DISTINCT
@@ -1378,12 +1401,15 @@ class FacturaController extends Controller
 		    	   	f.paciente p
 		    	JOIN
 		    		f.cliente cli
+    			JOIN
+		    		f.cargo c
 		    	WHERE
 			    	f.fecha > :inicio AND
 			    	f.fecha <= :fin AND
 			    	f.estado = :estado AND
 			    	f.cliente = :cliente AND
-    				f.sede = :sede
+    				f.sede = :sede ".
+    				$con_tipo."
 		    	ORDER BY
 		    		f.fecha ASC";
     	
@@ -1415,11 +1441,17 @@ class FacturaController extends Controller
     	return count($entity);
     }
     
-    private function fileAP($cliente, $f_inicio, $f_fin, $factura, $obj_sede){
+    private function fileAP($cliente, $f_inicio, $f_fin, $factura, $obj_sede, $tipo){
     	 
     	$dir = $this->container->getParameter('dlaser.directorio.rips');
     	 
     	$em = $this->getDoctrine()->getEntityManager();
+    	
+    	if(trim($tipo)){
+    		$con_tipo = "AND c.tipo ='".$tipo."'";
+    	}else{
+    		$con_tipo = "";
+    	}
     	 
     	$dql= " SELECT    	
 			    	p.identificacion AS id,
@@ -1440,7 +1472,8 @@ class FacturaController extends Controller
 			    	f.estado = :estado AND
 			    	f.cliente = :cliente AND
 			    	c.cups != '890202' AND
-    				f.sede = :sede
+    				f.sede = :sede ".
+    				$con_tipo."
 		    	ORDER BY
 		    		f.fecha ASC";
     	 
@@ -1471,7 +1504,7 @@ class FacturaController extends Controller
     	return count($entity);
     }
     
-    private function fileAC($cliente, $f_inicio, $f_fin, $factura){
+    private function fileAC($cliente, $f_inicio, $f_fin, $factura, $tipo){
     
     	$dir = $this->container->getParameter('dlaser.directorio.rips');
     
@@ -1508,25 +1541,30 @@ class FacturaController extends Controller
     	$query->setParameter('estado', 'I');
     
     	$entity = $query->getArrayResult();
+    	
+    	if ($entity) {
+    		
     
-    	$gestor = fopen($dir."AC.txt", "w+");
-    
-    	if (!$gestor){
-    		$this->get('session')->setFlash('info', 'No se puede crear txt.');
-    		return $this->redirect($this->generateUrl('factura_rips_search'));
-    	}
-    
-    	foreach ($entity as $value){
-    
-    		$fecha = new \DateTime($value['fecha']);
-    
-    		fwrite($gestor, "".$factura.",768340706001,".$value['tipoId'].",".$value['id'].",".$fecha->format('d/m/Y').",".$value['autorizacion'].",".$value['cups'].",10,15,,,,,1,".$value['valor'].".00,".$value['copago'].".00,".($value['valor']-$value['copago']).".00\r\n");
-    	}
+	    	$gestor = fopen($dir."AC.txt", "w+");
+	    
+	    	if (!$gestor){
+	    		$this->get('session')->setFlash('info', 'No se puede crear txt.');
+	    		return $this->redirect($this->generateUrl('factura_rips_search'));
+	    	}
+	    
+	    	foreach ($entity as $value){
+	    
+	    		$fecha = new \DateTime($value['fecha']);
+	    
+	    		fwrite($gestor, "".$factura.",768340706001,".$value['tipoId'].",".$value['id'].",".$fecha->format('d/m/Y').",".$value['autorizacion'].",".$value['cups'].",10,15,,,,,1,".$value['valor'].".00,".$value['copago'].".00,".($value['valor']-$value['copago']).".00\r\n");
+	    	}
+	    	
+	    }
     
     	return count($entity);
     }
     
-    private function fileAD($cliente, $f_inicio, $f_fin, $factura, $obj_sede){
+    private function fileAD($cliente, $f_inicio, $f_fin, $factura, $obj_sede, $tipo){
     
     	$dir = $this->container->getParameter('dlaser.directorio.rips');
     
@@ -1560,6 +1598,12 @@ class FacturaController extends Controller
     
     	$entity = $query->getArrayResult();*/
     	
+    	if(trim($tipo)){
+    		$con_tipo = "AND c.tipo ='".$tipo."'";
+    	}else{
+    		$con_tipo = "";
+    	}
+    	
     	$dql= " SELECT
 			    	c.cups,
 			    	f.valor,
@@ -1576,8 +1620,8 @@ class FacturaController extends Controller
 			    	f.estado = :estado AND
 			    	f.cliente = :cliente AND
 			    	c.cups != '890202' AND
-    				f.sede = :sede
-    	";
+    				f.sede = :sede ".
+    				$con_tipo;
     	
     	$query = $em->createQuery($dql);
     	
@@ -1616,29 +1660,37 @@ class FacturaController extends Controller
     		$num_px++;
     	}	
     	 
-    	fwrite($gestor, "".$factura.",768340706001,".$num_px.",,".($val_px-$copago_px).".00\r\n");
+    	fwrite($gestor, "".$factura.",768340706001,02,".$num_px.",0,".($val_px-$copago_px).".00\r\n");
     
-    	return 2;
+    	return 1;
     }
     
-    private function fileAF($cliente, $f_inicio, $f_fin, $factura, $obj_sede){
+    private function fileAF($cliente, $f_inicio, $f_fin, $factura, $obj_sede, $tipo){
     
     	$dir = $this->container->getParameter('dlaser.directorio.rips');
     
     	$em = $this->getDoctrine()->getEntityManager();
+    	
+    	if(trim($tipo)){
+    		$con_tipo = "AND c.tipo ='".$tipo."'";
+    	}else{
+    		$con_tipo = "";
+    	}
     
     	$dql= " SELECT
 			    	SUM (f.valor) AS valor,
 			    	SUM (f.copago) AS copago
 		    	FROM
 		    		ParametrizarBundle:Factura f
+    			JOIN
+    				f.cargo c
 		    	WHERE
 			    	f.fecha > :inicio AND
 			    	f.fecha <= :fin AND
 			    	f.estado = :estado AND
 			    	f.cliente = :cliente AND
-    				f.sede = :sede
-		";
+    				f.sede = :sede ".
+    				$con_tipo;
     
     	$query = $em->createQuery($dql);
     
@@ -1684,7 +1736,9 @@ class FacturaController extends Controller
     	fwrite($gestor, "768340706001,".$fecha->format('d/m/Y').",US,".$us."\r\n");
     	fwrite($gestor, "768340706001,".$fecha->format('d/m/Y').",AF,".$af."\r\n");
     	fwrite($gestor, "768340706001,".$fecha->format('d/m/Y').",AD,".$ad."\r\n");
-    	fwrite($gestor, "768340706001,".$fecha->format('d/m/Y').",AC,".$ac."\r\n");
+    	if ($ac > 0) {
+    		fwrite($gestor, "768340706001,".$fecha->format('d/m/Y').",AC,".$ac."\r\n");
+    	}
     	fwrite($gestor, "768340706001,".$fecha->format('d/m/Y').",AP,".$ap."\r\n");
     	 
     	return true;
@@ -1698,6 +1752,7 @@ class FacturaController extends Controller
     	$cliente = $request->request->get('cliente');
     	$f_inicio = $request->request->get('f_inicio');
     	$f_fin = $request->request->get('f_fin');
+    	$tipo = $request->request->get('tipo');
     	 
     	$em = $this->getDoctrine()->getEntityManager();
     
@@ -1724,6 +1779,12 @@ class FacturaController extends Controller
     		$empresa = $obj_sede->getEmpresa();
     		$con_sede = "";
     	}
+    	
+    	if(trim($tipo)){
+    		$con_tipo = "AND c.tipo ='".$tipo."'";
+    	}else{
+    		$con_tipo = "";
+    	}
     
     	$dql= " SELECT
     				SUM(f.valor) AS valor,
@@ -1741,7 +1802,8 @@ class FacturaController extends Controller
 			    	f.fecha <= :fin AND
     				f.estado = :estado AND
 			    	f.cliente = :cliente ".
-			    	$con_sede;
+			    	$con_sede.
+    				$con_tipo;
     	 
     	$query = $em->createQuery($dql);
     
@@ -1761,6 +1823,7 @@ class FacturaController extends Controller
     	$entity->setFin($f_fin);
     	$entity->setSedes($sedes);
     	$entity->setConcepto('');
+    	$entity->setGrupo($tipo);
     	$entity->setValor($valor['valor']);
     	$entity->setCopago($valor['copago']);
     	$entity->setIva(0);
@@ -1908,11 +1971,11 @@ class FacturaController extends Controller
     	 
     	exec("rm -rf ".$dir."*.tar.gz ".$dir."*.txt");
     
-    	$us = $this->fileUS($cliente, $f_inicio, $f_fin, $obj_sede);
-    	$ap = $this->fileAP($cliente, $f_inicio, $f_fin, $factura, $obj_sede);
-    	$ac = $this->fileAC($cliente, $f_inicio, $f_fin, $factura);
-    	$ad = $this->fileAD($cliente, $f_inicio, $f_fin, $factura, $obj_sede);
-    	$af = $this->fileAF($cliente, $f_inicio, $f_fin, $factura, $obj_sede);
+    	$us = $this->fileUS($cliente, $f_inicio, $f_fin, $obj_sede, $entity->getGrupo());
+    	$ap = $this->fileAP($cliente, $f_inicio, $f_fin, $factura, $obj_sede, $entity->getGrupo());
+    	$ac = $this->fileAC($cliente, $f_inicio, $f_fin, $factura, $entity->getGrupo());
+    	$ad = $this->fileAD($cliente, $f_inicio, $f_fin, $factura, $obj_sede, $entity->getGrupo());
+    	$af = $this->fileAF($cliente, $f_inicio, $f_fin, $factura, $obj_sede, $entity->getGrupo());
     	 
     	$this->fileCt($us, $ap, $ac, $ad, $af);
     

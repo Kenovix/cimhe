@@ -113,6 +113,13 @@ class Factura
      * @ORM\Column(name="estado", type="string", length=1, nullable=true)
      */
     private $estado;
+    
+    /**
+     * @var string $grupo
+     *
+     * @ORM\Column(name="grupo", type="string", length=2, nullable=true)
+     */
+    private $grupo;
 
     /**
      * @var string $observacion
@@ -441,6 +448,26 @@ class Factura
     public function getEstado()
     {
         return $this->estado;
+    }
+    
+    /**
+     * Set grupo
+     *
+     * @param string $grupo
+     */
+    public function setGrupo($grupo)
+    {
+    	$this->grupo = $grupo;
+    }
+    
+    /**
+     * Get grupo
+     *
+     * @return string
+     */
+    public function getGrupo()
+    {
+    	return $this->grupo;
     }
 
     /**
