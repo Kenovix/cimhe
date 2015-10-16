@@ -131,8 +131,15 @@ class PacienteController extends Controller
         $form->bindRequest($request);
     
         if ($form->isValid()) {
-             
-            $em = $this->getDoctrine()->getEntityManager();
+        	
+        	$em = $this->getDoctrine()->getEntityManager();
+        	
+        	$mupio = $em->getRepository('ParametrizarBundle:Mupio')->find($entity->getMupio());
+        	$depto = $em->getRepository('ParametrizarBundle:Depto')->find($entity->getDepto());
+        	
+            $entity->setDepto($depto->getCodigo());
+            $entity->setMupio($mupio->getCodigo());
+            
             $em->persist($entity);
             $em->flush();
     
@@ -198,6 +205,14 @@ class PacienteController extends Controller
         if (!$entity) {
             throw $this->createNotFoundException('El paciente solicitado no existe');
         }
+        
+        
+        
+        $depto = $em->getRepository('ParametrizarBundle:Depto')->findOneBy(array('codigo' => $entity->getDepto()));
+                      
+        $mupio = $em->getRepository('ParametrizarBundle:Mupio')->findOneBy(array('codigo' => $entity->getMupio(), 'depto' => $depto->getId()));
+ 
+        $entity->setMupio($mupio->getId());
     
         $editForm = $this->createForm(new PacienteType(), $entity);
         
@@ -236,6 +251,12 @@ class PacienteController extends Controller
         $editForm->bindRequest($request);
     
         if ($editForm->isValid()) {
+        	 
+        	$mupio = $em->getRepository('ParametrizarBundle:Mupio')->find($entity->getMupio());
+        	$depto = $em->getRepository('ParametrizarBundle:Depto')->find($entity->getDepto());
+        	 
+        	$entity->setDepto($depto->getCodigo());
+        	$entity->setMupio($mupio->getCodigo());
     
             $em->persist($entity);
             $em->flush();

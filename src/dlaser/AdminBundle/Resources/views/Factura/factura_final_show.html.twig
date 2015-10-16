@@ -48,7 +48,11 @@
             </tr>
             <tr>
             	<th><b>Subtotal:</b></th>
-                <td>{{ entity.valor }}</td>
+                <td>{{ entity.subtotal }}</td>
+            </tr>
+            <tr>
+            	<th><b>Copago:</b></th>
+                <td>{{ entity.copago }}</td>
             </tr>
             <tr>
             	<th><b>Iva:</b></th>
@@ -56,20 +60,16 @@
             </tr>
             <tr>
             	<th><b>Total:</b></th>
-                <td>{{(entity.valor+entity.iva)|number_format(0)}}</td>
+                <td>{{(entity.subtotal+entity.iva)|number_format(0)}}</td>
             </tr>            
             <tr>
             	<th><b>Nota:</b></th>
-                <td>{{entity.observacion}}</td>
-             </tr>
-             <tr>
-            	<th><b>Grupo:</b></th>
-                <td>{{entity.grupo}}</td>
+                <td>{{entity.nota}}</td>
              </tr>
         </tbody>
     </table>
 
-<a href="{{ path('factura_final_imprimir', { 'id': entity.id }) }}" class="button blue"><span class="label">Imprimir</span></a>
-<a href="{{ path('factura_final_rips', { 'id': entity.id }) }}" class="button blue"><span class="label">Generar RIPS</span></a>
+<a href="{{ path('factura_final_imprimir', { 'id': entity.id }) }}" target="blank" class="button blue"><span class="label">Imprimir</span></a>
+<a href="{{ path('factura_final_rips', { 'id': entity.id, 'tipo': tipo}) }}" class="button blue"><span class="label">Generar RIPS</span></a>
 
 {% endblock %}

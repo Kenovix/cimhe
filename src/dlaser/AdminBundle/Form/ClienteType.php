@@ -16,6 +16,7 @@ class ClienteType extends AbstractType
         ->add('razon', 'text', array('required' => false, 'label' => 'Razón social', 'attr' => array('placeholder' => 'razón social')))
         ->add('direccion', 'text', array('required' => false, 'attr' => array('placeholder' => 'Dirección')))
         ->add('telefono', 'text', array('required' => false, 'attr' => array('placeholder' => 'Teléfono')))
+        ->add('particular', 'choice', array('required' => true, 'choices' => array('SI' => 'SI', 'NO' => 'NO')))
         ;
     }
 

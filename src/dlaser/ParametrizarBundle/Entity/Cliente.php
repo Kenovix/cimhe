@@ -74,6 +74,14 @@ class Cliente
      */
     private $telefono;
     
+    /**
+     * @var string $particular
+     *
+     * @ORM\Column(name="particular", type="string", length=2, nullable=true)
+     * @Assert\MaxLength(limit=2, message="El valor ingresado debe tener máximo {{ limit }} caracteres.")
+     */
+    private $particular;
+    
     
     public function __toString()
     {
@@ -208,5 +216,25 @@ class Cliente
     public function getTelefono()
     {
     	return $this->telefono;
+    }
+    
+    /**
+     * Set particular
+     *
+     * @param string $particular
+     */
+    public function setParticular($particular)
+    {
+    	$this->particular = $particular;
+    }
+    
+    /**
+     * Get particular
+     *
+     * @return string
+     */
+    public function getParticular()
+    {
+    	return $this->particular;
     }
 }

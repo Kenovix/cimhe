@@ -6,7 +6,7 @@
 
 {% block rastro %}{{ wo_render_breadcrumbs() }}{% endblock %}
 
-{% block titulo %}Listado de facturas antiguas{% endblock %}
+{% block titulo %}Listado de facturas pacientes nuevas{% endblock %}
 
 {% block msg %}
 	{% if app.session.flash('ok') %}
@@ -34,7 +34,7 @@
                 <th>Fecha</th>
                 <th>Cliente</th>
                 <th>EPS</th>
-                <th>Actividad</th>
+                <th>Concepto</th>
                 <th>Valor</th>
                 <th>Sede</th>
                 <th></th>                
@@ -43,14 +43,14 @@
         <tbody>
         {% for entity in entities %}
             <tr>
-                <td><a href="{{ path('factura_show', {'id': entity.id}) }}" title="Ver factura">{{ entity.id }}</a></td>
+                <td><a href="{{ path('factura_paciente_show', {'id': entity.id}) }}" title="Ver factura">{{ entity.id }}</a></td>
                 <td>{{ entity.fecha | date('d-m-Y H:i') }}</td>
                 <td>{{ entity.priNombre }} {{ entity.segNombre }} {{ entity.priApellido }} {{ entity.segApellido }}</td>
                 <td>{{ entity.cliente }}</td>
-                <td>{{ entity.nombre }}</td>
-                <td>${{ entity.valor | number_format(0) }}</td>
+                <td>{{ entity.concepto }}</td>
+                <td>${{ (entity.subtotal - entity.copago ) | number_format(0) }}</td>
                 <td>{{ entity.sede }}</td>
-                <td><a href="{{ path('factura_imprimir', {'id': entity.id}) }}" target="blank" class="button"><span class="icon icon153"></span></a></td>
+                <td><a href="{{ path('factura_paciente_imprimir', {'id': entity.id}) }}" target="blank" class="button"><span class="icon icon153"></span></a></td>
             </tr>
          {% else %}
          	<tr>
@@ -61,10 +61,6 @@
     </table>
     
     {% if entities %}
-		{{ simple_paginator_render('factura_list', null) }}
-    {% endif %}
-    
-    <a href="{{ path('cliente_new') }}" class="button left"><span class="label">Nuevo cliente</span></a>
-    
-    
+		{{ simple_paginator_render('factura_list_newPac', null) }}
+    {% endif %}    
 {% endblock %}

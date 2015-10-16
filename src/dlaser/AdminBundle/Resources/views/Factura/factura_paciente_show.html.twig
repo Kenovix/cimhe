@@ -1,0 +1,68 @@
+{% extends "AdminBundle::admin_layout.html.twig" %}
+
+{% block menu %}
+	{{ knp_menu_render('AdminBundle:Builder:adminMenu') }}
+{% endblock %}
+
+{% block rastro %}{{ wo_render_breadcrumbs() }}{% endblock %}
+
+{% block titulo %}Detalles admisión{% endblock %}
+
+{% block msg %}
+	{% if app.session.flash('ok') %}
+	    <div class="success mensajes">
+	        <span>{{ app.session.flash('ok') }}</span>
+	    </div>
+	{% elseif app.session.flash('info') %}
+		<div class="info">
+	        <span>{{ app.session.flash('info') }}</span>
+	    </div>
+	{% elseif app.session.flash('error') %}
+		<div class="error">
+	        <span>{{ app.session.flash('error') }}</span>
+	    </div>
+	{% endif %}
+{% endblock %}
+
+{% block cuerpo %}
+<table>
+	<tbody>
+    	<tr>
+        	<th><b>Factura No.</b></th>
+            <td>{{entity.id}}</td>
+      	</tr>
+        <tr>
+        	<th><b>Fecha:</b></th>
+            <td>{{entity.fecha | date('d-m-Y')}}</td>
+        </tr>
+        <tr>
+        	<th><b>Cliente:</b></th>
+        	<td>{{ entity.paciente.priNombre }} {{ entity.paciente.segNombre }} {{ entity.paciente.priApellido }} {{ entity.paciente.segApellido }}</td>
+        </tr>    
+        <tr>
+            <th><b>Nit ó CC:</b></th>
+            <td>{{entity.paciente.identificacion}}</td>
+        </tr>
+        <tr>
+        	<th><b>Subtotal:</b></th>
+           	<td>{{ entity.subtotal }}</td>
+        </tr>
+        <tr>
+        	<th><b>Iva:</b></th>
+            <td>{{entity.iva}}</td>
+        </tr>
+		<tr>
+          	<th><b>Total:</b></th>
+            <td>{{(entity.subtotal+entity.iva)|number_format(0)}}</td>
+        </tr>            
+        <tr>
+          	<th><b>Nota:</b></th>
+            <td>{{entity.nota}}</td>
+        </tr>
+	</tbody>
+</table>
+
+<a href="{{ path('factura_paciente_imprimir', { 'id': entity.id }) }}" target="blank" class="button blue"><span class="label">Imprimir</span></a>
+<a href="{{ path('factura_paciente_edit', { 'id': entity.id }) }}" class="button blue"><span class="label">Modificar</span></a>
+
+{% endblock %}

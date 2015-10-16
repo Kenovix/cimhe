@@ -27,21 +27,27 @@
             	<td width="15%"><strong>FECHA:</strong></td>                
             	<td width="35%">{{ entity.fecha|date('d-m-Y') }}</td>
             	<td width="13%"><strong>CEDULA O NIT:</strong></td>                
-            	<td width="17%">{{ entity.cliente.nit }}</td>
+            	<td width="17%">{{ cliente.identificacion }}</td>
             	<td width="20%"><strong>FACTURA DE VENTA No</strong>.</td>            	
             </tr>
             <tr>
             	<td width="15%"><strong>NOMBRE:</strong></td>
-            	<td width="35%">{{ entity.cliente.razon }}</td>                
-            	<td width="13%"><strong>F. NACIMIENTO:</strong></td>                
-            	<td width="17%"></td>
+            	<td width="35%">{{ cliente.priNombre }} {{ cliente.segNombre }} {{ cliente.priApellido }} {{ cliente.segApellido }}</td>                
+            	<td width="13%"><strong>DIRECIÓN:</strong></td>                
+            	<td width="17%">{{ cliente.direccion }}</td>
             	<td width="20%" rowspan="2" align="center"><br /><br />{{ entity.id }}</td>            	            	
             </tr>
             <tr>
-            	<td width="15%"><strong>DIRECIÓN:</strong></td>
-            	<td width="35%">{{ entity.cliente.direccion }}</td>
+            	<td width="15%"><strong>CLIENTE:</strong></td>
+            	<td width="35%">{{ entity.cliente.razon }}</td>
             	<td width="13%"><strong>TELÉFONO:</strong></td>                
-            	<td width="17%">{{ entity.cliente.telefono }}</td>
+            	<td width="17%">
+            		{% if cliente.telefono %}
+            			{{ cliente.telefono }}
+            		{% else %}
+						{{ cliente.movil }}
+					{% endif %}            		
+            	</td>
             </tr>
         </tbody>             
 	</table>
@@ -58,7 +64,7 @@
             	<td width="80%" height="120">
             		<br /><br />{{ entity.concepto }}
             		{% if entity.nota %}
-            			<br /><br /><br /><br />Nota: {{ entity.nota }}
+            			<br /><br /><br />Nota: {{ entity.nota }}
             		{% endif %}
             	</td>
             	<td width="20%" align="center"><br /><br />${{ (entity.subtotal + entity.iva) |number_format(0) }}</td>                
@@ -73,9 +79,9 @@
             	<td width="30%" height="60">Entrega:</td>                
             	<td width="20%" align="center" height="60">Subtotal<br /><br />IVA<br /><br />Valor Total</td>
             	<td width="20%" align="center" height="60">
-            		${{ (entity.subtotal - entity.copago)|number_format(0) }}<br /><br />
+            		${{ (entity.subtotal)|number_format(0) }}<br /><br />
             		${{ (entity.iva)|number_format(0) }}<br /><br />
-            		${{ ((entity.subtotal - entity.copago) + entity.iva)|number_format(0) }}
+            		${{ (entity.subtotal + entity.iva)|number_format(0) }}
             	</td>                
             </tr>                    	       
         </tbody>             

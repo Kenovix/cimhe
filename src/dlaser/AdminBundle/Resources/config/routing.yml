@@ -272,6 +272,14 @@ afiliacion_ajax_save:
 factura_list:
     pattern:  /factura/list
     defaults: { _controller: AdminBundle:Factura:list }
+    
+factura_list_new:
+    pattern:  /factura/list/nuevas
+    defaults: { _controller: AdminBundle:Factura:listNew }
+    
+factura_list_newPac:
+    pattern:  /factura/list/nuevas/pacientes
+    defaults: { _controller: AdminBundle:Factura:listNewPac }
 
 factura_new:
     pattern:  /factura/new/{cupo}
@@ -378,11 +386,11 @@ factura_final_new:
         _method:  POST
         
 factura_final_save:
-    pattern:  /factura/final/save/{cliente}/{sede}
+    pattern:  /factura/final/save/{cliente}/{sede}/{tipo}
     defaults: { _controller: AdminBundle:Factura:facturacionSave }
     
 factura_final_show:
-    pattern:  /factura/final/show/{id}
+    pattern:  /factura/final/show/{id}/{tipo}
     defaults: { _controller: AdminBundle:Factura:facturacionShow }
     
 factura_final_imprimir:
@@ -390,7 +398,7 @@ factura_final_imprimir:
     defaults: { _controller: AdminBundle:Factura:facturacionImprimir }
     
 factura_final_rips:
-    pattern:  /factura/final/rips/{id}
+    pattern:  /factura/final/rips/{id}/{tipo}
     defaults: { _controller: AdminBundle:Factura:facturacionRips }
     
 factura_genera_reporte:
@@ -402,3 +410,19 @@ factura_gst_reporte:
     defaults: { _controller: AdminBundle:Factura:gstReporteFactura }
     requirements:
         _method:  POST
+        
+factura_paciente_show:
+    pattern:  /factura/final/paciente/show/{id}
+    defaults: { _controller: AdminBundle:Factura:facturacionPacienteShow }
+    
+factura_paciente_imprimir:
+    pattern:  /factura/final/paciente/imprimir/{id}
+    defaults: { _controller: AdminBundle:Factura:facturacionPacienteImprimir }
+    
+factura_paciente_edit:
+    pattern:  /factura/final/paciente/edit/{id}
+    defaults: { _controller: AdminBundle:Factura:facturacionPacienteEdit }
+    
+factura_paciente_update:
+    pattern:  /factura/final/paciente/update/{id}
+    defaults: { _controller: AdminBundle:Factura:facturacionPacienteUpdate }

@@ -9,12 +9,14 @@ use dlaser\AdminBundle\Form\AdmisionAuxType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use dlaser\ParametrizarBundle\Entity\Factura;
+use dlaser\ParametrizarBundle\Entity\Facturacion;
 use dlaser\AdminBundle\Form\FacturaType;
 use dlaser\AdminBundle\Form\FacturacionType;
 use dlaser\AdminBundle\Form\AdmisionType;
 use dlaser\HcBundle\Entity\Hc;
 use dlaser\HcBundle\Entity\HcMedicamento;
 use Symfony\Component\Validator\Constraints\Date;
+use Doctrine\ORM\Query;
 
 class FacturaController extends Controller
 {
@@ -23,7 +25,7 @@ class FacturaController extends Controller
 	{
 		$em = $this->getDoctrine()->getEntityManager();
 		$paginador = $this->get('ideup.simple_paginator');
-		$paginador->setItemsPerPage(20);
+		$paginador->setItemsPerPage(30);
 	
 		$dql = $em->createQuery("SELECT
 						    		f.id,
@@ -48,6 +50,8 @@ class FacturaController extends Controller
 					    			f.cliente cli
 								JOIN
 									f.sede s
+								WHERE
+									f.id <= 16866
 					    		ORDER BY
 					    			f.id ASC");
 		
@@ -59,6 +63,78 @@ class FacturaController extends Controller
 		$breadcrumbs->addItem("Listar");
 	
 		return $this->render('AdminBundle:Factura:list.html.twig', array(
+				'entities'  => $facturas
+		));
+	}
+	
+	public function listNewAction()
+	{
+		$em = $this->getDoctrine()->getEntityManager();
+		$paginador = $this->get('ideup.simple_paginator');
+		$paginador->setItemsPerPage(20);
+	
+		$dql = $em->createQuery("SELECT
+						    		f
+					    		FROM
+					    			ParametrizarBundle:Facturacion f
+					    		WHERE
+									f.paciente IS NULL 
+					    		ORDER BY
+					    			f.id ASC");
+		
+	
+		$facturas = $paginador->paginate($dql->getResult())->getResult();
+	
+		$breadcrumbs = $this->get("white_october_breadcrumbs");
+		$breadcrumbs->addItem("Inicio", $this->get("router")->generate("empresa_list"));
+		$breadcrumbs->addItem("Factura", $this->get("router")->generate("factura_list_new"));
+		$breadcrumbs->addItem("Listar Nuevas");
+	
+		return $this->render('AdminBundle:Factura:list_new.html.twig', array(
+				'entities'  => $facturas
+		));
+	}
+	
+	public function listNewPacAction()
+	{
+		$em = $this->getDoctrine()->getEntityManager();
+		$paginador = $this->get('ideup.simple_paginator');
+		$paginador->setItemsPerPage(20);
+	
+		$dql = $em->createQuery("SELECT
+						    		f.id,
+						    		f.fecha,
+									p.priNombre,
+						    		p.segNombre,
+						    		p.priApellido,
+						    		p.segApellido,
+									cli.nombre as cliente,
+									f.concepto,
+						    		f.subtotal,
+									f.copago,
+						    		f.iva,
+						    		f.estado,
+									s.nombre as sede
+					    		FROM
+					    			ParametrizarBundle:Facturacion f
+					    		JOIN
+					    			f.cliente cli
+								JOIN
+					    			f.paciente p
+								JOIN
+									f.sede s
+					    		ORDER BY
+					    			f.id ASC");
+	
+	
+		$facturas = $paginador->paginate($dql->getResult())->getResult();
+	
+		$breadcrumbs = $this->get("white_october_breadcrumbs");
+		$breadcrumbs->addItem("Inicio", $this->get("router")->generate("empresa_list"));
+		$breadcrumbs->addItem("Factura", $this->get("router")->generate("factura_list_new"));
+		$breadcrumbs->addItem("Listar Nuevas");
+	
+		return $this->render('AdminBundle:Factura:list_new_pac.html.twig', array(
 				'entities'  => $facturas
 		));
 	}
@@ -115,8 +191,35 @@ class FacturaController extends Controller
             }else{
                 $valor = round(($reserva->getCargo()->getValor()+($reserva->getCargo()->getValor()*$contrato->getPorcentaje())));
             }
+            
+            $query = $em->createQuery("   SELECT
+								    		f
+							    		FROM
+							    			ParametrizarBundle:Factura f
+							    		WHERE
+            								f.sede = :sede AND
+            								f.paciente = :paciente AND
+            								f.cliente = :cliente AND
+            								f.autorizacion = :autorizacion");
 
-            $entity->setFecha(new \DateTime('now'));
+            
+
+            $query->setParameter('sede', $reserva->getAgenda()->getSede()->getId());
+            $query->setParameter('paciente', $reserva->getPaciente()->getId());
+            $query->setParameter('cliente', $reserva->getCliente());
+            $query->setParameter('autorizacion', $entity->getAutorizacion());
+            
+            $doble_ops = $query->getResult();
+            
+            if ($doble_ops){
+            	$entity->setGrupo($doble_ops[0]->getGrupo());
+            }else {
+            	$entity->setGrupo($reserva->getCargo()->getTipo());
+            }
+            
+            $fecha = new \DateTime('now');
+
+            $entity->setFecha($fecha);
             $entity->setEstado('I');
             $entity->setCargo($reserva->getCargo());
             $entity->setValor($valor);
@@ -127,21 +230,70 @@ class FacturaController extends Controller
             
             $reserva->setEstado('F');
             
-            $em->persist($entity);
-            $em->persist($reserva);
+            if ($entity->getCopago() > 0){
+            	
+            	$f_f  = new Facturacion();
+            	
+            	$f_f->setFecha($fecha);
+            	$f_f->setInicio($fecha);
+            	$f_f->setFin($fecha);
+            	$f_f->setConcepto('COPAGO '.$reserva->getCargo()->getNombre());
+            	$f_f->setSubtotal($entity->getCopago());
+            	$f_f->setIva(0);
+            	$f_f->setEstado('G');
+            	$f_f->setCliente($cliente);
+            	$f_f->setSede($reserva->getAgenda()->getSede());
+            	$f_f->setPaciente($reserva->getPaciente());
+            	
+            	$em->persist($entity);
+            	$em->persist($reserva);
+            	$em->persist($f_f);
+            	
+            	$ft = true;
+            
+            }elseif ($cliente->getParticular() == 'SI'){
+            	
+            	$f_f  = new Facturacion();
+            	 
+            	$f_f->setFecha($fecha);
+            	$f_f->setInicio($fecha);
+            	$f_f->setFin($fecha);
+            	$f_f->setConcepto($reserva->getCargo()->getNombre());
+            	$f_f->setSubtotal($valor);
+            	$f_f->setIva(0);
+            	$f_f->setEstado('G');
+            	$f_f->setCliente($cliente);
+            	$f_f->setSede($reserva->getAgenda()->getSede());
+            	$f_f->setPaciente($reserva->getPaciente());
+            	
+            	$em->persist($entity);
+            	$em->persist($reserva);
+            	$em->persist($f_f);
+            	
+            	$ft = true;
+            }else{            	
+            	$em->persist($entity);
+            	$em->persist($reserva);
+
+            	$ft = false;
+            }
+            
             $em->flush();
             
             $this->get('session')->setFlash('ok', 'La admisión ha sido registrada éxitosamente.');            
 
-            return $this->redirect($this->generateUrl('factura_show',array("id"=>$entity->getId())));        
+            if ($ft) {
+            	return $this->redirect($this->generateUrl('factura_paciente_show',array("id"=>$f_f->getId())));
+            }else{
+            	return $this->redirect($this->generateUrl('factura_show',array("id"=>$entity->getId())));
+            }
         }
-        
+
         return $this->render('AdminBundle:Factura:new.html.twig', array(
                 'cupo' => $reserva,
                 'actividad' => $valor,
                 'form'   => $form->createView()
         ));
-        
     }   
         
     public function searchAction()
@@ -783,7 +935,7 @@ class FacturaController extends Controller
     	}
     	
     	if(trim($tipo)){
-    		$con_tipo = "AND c.tipo ='".$tipo."'";
+    		$con_tipo = "AND f.grupo ='".$tipo."'";
     	}else{
     		$con_tipo = "";
     	}
@@ -1178,7 +1330,7 @@ class FacturaController extends Controller
     	}
     	
     	if(trim($tipo)){
-    		$con_tipo = "AND c.tipo ='".$tipo."'";
+    		$con_tipo = "AND f.grupo ='".$tipo."'";
     	}else{
     		$con_tipo = "";
     	}
@@ -1375,7 +1527,7 @@ class FacturaController extends Controller
     	
     	$em = $this->getDoctrine()->getEntityManager();
     	
-    	if(trim($tipo)){
+    	if(trim($tipo) != 'N'){
     		$con_tipo = "AND c.tipo ='".$tipo."'";
     	}else{
     		$con_tipo = "";
@@ -1447,7 +1599,7 @@ class FacturaController extends Controller
     	 
     	$em = $this->getDoctrine()->getEntityManager();
     	
-    	if(trim($tipo)){
+    	if(trim($tipo != 'N')){
     		$con_tipo = "AND c.tipo ='".$tipo."'";
     	}else{
     		$con_tipo = "";
@@ -1598,7 +1750,7 @@ class FacturaController extends Controller
     
     	$entity = $query->getArrayResult();*/
     	
-    	if(trim($tipo)){
+    	if(trim($tipo) != 'N'){
     		$con_tipo = "AND c.tipo ='".$tipo."'";
     	}else{
     		$con_tipo = "";
@@ -1671,7 +1823,7 @@ class FacturaController extends Controller
     
     	$em = $this->getDoctrine()->getEntityManager();
     	
-    	if(trim($tipo)){
+    	if(trim($tipo) != 'N'){
     		$con_tipo = "AND c.tipo ='".$tipo."'";
     	}else{
     		$con_tipo = "";
@@ -1817,15 +1969,15 @@ class FacturaController extends Controller
     	if($con_sede=="") $sedes = 0;
     	else $sedes = $obj_sede->getId();
     	
-    	$entity = new Factura();
+    	$entity = new Facturacion();
     	
     	$entity->setInicio($f_inicio);
     	$entity->setFin($f_fin);
     	$entity->setSedes($sedes);
     	$entity->setConcepto('');
-    	$entity->setGrupo($tipo);
-    	$entity->setValor($valor['valor']);
+    	$entity->setSubtotal($valor['valor']);
     	$entity->setCopago($valor['copago']);
+    	$entity->setNota('Copago $'.$valor['copago']);
     	$entity->setIva(0);
     	
     	$form   = $this->createForm(new FacturacionType(), $entity);
@@ -1835,20 +1987,25 @@ class FacturaController extends Controller
     	$breadcrumbs->addItem("Factura", $this->get("router")->generate("factura_search"));
     	$breadcrumbs->addItem("Final nuevo");
     	
+    	if(!trim($tipo)){
+    		$tipo='N';
+    	}
+    	
     	return $this->render('AdminBundle:Factura:factura_previa.html.twig', array(
     			'valores' => $valor,
     			'cliente' => $obj_cliente,
     			'sede' => $obj_sede,
     			'f_i' => $f_inicio,
     			'f_f' => $f_fin,
+    			'tipo' => $tipo,
     			'form'   => $form->createView()
     	));
     }
     
     
-    public function facturacionSaveAction($cliente, $sede)
+    public function facturacionSaveAction($cliente, $sede, $tipo)
     {
-    	$entity  = new Factura();
+    	$entity  = new Facturacion();
     
     	$request = $this->getRequest();
     	$form    = $this->createForm(new FacturacionType(), $entity);
@@ -1870,8 +2027,6 @@ class FacturaController extends Controller
     		$entity->setInicio($inicio);
     		$entity->setFin($fin);
     		$entity->setEstado('G');
-    		$entity->setTipo('F');
-    		$entity->setCopago($registro->getCopago());
     		$entity->setCliente($cliente);
     		$entity->setSede($sede);
     		   
@@ -1880,27 +2035,27 @@ class FacturaController extends Controller
     
     		$this->get('session')->setFlash('info', 'La información de la factura ha sido registrada éxitosamente.');
     
-    		return $this->redirect($this->generateUrl('factura_final_show',array("id"=>$entity->getId())));
+    		return $this->redirect($this->generateUrl('factura_final_show',array("id"=>$entity->getId(), "tipo"=>$tipo)));
     
     	}
     
     	return $this->render('AdminBundle:Factura:factura_previa.html.twig', array(
-    			'valores' => $valor,
-    			'cliente' => $obj_cliente,
-    			'sede' => $obj_sede,
-    			'f_i' => $f_inicio,
-    			'f_f' => $f_fin,
+    			'cliente' => $cliente,
+    			'sede' => $sede,
+    			'f_i' => $inicio,
+    			'f_f' => $fin,
+    			'tipo' => $tipo,
     			'form'   => $form->createView()
     	));
     
     }
     
     
-    public function facturacionShowAction($id)
+    public function facturacionShowAction($id, $tipo)
     {
     	$em = $this->getDoctrine()->getEntityManager();
     
-    	$factura = $em->getRepository('ParametrizarBundle:Factura')->find($id);
+    	$factura = $em->getRepository('ParametrizarBundle:Facturacion')->find($id);
     
     
     	if (!$factura) {
@@ -1913,7 +2068,8 @@ class FacturaController extends Controller
     	$breadcrumbs->addItem("Factura venta");
     
     	return $this->render('AdminBundle:Factura:factura_final_show.html.twig', array(
-    			'entity'  => $factura    
+    			'entity'  => $factura,
+    			'tipo' => $tipo
     	));
     }
     
@@ -1923,7 +2079,7 @@ class FacturaController extends Controller
     	
     	$em = $this->getDoctrine()->getEntityManager();
     
-    	$entity = $em->getRepository('ParametrizarBundle:Factura')->find($id);
+    	$entity = $em->getRepository('ParametrizarBundle:Facturacion')->find($id);
     	 
     	if (!$entity) {
     		throw $this->createNotFoundException('La factura a imprimir no esta disponible.');
@@ -1954,11 +2110,11 @@ class FacturaController extends Controller
     }
     
     
-    public function facturacionRipsAction($id)
+    public function facturacionRipsAction($id, $tipo)
     {
     	$em = $this->getDoctrine()->getEntityManager();
     	
-    	$entity = $em->getRepository("ParametrizarBundle:Factura")->find($id);
+    	$entity = $em->getRepository("ParametrizarBundle:Facturacion")->find($id);
     	
     	$f_inicio = $entity->getInicio()->format("Y-m-d");
     	$f_fin = $entity->getFin()->format("Y-m-d");
@@ -1971,11 +2127,11 @@ class FacturaController extends Controller
     	 
     	exec("rm -rf ".$dir."*.tar.gz ".$dir."*.txt");
     
-    	$us = $this->fileUS($cliente, $f_inicio, $f_fin, $obj_sede, $entity->getGrupo());
-    	$ap = $this->fileAP($cliente, $f_inicio, $f_fin, $factura, $obj_sede, $entity->getGrupo());
-    	$ac = $this->fileAC($cliente, $f_inicio, $f_fin, $factura, $entity->getGrupo());
-    	$ad = $this->fileAD($cliente, $f_inicio, $f_fin, $factura, $obj_sede, $entity->getGrupo());
-    	$af = $this->fileAF($cliente, $f_inicio, $f_fin, $factura, $obj_sede, $entity->getGrupo());
+    	$us = $this->fileUS($cliente, $f_inicio, $f_fin, $obj_sede, $tipo);
+    	$ap = $this->fileAP($cliente, $f_inicio, $f_fin, $factura, $obj_sede, $tipo);
+    	$ac = $this->fileAC($cliente, $f_inicio, $f_fin, $factura, $tipo);
+    	$ad = $this->fileAD($cliente, $f_inicio, $f_fin, $factura, $obj_sede, $tipo);
+    	$af = $this->fileAF($cliente, $f_inicio, $f_fin, $factura, $obj_sede, $tipo);
     	 
     	$this->fileCt($us, $ap, $ac, $ad, $af);
     
@@ -2153,6 +2309,137 @@ class FacturaController extends Controller
     			'cliente' => $obj_cliente,
     			'f_i' => $desde[2]."/".$desde[1]."/".$desde[0],
     			'f_f' => $hasta[2]."/".$hasta[1]."/".$hasta[0]
+    	));
+    }
+    
+    public function facturacionPacienteShowAction($id)
+    {
+    	$em = $this->getDoctrine()->getEntityManager();
+    
+    	$factura = $em->getRepository('ParametrizarBundle:Facturacion')->find($id);
+    
+    
+    	if (!$factura) {
+    		throw $this->createNotFoundException('La factura solicitada no esta disponible.');
+    	}
+    
+    	return $this->render('AdminBundle:Factura:factura_paciente_show.html.twig', array(
+    			'entity'  => $factura
+    	));
+    }
+    
+    public function facturacionPacienteImprimirAction($id)
+    {
+    	$em = $this->getDoctrine()->getEntityManager();
+    
+    	$entity = $em->getRepository('ParametrizarBundle:Facturacion')->find($id);
+    
+    	if (!$entity) {
+    		throw $this->createNotFoundException('La factura a imprimir no esta disponible.');
+    	}
+    
+    	$paciente = $entity->getPaciente();
+    	$sede = $entity->getSede();
+    
+    	$html = $this->renderView('AdminBundle:Factura:factura_venta_paciente.pdf.twig',
+    			array('entity' 	=> $entity,
+    					'cliente'	=> $paciente,
+    					'sede'=>$sede
+    			));
+    
+    	$this->get('io_tcpdf')->dir = $sede->getDireccion();
+    	$this->get('io_tcpdf')->ciudad = $sede->getCiudad();
+    	$this->get('io_tcpdf')->tel = $sede->getTelefono();
+    	$this->get('io_tcpdf')->mov = $sede->getMovil();
+    	$this->get('io_tcpdf')->mail = $sede->getEmail();
+    	$this->get('io_tcpdf')->sede = $sede->getnombre();
+    	$this->get('io_tcpdf')->empresa = $sede->getEmpresa()->getNombre();
+    	
+    	$this->get('io_tcpdf')->formato = 'P5';
+    	$this->get('io_tcpdf')->orientacion = 'L';
+    
+    	return $this->get('io_tcpdf')->quick_pdf($html, 'Factura_Venta_CC'.$entity->getId().'.pdf', 'I');
+    }
+    
+    public function pacienteEditAction($id)
+    {
+    	$em = $this->getDoctrine()->getEntityManager();
+    	$entity = $em->getRepository('ParametrizarBundle:Factura')->find($id);
+    
+    	if (!$entity) {
+    		throw $this->createNotFoundException('La factura solicitada no existe');
+    	}
+    	$user = $this->get('security.context')->getToken()->getUser();
+    		
+    	if ($user->getPerfil() == 'ROLE_ADMIN') {
+    		$editForm = $this->createForm(new AdmisionType(), $entity);
+    	}
+    	else{
+    		$editForm = $this->createForm(new AdmisionAuxType(), $entity);
+    	}
+    
+    	$breadcrumbs = $this->get("white_october_breadcrumbs");
+    	$breadcrumbs->addItem("Inicio", $this->get("router")->generate("agenda_list"));
+    	$breadcrumbs->addItem("Factura", $this->get("router")->generate("factura_search"));
+    	$breadcrumbs->addItem("Detalle ",$this->get("router")->generate("factura_show",array("id" => $id)));
+    	$breadcrumbs->addItem("Modificar admisión");
+    	 
+    	return $this->render('AdminBundle:Factura:edit.html.twig', array(
+    			'entity'      => $entity,
+    			'edit_form'   => $editForm->createView(),
+    	));
+    }
+    
+    public function pacienteUpdateAction($id)
+    {
+    	$em = $this->getDoctrine()->getEntityManager();
+    	$entity = $em->getRepository('ParametrizarBundle:Factura')->find($id);
+    	 
+    	if (!$entity) {
+    		throw $this->createNotFoundException('La factura solicitada no existe.');
+    	}
+    	$request = $this->getRequest();
+    	$user = $this->get('security.context')->getToken()->getUser();
+    	if($user->getPerfil() == 'ROLE_ADMIN'){
+    		$editForm = $this->createForm(new AdmisionType(), $entity);
+    	}else{
+    		$editForm = $this->createForm(new AdmisionAuxType(), $entity);
+    	}
+    	$editForm->bindRequest($request);
+    	 
+    
+    	if ($editForm->isValid()) {
+    
+    		$cliente = $em->getRepository('ParametrizarBundle:Cliente')->find($entity->getCliente()->getId());
+    		$contrato = $em->getRepository('ParametrizarBundle:Contrato')->findOneBy(array('sede' => $entity->getSede()->getId(), 'cliente' => $cliente->getId()));
+    
+    		if(!$contrato){
+    			$this->get('session')->setFlash('info', 'El cliente seleccionado no tiene contrato con la sede, por favor verifique y vuelva a intentarlo.');
+    			return $this->redirect($this->generateUrl('factura_edit', array('id' => $id)));
+    		}
+    
+    		$actividad = $em->getRepository('ParametrizarBundle:Actividad')->findOneBy(array('cargo' => $entity->getCargo()->getId(), 'contrato' => $contrato->getId()));
+    
+    		if(!$user->getPerfil() == 'ROLE_ADMIN'){
+    			if($actividad->getPrecio()){
+    				$valor = $actividad->getPrecio();
+    			}else{
+    				$valor = round(($entity->getCargo()->getValor()+($entity->getCargo()->getValor()*$contrato->getPorcentaje()/100)));
+    			}
+    	   
+    			$entity->setValor($valor);
+    		}
+    		$entity->setCliente($cliente);
+    
+    		$em->persist($entity);
+    		$em->flush();
+    
+    		$this->get('session')->setFlash('info', 'La información de la admisión ha sido modificada éxitosamente.');
+    		return $this->redirect($this->generateUrl('factura_edit', array('id' => $id)));
+    	}
+    	return $this->render('AdminBundle:Factura:edit.html.twig', array(
+    			'entity'      => $entity,
+    			'edit_form'   => $editForm->createView(),
     	));
     }
     

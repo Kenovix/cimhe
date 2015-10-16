@@ -85,7 +85,7 @@
       <div class="contentWrap"></div>
     </div>  
     
-    <button class="action blue" type="submit">
+    <button class="action blue" type="submit" onclick="return validarHora()">
         <span class="label">Crear</span>
     </button>
     <a href="{{ path('cupo_list') }}" class="button left"><span class="label">Listado de reservas</span></a>
@@ -230,7 +230,79 @@
         	    alert("Ha ocurrido un error en el sistema.");
             }
         });    	
-    } 
+    }
+
+	function validarHora(){
+
+    	var url="{{ path('ajx_cupo_reservado') }}";
+
+    	var agenda = $("#Cupo_agenda").val();
+        var hora = $("#Cupo_hora").val();
+            
+            $.post(url,{
+                   hora: hora,
+                   agenda: agenda
+            },function(data){
+                if(data.responseCode==200 ){
+
+                	$('#ajaxMsg').html(data.msg);
+                    $('#ajaxMsg').css("color","red");
+
+            		resetHoras();
+
+            		return false;
+            		                            		                    
+                }
+                else if(data.responseCode==400){
+                	return true;
+                }
+                else{
+            	    alert("Ha ocurrido un error en el sistema.");
+                }
+            });
+    }
+
+    function resetHoras(){
+
+        var url="{{ path('cupo_buscar') }}";
+
+        var cargo = $("#Cupo_cargo").val();
+        var agenda = $("#Cupo_agenda").val();
+            
+        $.post(url,{
+        		cargo: cargo,
+                agenda: agenda,
+                paciente: idpaciente
+      	},function(data){
+        		if(data.responseCode==200 ){
+
+            		var select = $('#Cupo_hora');
+            		if(select.prop) {
+            		  var options = select.prop('options');
+            		}
+            		else {
+            		  var options = select.attr('options');
+            		}
+            		$('option', select).remove();
+
+            		options[options.length] = new Option('Seleccione hora', '');
+
+            		$.each(data.cupo, function(val, text) {
+            		    options[options.length] = new Option(text, data.fecha+' '+text+':00');
+            		});
+            		
+            		select.val('');
+            		                            		                    
+                }
+                else if(data.responseCode==400){
+                	$('#ajaxMsg').html(data.msg);
+                    $('#ajaxMsg').css("color","red");
+                }
+                else{
+            	    alert("Ha ocurrido un error en el sistema.");
+                }
+    	});        
+    }
 
     $(document).ready(function() {
 
@@ -366,7 +438,6 @@
             	    alert("Ha ocurrido un error en el sistema.");
                 }
             });
-            
         });
 
 
@@ -411,7 +482,7 @@
                 }
             });
             
-        });        
+        });
     });
 </script>    
 {% endblock %}

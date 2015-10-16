@@ -69,6 +69,13 @@ class Facturacion
      * @ORM\Column(name="iva", type="integer", nullable=true)
      */
     private $iva;
+    
+    /**
+     * @var integer $copago
+     *
+     * @ORM\Column(name="copago", type="integer", nullable=true)
+     */
+    private $copago;
 
     /**
      * @var integer $nota
@@ -103,7 +110,16 @@ class Facturacion
      * })
      */
     private $sede;
-
+    
+    /**
+     * @var Paciente
+     *
+     * @ORM\ManyToOne(targetEntity="dlaser\ParametrizarBundle\Entity\Paciente")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="paciente_id", referencedColumnName="id")
+     * })
+     */
+    private $paciente;
     
     /**
      * Get id
@@ -257,6 +273,26 @@ class Facturacion
     }
     
     /**
+     * Set copago
+     *
+     * @param integer $copago
+     */
+    public function setCopago($copago)
+    {
+    	$this->copago = $copago;
+    }
+    
+    /**
+     * Get copago
+     *
+     * @return integer
+     */
+    public function getCopago()
+    {
+    	return $this->copago;
+    }
+    
+    /**
      * Set nota
      *
      * @param string $nota
@@ -334,5 +370,25 @@ class Facturacion
     public function getSede()
     {
         return $this->sede;
+    }
+    
+    /**
+     * Set paciente
+     *
+     * @param dlaser\ParametrizarBundle\Entity\Paciente $paciente
+     */
+    public function setPaciente(\dlaser\ParametrizarBundle\Entity\Paciente $paciente)
+    {
+    	$this->paciente = $paciente;
+    }
+    
+    /**
+     * Get paciente
+     *
+     * @return dlaser\ParametrizarBundle\Entity\Paciente
+     */
+    public function getPaciente()
+    {
+    	return $this->paciente;
     }
 }

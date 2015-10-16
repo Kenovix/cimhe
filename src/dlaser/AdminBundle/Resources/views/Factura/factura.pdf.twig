@@ -28,7 +28,13 @@
             	<td width="35%">{{ entity.fecha|date('d-m-Y') }}</td>
             	<td width="13%"><strong>CEDULA O NIT:</strong></td>                
             	<td width="17%">{{ entity.paciente.tipoId }} - {{ entity.paciente.identificacion }}</td>
-            	<td width="20%"><strong>FACTURA DE VENTA No</strong>.</td>            	
+            	<td width="20%">
+            		{% if entity.id <= 16866 %}
+            			<strong>FACTURA DE VENTA No.</strong>
+            		{% else %}
+            			<strong>RECIBO DE CAJA No.</strong>.
+            		{% endif %}
+            	</td>            	
             </tr>
             <tr>
             	<td width="15%"><strong>NOMBRE:</strong></td>
@@ -98,5 +104,5 @@
         </tbody>             
 	</table>
 	
-	<span style="font-size: 18px; text-align:center">Resol. DIAN 210000045558 2014/06/16 del 1 al 10000 - Factura impresa por computador.</span>
+	<!--  <span style="font-size: 18px; text-align:center">Resol. DIAN 210000045558 2014/06/16 del 10001 al 20000 - Factura impresa por computador.</span>-->
 {% endblock %}

@@ -11,7 +11,7 @@ body {
 	background-repeat: no-repeat;
 	background-position:right center;
 	width: 60px;
-	height: 105px;
+	height: 15px;
 }
 
 #banner_cliente{
@@ -20,7 +20,7 @@ body {
 	background-size: 87% 60%;
 	background-repeat: no-repeat;
 	background-position:center center;
-	height: 105px;
+	height: 15px;
 }
 
 #contenedor {

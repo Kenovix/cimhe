@@ -361,7 +361,7 @@ class CupoController extends Controller
      *
      * @param ninguno
      */
-public function ajaxBuscarCupoAction() {
+	public function ajaxBuscarCupoAction() {
 
 		$request = $this->get('request');
 		$parametro = $request->request->get('parametro');
@@ -462,4 +462,46 @@ public function ajaxBuscarCupoAction() {
 		return new Response($return, 200, array('Content-Type' => 'application/json'));
 
 	}
+	
+	
+	/**
+	 * @uses Función que consulta si una hora determinada esta asignada.
+	 *
+	 * @param ninguno
+	 */
+	public function ajaxBuscarHoraAction() {
+	
+		$request = $this->get('request');
+		
+		$hora = $request->request->get('hora');
+		$agenda = $request->request->get('agenda');
+	
+		$em = $this->getDoctrine()->getEntityManager();
+	
+		die(var_dump("AQUI FUEEEE"));
+		
+		$query = $em->createQuery(' SELECT 
+										c
+				    				FROM
+										AgendaBundle:Cupo c
+				    				WHERE
+										c.hora = :hora AND
+										c.agenda >= :agenda');
+
+		$query->setParameter('hora', $hora);
+		$query->setParameter('agenda', $agenda);
+		
+		$reserva = $query->getResult();
+		
+	
+		if (!$reserva) {
+			$response = array("responseCode" => 400, "msg" => "No existen reservas para los parametros de consulta ingrasados.");
+		} else {
+	
+			$response = array("responseCode" => 200, "msg" => "El cupo ya fue asignado intenten nuevamente.");
+		}
+	
+		$return = json_encode($response);
+		return new Response($return, 200, array('Content-Type' => 'application/json'));	
+	}	
 }

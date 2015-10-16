@@ -118,6 +118,12 @@ ajx_cupo_search:
     requirements:
         _method:  POST
         
+ajx_cupo_reservado:
+    pattern:  /cupo/verificar/reserva
+    defaults: { _controller: AgendaBundle:Cupo:ajaxBuscarHora }
+    requirements:
+        _method:  POST
+        
 #************** Agenda Medica ***************#
 
 agenda_medica_list:

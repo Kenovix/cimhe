@@ -39,7 +39,9 @@ class Builder extends ContainerAware
 					
 			$menu->addChild('Facturación', array('uri' => '#'));
 				$menu['Facturación']->addChild('Facturas', array('uri' => '#'));
-					$menu['Facturación']['Facturas']->addChild('Listar', array('route' => 'factura_list'));
+					$menu['Facturación']['Facturas']->addChild('Listar Antiguas', array('route' => 'factura_list'));
+					$menu['Facturación']['Facturas']->addChild('Listar Clientes Nuevas', array('route' => 'factura_list_new'));
+					$menu['Facturación']['Facturas']->addChild('Listar Pacientes Nuevas', array('route' => 'factura_list_newPac'));
 					$menu['Facturación']['Facturas']->addChild('Consultar', array('route' => 'factura_list'));
 					$menu['Facturación']['Facturas']->addChild('Generar reporte', array('route' => 'factura_genera_reporte'));
 				$menu['Facturación']->addChild('Cierre de caja', array('uri' => '#'));
@@ -56,6 +58,9 @@ class Builder extends ContainerAware
 			
 			$menu->addChild('Agendamiento', array('uri' => '#'));
 				$menu['Agendamiento']->addChild('Agenda', array('route' => 'agenda_medica_list'));
+				
+			$menu->addChild('Informes', array('uri' => '#'));
+				$menu['Informes']->addChild('Consultar', array('uri' => '#'));
 			
 			
 		}else{
