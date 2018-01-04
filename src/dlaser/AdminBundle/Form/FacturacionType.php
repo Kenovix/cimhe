@@ -10,6 +10,8 @@ class FacturacionType extends AbstractType
     public function buildForm(FormBuilder $builder, array $options)
     {
         $builder
+        ->add('prefijo', 'hidden', array('required' => true))
+        ->add('consecutivo', 'hidden', array('required' => true))
         ->add('inicio', 'hidden', array('required' => true))
         ->add('fin', 'hidden', array('required' => true))
         ->add('sedes', 'hidden', array('required' => true))

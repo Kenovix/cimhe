@@ -386,11 +386,11 @@ factura_final_new:
         _method:  POST
         
 factura_final_save:
-    pattern:  /factura/final/save/{cliente}/{sede}/{tipo}
+    pattern:  /factura/final/save/{cliente}/{sede}/{tipo}/{rips}
     defaults: { _controller: AdminBundle:Factura:facturacionSave }
     
 factura_final_show:
-    pattern:  /factura/final/show/{id}/{tipo}
+    pattern:  /factura/final/show/{id}/{tipo}/{rips}
     defaults: { _controller: AdminBundle:Factura:facturacionShow }
     
 factura_final_imprimir:
@@ -398,7 +398,7 @@ factura_final_imprimir:
     defaults: { _controller: AdminBundle:Factura:facturacionImprimir }
     
 factura_final_rips:
-    pattern:  /factura/final/rips/{id}/{tipo}
+    pattern:  /factura/final/rips/{id}/{tipo}/{rips}
     defaults: { _controller: AdminBundle:Factura:facturacionRips }
     
 factura_genera_reporte:

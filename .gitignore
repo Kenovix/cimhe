@@ -30,3 +30,9 @@ composer.phar
 /.metadata/
 /.buildpath
 /.externalToolBuilders
+*.buildpath
+*.project
+
+# OSX
+
+.DS_Store

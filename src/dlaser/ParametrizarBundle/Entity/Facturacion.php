@@ -20,6 +20,20 @@ class Facturacion
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
+    
+    /**
+     * @var string $prefijo
+     *
+     * @ORM\Column(name="prefijo", type="string", length=3, nullable=true)
+     */
+    private $prefijo;
+    
+    /**
+     * @var integer $consecutivo
+     *
+     * @ORM\Column(name="consecutivo", type="integer", nullable=false)
+     */
+    private $consecutivo;
 
     /**
      * @var datetime $fecha
@@ -129,6 +143,46 @@ class Facturacion
     public function getId()
     {
         return $this->id;
+    }
+    
+    /**
+     * Set prefijo
+     *
+     * @param string $prefijo
+     */
+    public function setPrefijo($prefijo)
+    {
+    	$this->prefijo = $prefijo;
+    }
+    
+    /**
+     * Get prefijo
+     *
+     * @return string
+     */
+    public function getPrefijo()
+    {
+    	return $this->prefijo;
+    }
+    
+    /**
+     * Set consecutivo
+     *
+     * @param integer $consecutivo
+     */
+    public function setConsecutivo($consecutivo)
+    {
+    	$this->consecutivo = $consecutivo;
+    }
+    
+    /**
+     * Get consecutivo
+     *
+     * @return integer
+     */
+    public function getConsecutivo()
+    {
+    	return $this->consecutivo;
     }
 
     /**

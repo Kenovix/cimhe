@@ -30,9 +30,13 @@
 <table>
         <tbody>
         	<tr>
-            	<th><b>Factura No.</b></th>
-                <td>{{entity.id}}</td>
+            	<th><b>Prefijo:</b></th>
+                <td>{{entity.prefijo}}</td>
                 
+            </tr>
+        	<tr>
+            	<th><b>Factura No.</b></th>
+                <td>{{entity.consecutivo}}</td>
             </tr>
             <tr>
         		<th><b>Fecha:</b></th>
@@ -70,6 +74,6 @@
     </table>
 
 <a href="{{ path('factura_final_imprimir', { 'id': entity.id }) }}" target="blank" class="button blue"><span class="label">Imprimir</span></a>
-<a href="{{ path('factura_final_rips', { 'id': entity.id, 'tipo': tipo}) }}" class="button blue"><span class="label">Generar RIPS</span></a>
+<a href="{{ path('factura_final_rips', { 'id': entity.id, 'tipo': tipo, 'rips': rips}) }}" class="button blue"><span class="label">Generar RIPS</span></a>
 
 {% endblock %}

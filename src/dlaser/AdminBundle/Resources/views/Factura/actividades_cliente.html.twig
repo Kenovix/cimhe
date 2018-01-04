@@ -46,6 +46,7 @@
                 <th>Fecha</th>
                 <th>Orden</th>
                 <th>Paciente</th>
+                <th>Edad</th>
                 <th>Actividad</th>
                 <th>Valor</th>
                 <th>Copago</th>
@@ -63,6 +64,7 @@
                 <td>{{ entity.fecha|date('d-m-Y') }}</td>
                 <td>{{ entity.autorizacion }}</td>
                 <td><a href="{{ path('paciente_edit', { 'id': entity.paciente }) }}" target="popup" title="Modificar admisión" onClick="popup(this.href,750,600); return false;">{{ entity.priNombre|capitalize }} {{ entity.segNombre|capitalize }} {{ entity.priApellido|capitalize }} {{ entity.segApellido|capitalize }}</a></td>
+                <td>{{date ('now')| date ('Y-m-d') - entity.fN|date('Y-m-d')}}</td>
                 <td>{{ entity.cups }}</td>
                 <td>{{ entity.valor }}</td>
                 <td>{{ entity.copago }}</td>
@@ -95,6 +97,7 @@
     		<input type="hidden" name="cliente" value="{{ cliente.id }}" />
     		<input type="hidden" name="f_inicio" value="{{ f_i }}" />
     		<input type="hidden" name="f_fin" value="{{ f_f }}" />
+                <input type="hidden" name="rips" value="{{ rips }}" />
     		<input type="hidden" name="tipo" value="{{ tipo }}" />
 
     		<button class="action green" type="submit">

@@ -53,7 +53,7 @@
 	</tbody>
 </table>
 
-<form action="{{ path('factura_final_save', {'cliente': cliente.id, 'sede': sede.id, 'tipo': tipo}) }}" onSubmit="return confirm('Seguro de querer generar la factura?');" method="post">
+<form action="{{ path('factura_final_save', {'cliente': cliente.id, 'sede': sede.id, 'tipo': tipo, 'rips': rips}) }}" onSubmit="return confirm('Seguro de querer generar la factura?');" method="post">
     <fieldset>
     	<legend>Datos de la factura</legend>
     
@@ -64,6 +64,7 @@
     	{% else %}
     		<input type="hidden" name="tipo" value="N" />
     	{% endif %}
+    	<input type="hidden" name="rips" value="{{ rips }}" />
     </fieldset>
     
     <button class="action blue" type="submit">

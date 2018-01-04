@@ -93,7 +93,7 @@ stfalcon_tinymce:
     include_jquery: true
     tinymce_jquery: true
     #selector: ".tinymce"
-    textarea_class: "tinymce"
+    #textarea_class: "tinymce"
     language: %locale%
     theme:
         simple:

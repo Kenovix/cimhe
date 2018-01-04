@@ -9,7 +9,6 @@
     
     table.descripcion {
     	font-size: 7pt;
-        
     }
     
     table.valores{
@@ -35,7 +34,7 @@
             	<td width="35%">{{ entity.cliente.razon }}</td>                
             	<td width="13%"><strong>F. NACIMIENTO:</strong></td>                
             	<td width="17%"></td>
-            	<td width="20%" rowspan="2" align="center"><br /><br />{{ entity.id }}</td>            	            	
+            	<td width="20%" rowspan="2" align="center"><br /><br />{{ entity.prefijo }}{{ entity.consecutivo }}</td>            	            	
             </tr>
             <tr>
             	<td width="15%"><strong>DIRECIÓN:</strong></td>
@@ -81,5 +80,5 @@
         </tbody>             
 	</table>
 	
-	<span style="font-size: 18px; text-align:center">Resol. DIAN 210000048282 2015/06/02 del 20001 al 40000 - Factura impresa por computador.</span>
+	<span style="font-size: 18px; text-align:center">Resol. DIAN 18762005608509 2017/11/09 de la T1 al T50000 - Factura impresa por computador.</span>
 {% endblock %}
