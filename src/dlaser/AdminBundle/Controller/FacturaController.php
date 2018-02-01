@@ -2277,67 +2277,66 @@ class FacturaController extends Controller
     }
     
     
-    public function facturacionRipsAction($id, $tipo,$rips)
-    {
-    	$em = $this->getDoctrine()->getEntityManager();
-    	
-    	$entity = $em->getRepository("ParametrizarBundle:Facturacion")->find($id);
-    	
-    	$f_inicio = $entity->getInicio()->format("Y-m-d");
-    	$f_fin = $entity->getFin()->format("Y-m-d");
-    	
-    	$cliente = $entity->getCliente();
-    	$factura = $entity->getId();
-    	$obj_sede = $entity->getSede();
-    	 
-    	$dir = $this->container->getParameter('dlaser.directorio.rips');
-    	 
-    	array_map('unlink', glob($dir."*.zip"));
-    	array_map('unlink', glob($dir."*.txt"));
+    public function facturacionRipsAction($id, $tipo,$rips){
+        	$em = $this->getDoctrine()->getEntityManager();
+        	
+        	$entity = $em->getRepository("ParametrizarBundle:Facturacion")->find($id);
+        	
+        	$f_inicio = $entity->getInicio()->format("Y-m-d");
+        	$f_fin = $entity->getFin()->format("Y-m-d");
+        	
+        	$cliente = $entity->getCliente();
+        	$factura = $entity->getId();
+        	$obj_sede = $entity->getSede();
+        	 
+        	$dir = $this->container->getParameter('dlaser.directorio.rips');
+        	 
+        	array_map('unlink', glob($dir."*.zip"));
+        	array_map('unlink', glob($dir."*.txt"));
+        
+        	$us = $this->fileUS($cliente, $f_inicio, $f_fin, $obj_sede, $tipo);
+        	$ap = $this->fileAP($cliente, $f_inicio, $f_fin, $factura, $obj_sede, $tipo, $rips);
+        	$ac = $this->fileAC($cliente, $f_inicio, $f_fin, $factura, $tipo);
+        	$ad = $this->fileAD($cliente, $f_inicio, $f_fin, $factura, $obj_sede, $tipo, $rips);
+        	$af = $this->fileAF($cliente, $f_inicio, $f_fin, $factura, $obj_sede, $tipo, $rips);
+        	 
+        	$this->fileCt($us, $ap, $ac, $ad, $af);
+        	
+        	$zip = new ZipArchive;
+        	
+        	if ($zip->open('rips/'.$entity->getFin()->format("m_d").".zip", ZipArchive::CREATE) === TRUE) {
     
-    	$us = $this->fileUS($cliente, $f_inicio, $f_fin, $obj_sede, $tipo);
-    	$ap = $this->fileAP($cliente, $f_inicio, $f_fin, $factura, $obj_sede, $tipo, $rips);
-    	$ac = $this->fileAC($cliente, $f_inicio, $f_fin, $factura, $tipo);
-    	$ad = $this->fileAD($cliente, $f_inicio, $f_fin, $factura, $obj_sede, $tipo, $rips);
-    	$af = $this->fileAF($cliente, $f_inicio, $f_fin, $factura, $obj_sede, $tipo, $rips);
-    	 
-    	$this->fileCt($us, $ap, $ac, $ad, $af);
-    	
-    	$zip = new ZipArchive;
-    	
-    	if ($zip->open('rips/'.$entity->getFin()->format("m_d").".zip", ZipArchive::CREATE) === TRUE) {
-
-    		foreach (glob($dir."*.txt") as $filename) {
-    			$zip->addFile($filename, basename($filename));
-    		}
-    		
-    		$zip->close();
-    		
-    	} else {
-    		$this->get('session')->setFlash('error', 'El archivo comprimido no ha podido ser creado.');
-    		
-    		return $this->redirect($this->generateUrl('factura_final_show',array("id"=>$entity->getId(), "tipo"=>$tipo, "rips"=>$rips)));
-    	}
-    	 
-    	$abririps=$dir.$entity->getFin()->format("m_d").".zip";
-    
-    	$fsize = filesize($abririps);
-    	
-    	header("Content-Type: application/octet-stream");
-    	header("Content-disposition: attachment; filename=miarchivo.zip");
-    
-    	/*header("Pragma: public");
-    	header("Expires: 0");
-    	header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-    	header("Cache-Control: private",false);
-    	header("Content-Type: application/x-gzip");*/
-    	header("Content-Disposition: attachment; filename=\"".basename($abririps)."\";" );
-    	//header("Content-Transfer-Encoding: binary");
-    	header("Content-Length: ".$fsize);
-    
-    	//ob_end_clean();
-    	flush();
-    	readfile( $abririps );
+        		foreach (glob($dir."*.txt") as $filename) {
+        			$zip->addFile($filename, basename($filename));
+        		}
+        		
+        		$zip->close();
+        		
+        	} else {
+        		$this->get('session')->setFlash('error', 'El archivo comprimido no ha podido ser creado.');
+        		
+        		return $this->redirect($this->generateUrl('factura_final_show',array("id"=>$entity->getId(), "tipo"=>$tipo, "rips"=>$rips)));
+        	}
+        	 
+        	$abririps=$dir.$entity->getFin()->format("m_d").".zip";
+        
+        	$fsize = filesize($abririps);
+        	
+        	header("Content-Type: application/octet-stream");
+        	header("Content-disposition: attachment; filename=miarchivo.zip");
+        
+        	/*header("Pragma: public");
+        	header("Expires: 0");
+        	header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+        	header("Cache-Control: private",false);
+        	header("Content-Type: application/x-gzip");*/
+        	header("Content-Disposition: attachment; filename=\"".basename($abririps)."\";" );
+        	header("Content-Transfer-Encoding: binary");
+        	header("Content-Length: ".$fsize);
+        
+        	//ob_end_clean();
+        	flush();
+        	readfile( $abririps );
     }
     
     public function reporteFacturaAction()
