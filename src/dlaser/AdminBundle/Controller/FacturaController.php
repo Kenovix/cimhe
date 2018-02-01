@@ -2323,18 +2323,11 @@ class FacturaController extends Controller
         	$fsize = filesize($abririps);
         	
         	header("Content-Type: application/octet-stream");
-        	header("Content-disposition: attachment; filename=miarchivo.zip");
-        
-        	/*header("Pragma: public");
-        	header("Expires: 0");
-        	header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-        	header("Cache-Control: private",false);
-        	header("Content-Type: application/x-gzip");*/
         	header("Content-Disposition: attachment; filename=\"".basename($abririps)."\";" );
         	header("Content-Transfer-Encoding: binary");
         	header("Content-Length: ".$fsize);
         
-        	//ob_end_clean();
+        	ob_end_clean();
         	flush();
         	readfile( $abririps );
     }
