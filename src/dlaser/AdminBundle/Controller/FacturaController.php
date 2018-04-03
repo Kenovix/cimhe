@@ -2304,7 +2304,7 @@ class FacturaController extends Controller
         	
         	$zip = new ZipArchive;
         	
-        	if ($zip->open('rips/'.$entity->getFin()->format("m_d").".zip", ZipArchive::CREATE) === TRUE) {
+        	if ($zip->open('rips/'.$entity->getFin()->format("m_d").".zip", ZipArchive::CREATE) === TRUE) {        	 
     
         		foreach (glob($dir."*.txt") as $filename) {
         			$zip->addFile($filename, basename($filename));
@@ -2322,14 +2322,20 @@ class FacturaController extends Controller
         
         	$fsize = filesize($abririps);
         	
-        	header("Content-Type: application/octet-stream");
+        	header("Pragma: public");
+        	header("Expires: 0");
+        	header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+        	header("Cache-Control: private",false);
+        	header("Content-Type: application/zip");
         	header("Content-Disposition: attachment; filename=\"".basename($abririps)."\";" );
         	header("Content-Transfer-Encoding: binary");
         	header("Content-Length: ".$fsize);
         
-        	ob_end_clean();
-        	flush();
+        	//ob_end_clean();
+        	//flush();
         	readfile( $abririps );
+        	//ob_end_flush();
+        	//@readfile($abririps);
     }
     
     public function reporteFacturaAction()
