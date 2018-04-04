@@ -2321,21 +2321,19 @@ class FacturaController extends Controller
         	$abririps=$dir.$entity->getFin()->format("m_d").".zip";
         
         	$fsize = filesize($abririps);
-        	
+
         	header("Pragma: public");
         	header("Expires: 0");
+        	header('Content-Description: File Transfer');
         	header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
         	header("Cache-Control: private",false);
         	header("Content-Type: application/zip");
         	header("Content-Disposition: attachment; filename=\"".basename($abririps)."\";" );
         	header("Content-Transfer-Encoding: binary");
-        	header("Content-Length: ".$fsize);
-        
-        	//ob_end_clean();
-        	//flush();
+        	header("Content-Length: \".$fsize.\"");
+
         	readfile( $abririps );
-        	//ob_end_flush();
-        	//@readfile($abririps);
+        	exit;
     }
     
     public function reporteFacturaAction()
