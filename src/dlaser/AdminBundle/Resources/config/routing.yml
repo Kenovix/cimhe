@@ -292,7 +292,7 @@ factura_save:
     defaults: { _controller: AdminBundle:Factura:save }
 
 factura_show:
-    pattern:  /factura/{id}/show
+    pattern:  /factura/{factura}/show/{copago}
     defaults: { _controller: AdminBundle:Factura:show }
     
 factura_edit:

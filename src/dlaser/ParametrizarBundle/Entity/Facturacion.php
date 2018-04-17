@@ -106,6 +106,13 @@ class Facturacion
     private $estado;
     
     /**
+     * @var integer $final
+     *
+     * @ORM\Column(name="final", type="integer", nullable=true)
+     */
+    private $final;
+    
+    /**
      * @var Cliente
      *
      * @ORM\ManyToOne(targetEntity="dlaser\ParametrizarBundle\Entity\Cliente")
@@ -384,6 +391,26 @@ class Facturacion
     public function getEstado()
     {
     	return $this->estado;
+    }
+    
+    /**
+     * Set final
+     *
+     * @param string $final
+     */
+    public function setFinal($final)
+    {
+        $this->final = $final;
+    }
+    
+    /**
+     * Get final
+     *
+     * @return integer
+     */
+    public function getFinal()
+    {
+        return $this->final;
     }
 
     /**

@@ -43,7 +43,7 @@
         <tbody>
         {% for entity in entities %}
             <tr>
-                <td><a href="{{ path('factura_paciente_show', {'id': entity.id}) }}" title="Ver factura">{{ entity.id }}</a></td>
+                <td><a href="{{ path('factura_paciente_show', {'id': entity.id}) }}" title="Ver factura">{{ entity.prefijo }} {{ entity.consecutivo }}</a></td>
                 <td>{{ entity.fecha | date('d-m-Y H:i') }}</td>
                 <td>{{ entity.priNombre }} {{ entity.segNombre }} {{ entity.priApellido }} {{ entity.segApellido }}</td>
                 <td>{{ entity.cliente }}</td>

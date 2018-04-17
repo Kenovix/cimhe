@@ -6,7 +6,7 @@
 
 {% block rastro %}{{ wo_render_breadcrumbs() }}{% endblock %}
 
-{% block titulo %}Detalles admisión{% endblock %}
+{% block titulo %}Detalles factura de actividad{% endblock %}
 
 {% block msg %}
 	{% if app.session.flash('ok') %}
@@ -32,60 +32,87 @@
 <table>
         <tbody>
         	<tr>
-            	<th><b>Recibo No.</b></th>
-                <td>{{entity.id}}</td>
+            	<th><b>Factura No.</b></th>
+                <td>{{ entity.prefijo }} {{ entity.consecutivo }}</td>
                 
             </tr>
             <tr>
         		<th><b>Fecha:</b></th>
                 <td>{{entity.fecha | date('d-m-Y')}}</td>
-            </tr>
-            <tr>
-        		<th><b>Cliente:</b></th>
-                <td>{{entity.cliente.nombre}}</td>
-            </tr>    
+            </tr>   
             <tr>
                 <th><b>Identificacion:</b></th>
-                <td>{{entity.paciente.tipoid}} - {{ entity.paciente.identificacion }}</td>
+                <td>{{entity.cliente.nit}}</td>
             </tr>
             <tr>
-            	<th><b>Paciente:</b></th>
-                <td>{{entity.paciente.prinombre|capitalize}} {{entity.paciente.segnombre|capitalize}} {{entity.paciente.priapellido|capitalize}} {{entity.paciente.segapellido|capitalize}}</td>
+            	<th><b>Cliente:</b></th>
+                <td>{{entity.cliente.razon|capitalize}}</td>
             </tr>
             <tr>
-            	<th><b>Actividad:</b></th>
-                <td>{{entity.cargo.cups}} - {{entity.cargo.nombre}}</td>
+            	<th><b>Concepto:</b></th>
+                <td>{{ entity.concepto }}</td>
             </tr>
             <tr>
             	<th><b>Autorizacion:</b></th>
-                <td>{{entity.autorizacion}}</td>
+                <td></td>
             </tr>
             <tr>
             	<th><b>Valor:</b></th>
-                <td>${{entity.valor|number_format(0)}}</td>
-            </tr>
-            <tr>
-            	<th><b>Copago:</b></th>
-                <td>${{entity.copago|number_format(0)}}</td>
-            </tr>
-            <tr>
-            	<th><b>Descuento:</b></th>
-                <td>${{entity.descuento|number_format(0)}}</td>
-             </tr>
-             <tr>
-            	<th><b>Total EPS:</b></th>
-                <td>${{ ((entity.valor - entity.copago) - entity.descuento)|number_format(0) }}</td>
+                <td>${{entity.subtotal|number_format(0)}}</td>
             </tr>
             <tr>
             	<th><b>Observacion:</b></th>
-                <td>{{entity.observacion}}</td>
+                <td>{{entity.nota}}</td>
+             </tr>
+        </tbody>
+    </table>
+    
+    <a href="{{ path('factura_imprimir', { 'id': entity.id }) }}" target="blank" class="button blue"><span class="label">Imprimir factura de actividad</span></a>
+    
+    {% if copago %}
+    <h2>Detalles factura de copago</h2>
+    
+    <table>
+        <tbody>
+        	<tr>
+            	<th><b>Factura No.</b></th>
+                <td>{{ copago.prefijo }} {{ copago.consecutivo }}</td>
+                
+            </tr>
+            <tr>
+        		<th><b>Fecha:</b></th>
+                <td>{{copago.fecha | date('d-m-Y')}}</td>
+            </tr>
+            <tr>
+                <th><b>Identificacion:</b></th>
+                <td>{{copago.paciente.tipoid}} - {{ copago.paciente.identificacion }}</td>
+            </tr>
+            <tr>
+            	<th><b>Cliente:</b></th>
+                <td>{{copago.paciente.priNombre|capitalize}} {{copago.paciente.segNombre|capitalize}} {{copago.paciente.priApellido|capitalize}}</td>
+            </tr>
+            <tr>
+            	<th><b>Concepto:</b></th>
+                <td>{{ copago.concepto }}</td>
+            </tr>
+            <tr>
+            	<th><b>Autorizacion:</b></th>
+                <td></td>
+            </tr>
+            <tr>
+            	<th><b>Valor:</b></th>
+                <td>${{copago.subtotal|number_format(0)}}</td>
+            </tr>
+            <tr>
+            	<th><b>Observacion:</b></th>
+                <td>{{copago.nota}}</td>
              </tr>
         </tbody>
     </table>
 
-<a href="{{ path('factura_imprimir', { 'id': entity.id }) }}" target="blank" class="button blue"><span class="label">Imprimir</span></a>
-<a href="{{ path('factura_edit', { 'id': entity.id }) }}" class="button blue"><span class="label">Modificar</span></a>
-<a href="{{ path('factura_search')}}" class="button center"><span class="label">Nueva Factura</span></a>
+	<a href="{{ path('factura_imprimir', { 'id': copago.id }) }}" target="blank" class="button blue"><span class="label">Imprimir factura de copago</span></a>
+	
+	{% endif %}
 
 
 {% endblock %}

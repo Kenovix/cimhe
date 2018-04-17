@@ -79,7 +79,7 @@ class FacturaController extends Controller
 					    		FROM
 					    			ParametrizarBundle:Facturacion f
 					    		WHERE
-									f.paciente IS NULL 
+									f.final = 1 
 					    		ORDER BY
 					    			f.id ASC");
 		
@@ -105,6 +105,8 @@ class FacturaController extends Controller
 		$dql = $em->createQuery("SELECT
 						    		f.id,
 						    		f.fecha,
+                                    f.prefijo,
+                                    f.consecutivo,
 									p.priNombre,
 						    		p.segNombre,
 						    		p.priApellido,
@@ -124,8 +126,10 @@ class FacturaController extends Controller
 					    			f.paciente p
 								JOIN
 									f.sede s
+                                WHERE
+                                    f.final = 0
 					    		ORDER BY
-					    			f.id ASC");
+					    			f.id DESC");
 	
 	
 		$facturas = $paginador->paginate($dql->getResult())->getResult();
@@ -248,66 +252,96 @@ class FacturaController extends Controller
             	$id=1;
             }
             
-            if ($entity->getCopago() > 0){
-            	
-            	$f_f  = new Facturacion();
-            	
-            	$f_f->setPrefijo('T');
-            	$f_f->setConsecutivo($id);
-            	$f_f->setFecha($fecha);
-            	$f_f->setInicio($fecha);
-            	$f_f->setFin($fecha);
-            	$f_f->setConcepto('COPAGO '.$reserva->getCargo()->getNombre());
-            	$f_f->setSubtotal($entity->getCopago());
-            	$f_f->setIva(0);
-            	$f_f->setEstado('G');
-            	$f_f->setCliente($cliente);
-            	$f_f->setSede($reserva->getAgenda()->getSede());
-            	$f_f->setPaciente($reserva->getPaciente());
-            	
-            	$em->persist($entity);
-            	$em->persist($reserva);
-            	$em->persist($f_f);
-            	
-            	$ft = true;
-            
-            }elseif ($cliente->getParticular() == 'SI'){
-            	
-            	$f_f  = new Facturacion();
-            	 
-            	$f_f->setPrefijo('T');
-            	$f_f->setConsecutivo($id);
-            	$f_f->setFecha($fecha);
-            	$f_f->setInicio($fecha);
-            	$f_f->setFin($fecha);
-            	$f_f->setConcepto($reserva->getCargo()->getNombre());
-            	$f_f->setSubtotal($valor);
-            	$f_f->setIva(0);
-            	$f_f->setEstado('G');
-            	$f_f->setCliente($cliente);
-            	$f_f->setSede($reserva->getAgenda()->getSede());
-            	$f_f->setPaciente($reserva->getPaciente());
-            	
-            	$em->persist($entity);
-            	$em->persist($reserva);
-            	$em->persist($f_f);
-            	
-            	$ft = true;
-            }else{            	
-            	$em->persist($entity);
-            	$em->persist($reserva);
-
-            	$ft = false;
+            if ($cliente->getParticular() == 'SI'){
+                
+                $f_f  = new Facturacion();
+                
+                $f_f->setPrefijo('T');
+                $f_f->setConsecutivo($id);
+                $f_f->setFecha($fecha);
+                $f_f->setInicio($fecha);
+                $f_f->setFin($fecha);
+                $f_f->setConcepto($reserva->getCargo()->getNombre());
+                $f_f->setSubtotal($valor);
+                $f_f->setIva(0);
+                $f_f->setEstado('G');
+                $f_f->setCliente($cliente);
+                $f_f->setSede($reserva->getAgenda()->getSede());
+                $f_f->setPaciente($reserva->getPaciente());
+                
+                $em->persist($entity);
+                $em->persist($reserva);
+                $em->persist($f_f);
+                
+                $ft = true;
+            }else{
+                
+                $f_f  = new Facturacion();
+                
+                $f_f->setPrefijo('T');
+                $f_f->setConsecutivo($id);
+                $f_f->setFecha($fecha);
+                $f_f->setInicio($fecha);
+                $f_f->setFin($fecha);
+                $f_f->setConcepto($reserva->getCargo()->getNombre());
+                $f_f->setSubtotal($valor);
+                $f_f->setIva(0);
+                $f_f->setEstado('G');
+                $f_f->setCliente($cliente);
+                $f_f->setSede($reserva->getAgenda()->getSede());
+                $f_f->setPaciente($reserva->getPaciente());
+                $f_f->setFinal(1);
+                $f_f->setSedes($reserva->getAgenda()->getSede());
+                
+                $em->persist($entity);
+                $em->persist($reserva);
+                $em->persist($f_f);
+                
+                if ($entity->getCopago() > 0){
+                    
+                    $f_f  = new Facturacion();
+                    
+                    $id++;
+                    
+                    $f_f->setPrefijo('T');
+                    $f_f->setConsecutivo($id);
+                    $f_f->setFecha($fecha);
+                    $f_f->setInicio($fecha);
+                    $f_f->setFin($fecha);
+                    $f_f->setConcepto('COPAGO '.$reserva->getCargo()->getNombre());
+                    $f_f->setSubtotal($entity->getCopago());
+                    $f_f->setIva(0);
+                    $f_f->setEstado('G');
+                    $f_f->setCliente($cliente);
+                    $f_f->setSede($reserva->getAgenda()->getSede());
+                    $f_f->setPaciente($reserva->getPaciente());
+                    $f_f->setFinal(0);
+                    
+                    $em->persist($f_f);
+                    
+                    $factura_copago = $f_f->getId();
+                    
+                }
+                
+                $ft = false;
             }
             
             $em->flush();
+            
+            if($entity->getCopago() > 0){
+                $factura_copago = $f_f->getId();
+                $factura_actividad = $factura_copago - 1;
+            }else{
+                $factura_copago = 0;
+                $factura_actividad = $f_f->getId();
+            }
             
             $this->get('session')->setFlash('ok', 'La admisión ha sido registrada éxitosamente.');            
 
             if ($ft) {
             	return $this->redirect($this->generateUrl('factura_paciente_show',array("id"=>$f_f->getId())));
             }else{
-            	return $this->redirect($this->generateUrl('factura_show',array("id"=>$entity->getId())));
+                return $this->redirect($this->generateUrl('factura_show',array( "factura"=>$factura_actividad, "copago"=>$factura_copago )));
             }
         }
 
@@ -479,11 +513,11 @@ class FacturaController extends Controller
     	));
     }   
     
-    public function showAction($id)
+    public function showAction($factura, $copago=0)
     {
         $em = $this->getDoctrine()->getEntityManager();
     
-        $factura = $em->getRepository('ParametrizarBundle:Factura')->find($id);
+        $factura = $em->getRepository('ParametrizarBundle:Facturacion')->find($factura);
         
         
         if (!$factura) {
@@ -493,10 +527,17 @@ class FacturaController extends Controller
         $breadcrumbs = $this->get("white_october_breadcrumbs");
         $breadcrumbs->addItem("Inicio", $this->get("router")->generate("agenda_list"));
         $breadcrumbs->addItem("Factura", $this->get("router")->generate("factura_search"));
-        $breadcrumbs->addItem("Detalle admisión");
+        $breadcrumbs->addItem("Detalle factura");
+        
+        if($copago != 0){
+            $copago = $em->getRepository('ParametrizarBundle:Facturacion')->find($copago);
+        }else{
+            $copago = null;
+        }
         
         return $this->render('AdminBundle:Factura:show.html.twig', array(
                 'entity'  => $factura,
+                'copago' => $copago,
                 
         ));
     }
