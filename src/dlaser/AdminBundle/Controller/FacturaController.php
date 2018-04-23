@@ -81,7 +81,7 @@ class FacturaController extends Controller
 					    		WHERE
 									f.final = 1 
 					    		ORDER BY
-					    			f.id ASC");
+					    			f.id DESC");
 		
 	
 		$facturas = $paginador->paginate($dql->getResult())->getResult();
@@ -277,6 +277,10 @@ class FacturaController extends Controller
             }else{
                 
                 $f_f  = new Facturacion();
+                
+                if ($entity->getCopago() > 0){
+                    $valor = $valor - $entity->getCopago();
+                }
                 
                 $f_f->setPrefijo('T');
                 $f_f->setConsecutivo($id);
@@ -1006,32 +1010,31 @@ class FacturaController extends Controller
     	
     	$dql= " SELECT
 			    	f.id,
+                    f.prefijo,
+                    f.consecutivo,
 			    	p.id as paciente,
 			    	p.tipoId,
 			    	p.identificacion,
                     p.fN,
 			    	f.fecha,
-			    	f.autorizacion,
 			    	p.priNombre,
 			    	p.segNombre,
 			    	p.priApellido,
 			    	p.segApellido,
-			    	c.cups,
-			    	f.valor,
+			    	f.concepto,
+			    	f.subtotal,
 			    	f.copago,
-			    	f.descuento,
 			    	f.estado
     			FROM
-    				ParametrizarBundle:Factura f
-    			JOIN
-    				f.cargo c
+    				ParametrizarBundle:Facturacion f
     			JOIN
     				f.paciente p
     			JOIN
     				f.cliente cli
     			WHERE
 			    	f.fecha > :inicio AND
-			    	f.fecha <= :fin AND			    	
+			    	f.fecha <= :fin AND
+                    f.final = 1 AND			    	
 			    	f.cliente = :cliente ".
 			    	$con_sede." ".
 			    	$con_tipo."
@@ -1814,34 +1817,6 @@ class FacturaController extends Controller
         $dir = $this->container->getParameter('dlaser.directorio.rips');
     
         $em = $this->getDoctrine()->getEntityManager();
-    
-        /*$dql= " SELECT
-                    f.id,
-                    c.cups,
-                    f.valor,
-                    f.copago
-                FROM
-                    ParametrizarBundle:Factura f
-                JOIN
-                    f.paciente p
-                JOIN
-                    f.cargo c
-                WHERE
-                    f.fecha > :inicio AND
-                    f.fecha <= :fin AND
-                    f.estado = :estado AND
-                    f.cliente = :cliente AND
-                    c.cups = '890202'
-        ";
-    
-        $query = $em->createQuery($dql);
-    
-        $query->setParameter('inicio', $f_inicio.' 00:00:00');
-        $query->setParameter('fin', $f_fin.' 23:59:00');
-        $query->setParameter('cliente', $cliente->getId());
-        $query->setParameter('estado', 'I');
-    
-        $entity = $query->getArrayResult();*/
         
         if(trim($tipo) != 'N'){
             $con_tipo = "AND c.tipo ='".$tipo."'";
@@ -1867,12 +1842,7 @@ class FacturaController extends Controller
                     f.cliente = :cliente AND
                     c.cups != '890202' AND
                     f.sede = :sede ".
-                    $con_tipo;
-        
-        
-        
-        
-        
+                    $con_tipo;     
         
         $query = $em->createQuery($dql);
         
@@ -2293,13 +2263,21 @@ class FacturaController extends Controller
     		throw $this->createNotFoundException('La factura a imprimir no esta disponible.');
     	}
 
-    	$cliente = $entity->getCliente();
+    	if ($entity->getFinal() == 1){
+    	    $cliente = $entity->getCliente();
+    	    $paciente = null;
+    	}else{
+    	    $paciente = $entity->getPaciente();
+    	    $cliente = null;
+    	}
+    	
     	$sede = $entity->getSede();
     
     	$html = $this->renderView('AdminBundle:Factura:factura_venta.pdf.twig',
     			array('entity' 	=> $entity,
     					'cliente'	=> $cliente,
-    					'sede'=>$sede
+    			        'paciente'	=> $paciente,
+    					'sede'      => $sede
     			));
     	 
     	 

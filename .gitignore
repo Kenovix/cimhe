@@ -7,13 +7,14 @@ vendor/*
 */cache/*
 web/uploads/*
 web/rips/*
-web/bundles/acmedemo/*
-web/bundles/fosjsrouting/*
-web/bundles/framework/*
-web/bundles/sensiodistribution/*
-web/bundles/stfalcontinymce/*
-web/bundles/webprofiler/*
+web/bundles/acmedemo
+web/bundles/fosjsrouting
+web/bundles/framework
+web/bundles/sensiodistribution
+web/bundles/stfalcontinymce
+web/bundles/webprofiler
 web/bundles/dlaser/images/*
+web/bundles/dlaser/js/*
 
 # Configuration files
 app/config/parameters.ini

@@ -26,12 +26,20 @@
             	<td width="15%"><strong>FECHA:</strong></td>                
             	<td width="35%">{{ entity.fecha|date('d-m-Y') }}</td>
             	<td width="13%"><strong>CEDULA O NIT:</strong></td>                
-            	<td width="17%">{{ entity.cliente.nit }}</td>
+            	{% if cliente %}
+            		<td width="17%">{{ entity.cliente.nit }}</td>
+            	{% else %}
+            		<td width="17%">{{ entity.paciente.tipoId }} - {{ entity.paciente.identificacion }}</td>
+            	{% endif %}
             	<td width="20%"><strong>FACTURA DE VENTA No</strong>.</td>            	
             </tr>
             <tr>
             	<td width="15%"><strong>NOMBRE:</strong></td>
-            	<td width="35%">{{ entity.cliente.razon }}</td>                
+            	{% if cliente %}
+            		<td width="35%">{{ entity.cliente.razon }}</td>
+            	{% else %}
+            	    <td width="35%">{{ entity.paciente.priNombre }} {{ entity.paciente.segNombre }} {{ entity.paciente.priApellido }} {{ entity.paciente.segApellido }}</td>
+            	{% endif %}            
             	<td width="13%"><strong>F. NACIMIENTO:</strong></td>                
             	<td width="17%"></td>
             	<td width="20%" rowspan="2" align="center"><br /><br />{{ entity.prefijo }}{{ entity.consecutivo }}</td>            	            	

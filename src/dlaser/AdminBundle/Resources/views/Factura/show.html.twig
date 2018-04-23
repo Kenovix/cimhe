@@ -67,7 +67,7 @@
         </tbody>
     </table>
     
-    <a href="{{ path('factura_imprimir', { 'id': entity.id }) }}" target="blank" class="button blue"><span class="label">Imprimir factura de actividad</span></a>
+    <a href="{{ path('factura_final_imprimir', { 'id': entity.id }) }}" target="blank" class="button blue"><span class="label">Imprimir factura de actividad</span></a>
     
     {% if copago %}
     <h2>Detalles factura de copago</h2>
@@ -110,7 +110,7 @@
         </tbody>
     </table>
 
-	<a href="{{ path('factura_imprimir', { 'id': copago.id }) }}" target="blank" class="button blue"><span class="label">Imprimir factura de copago</span></a>
+	<a href="{{ path('factura_final_imprimir', { 'id': copago.id }) }}" target="blank" class="button blue"><span class="label">Imprimir factura de copago</span></a>
 	
 	{% endif %}
 
