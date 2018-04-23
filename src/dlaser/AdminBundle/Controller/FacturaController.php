@@ -278,6 +278,8 @@ class FacturaController extends Controller
                 
                 $f_f  = new Facturacion();
                 
+                die(var_dump($entity->getCopago()));
+                
                 if ($entity->getCopago() > 0){
                     $valor = $valor - $entity->getCopago();
                 }
