@@ -398,7 +398,7 @@ factura_final_imprimir:
     defaults: { _controller: AdminBundle:Factura:facturacionImprimir }
     
 factura_final_rips:
-    pattern:  /factura/final/rips/{id}/{tipo}/{rips}
+    pattern:  /factura/final/rips
     defaults: { _controller: AdminBundle:Factura:facturacionRips }
     
 factura_genera_reporte:

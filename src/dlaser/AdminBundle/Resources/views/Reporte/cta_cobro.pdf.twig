@@ -38,9 +38,8 @@
 				<td width="30">Tipo</td>
 				<td width="90">Identificación</td>
 				<td width="70">Fecha</td>
-				<td width="100">Autorización</td>
 				<td width="190">Paciente</td>
-                                <td width="35">Edad</td>
+				<td width="35">Edad</td>
 				<td width="90">Cargo</td>
 				<td width="50">Valor</td>
 				<td width="50">Copago</td>
@@ -57,7 +56,6 @@
                 <td width="30">{{ entity.tipoId }}</td>
                 <td width="90">{{ entity.identificacion }}</td>
                 <td width="70">{{ entity.fecha|date('d-m-Y') }}</td>
-                <td width="100">{{ entity.autorizacion }}</td>
                 <td width="190">{{ entity.priNombre|capitalize }} {{ entity.segNombre|capitalize }} {{ entity.priApellido|capitalize }} {{ entity.segApellido|capitalize }}</td>
                 <td width="35">{{date ('now')|date('Y-m-d') - entity.fN |  date ('Y-m-d')}}</td>
                 <td width="90">{{ entity.nombre }}</td>

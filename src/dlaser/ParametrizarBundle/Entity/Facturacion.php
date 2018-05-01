@@ -113,6 +113,13 @@ class Facturacion
     private $final;
     
     /**
+     * @var string $autorizacion
+     
+     * @ORM\Column(name="autorizacion", type="string", length=30, nullable=true)
+     */
+    private $autorizacion;
+    
+    /**
      * @var Cliente
      *
      * @ORM\ManyToOne(targetEntity="dlaser\ParametrizarBundle\Entity\Cliente")
@@ -141,6 +148,16 @@ class Facturacion
      * })
      */
     private $paciente;
+    
+    /**
+     * @var Cargo
+     *
+     * @ORM\ManyToOne(targetEntity="dlaser\ParametrizarBundle\Entity\Cargo")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="cargo_id", referencedColumnName="id", nullable="true")
+     * })
+     */
+    private $cargo;
     
     /**
      * Get id
@@ -412,6 +429,26 @@ class Facturacion
     {
         return $this->final;
     }
+    
+    /**
+     * Set autorizacion
+     *
+     * @param string $autorizacion
+     */
+    public function setAutorizacion($autorizacion)
+    {
+        $this->autorizacion = $autorizacion;
+    }
+    
+    /**
+     * Get autorizacion
+     *
+     * @return string
+     */
+    public function getAutorizacion()
+    {
+        return $this->autorizacion;
+    }
 
     /**
      * Set cliente
@@ -471,5 +508,25 @@ class Facturacion
     public function getPaciente()
     {
     	return $this->paciente;
+    }
+    
+    /**
+     * Set cargo
+     *
+     * @param dlaser\ParametrizarBundle\Entity\Cargo $cargo
+     */
+    public function setCargo(\dlaser\ParametrizarBundle\Entity\Cargo $cargo)
+    {
+        $this->cargo = $cargo;
+    }
+    
+    /**
+     * Get cargo
+     *
+     * @return dlaser\ParametrizarBundle\Entity\Cargo
+     */
+    public function getCargo()
+    {
+        return $this->cargo;
     }
 }
