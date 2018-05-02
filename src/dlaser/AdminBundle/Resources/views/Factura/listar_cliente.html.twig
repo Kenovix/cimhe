@@ -36,7 +36,6 @@
     <div>
     	<label for="sede">Sede:</label>
     	<select id="sede" name="sede">
-    	    <option value="">Todas las sedes</option>
     	    {% for sede in sedes %}
       			<option value="{{ sede.id }}">{{ sede.nombre }}</option>
        		{% endfor %}

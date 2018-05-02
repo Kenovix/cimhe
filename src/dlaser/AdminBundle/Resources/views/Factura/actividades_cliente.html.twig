@@ -56,7 +56,7 @@
         
         {% for entity in entities %}
             <tr>
-                <td><a href="{{ path('factura_edit', { 'id': entity.id }) }}" target="popup" title="Modificar admisión" onClick="popup(this.href,750,600); return false;">{{ entity.prefijo }} {{ entity.consecutivo }}</a></td>
+                <td><a href="{{ path('factura_final_imprimir', { 'id': entity.id }) }}" target="popup" title="Modificar admisión" onClick="popup(this.href,750,600); return false;">{{ entity.prefijo }} {{ entity.consecutivo }}</a></td>
                 <td>{{ entity.tipoId }}</td>
                 <td>{{ entity.identificacion }}</td>
                 <td>{{ entity.fecha|date('d-m-Y') }}</td>
