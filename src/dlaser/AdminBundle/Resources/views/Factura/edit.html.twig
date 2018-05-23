@@ -39,7 +39,26 @@
     <button class="action blue" type="submit">
         <span class="label">Modificar</span>
     </button>
-    <a href="{{ path('factura_show', { 'id': entity.id }) }}" class="button left"><span class="label">Detalle de la admisión</span></a>
+    
     
 </form>
+
+{% if entity.copago %}
+    {% set copago = entity.copago %}
+{% else %}
+    {% set copago = 0 %}
+ {% endif %}
+
+<a href="{{ path('factura_show', { 'factura': entity.id, 'copago': copago }) }}" target="blank" class="button blue"><span class="label">Cancelar</span></a>
+{% endblock %}
+
+{% block javascripts %}
+	<script type="text/javascript">
+	
+	$( document ).ready(function() {
+    	$("#editAdmision_fecha_date").prop("disabled","disabled");
+    	$("#editAdmision_fecha_time").prop("disabled","disabled");
+	});
+
+	</script>
 {% endblock %}

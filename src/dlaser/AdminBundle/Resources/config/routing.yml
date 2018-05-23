@@ -332,8 +332,10 @@ factura_consultado_arqueo:
         _method:  POST
     
 factura_arqueo_imprimir:
-    pattern:  /factura/{sede}/imprimirArqueo
+    pattern:  /factura/imprimirArqueo
     defaults: { _controller: AdminBundle:Factura:imprimirArqueo }
+    requirements:
+        _method:  POST
     
 factura_cliente_list:
     pattern:  /factura/cliente/list

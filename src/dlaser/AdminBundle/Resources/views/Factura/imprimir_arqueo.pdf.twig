@@ -26,6 +26,8 @@
 
 {% block head %}
 	<h3><p align="center">Cierre de caja {{ date('now')|date('d-m-Y') }} Sede {{ sede.nombre }}</p></h3>
+	<h4>Sede: {{ sede.nombre }}</h3>
+	<h5>Usuario: {{ usuario.nombre }}</h3>
 {% endblock %}
 
 {% block body %}
@@ -42,26 +44,24 @@
 		</tr>  
 	</thead>
     <tbody>
-    	<!-- la suma de los cliente se esta manejando por medio de los id de los clientes q se encuentran creados en la base de datos.-->
-    	{% set particulares = {'9': 'PREVISER', '17': 'PARTICULAR' , '16': 'PROCARE' , '11': 'SOLUCIONES INTEGRALES EN SALUD SISA' , '27': 'TARIFAS CIMHE'} %}
 		{% set copago = 0 %}
 		{% set particular = 0 %}
 		
 		{% for entities in entity %}
 		
-		{% if entities.cliente in [9, 17, 16, 11, 27] %}
+		{% if entities.particular == 'SI' %}
 			{% set particular = particular + entities.valor %}
 		{% endif %}
 		
 		{% set copago = copago + entities.copago %}
         	<tr>
-            	<td>{{ entities.id }}</td>
+            	<td>{{ entities.prefijo }} {{ entities.consecutivo }}</td>
             	<td>{{ entities.identificacion }}</td>
                 <td>{{ entities.priNombre }} {{ entities.segNombre }} {{ entities.priApellido }} {{ entities.segApellido }}</td>
                 <td>{{ entities.nombre }}</td>
-                <td>{{ entities.valor }}</td>
+                <td>{{ (entities.subtotal + entities.copago) }}</td>
                 <td>{{ entities.copago }}</td>
-                <td>{{ entities.descuento }}</td>
+                <td></td>
 			</tr>
         {% endfor %}
         <tr>

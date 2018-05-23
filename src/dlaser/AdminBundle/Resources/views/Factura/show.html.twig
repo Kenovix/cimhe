@@ -68,6 +68,7 @@
     </table>
     
     <a href="{{ path('factura_final_imprimir', { 'id': entity.id }) }}" target="blank" class="button blue"><span class="label">Imprimir factura de actividad</span></a>
+    <a href="{{ path('factura_edit', { 'id': entity.id }) }}" target="blank" class="button blue"><span class="label">Modificar factura</span></a>
     
     {% if copago %}
     <h2>Detalles factura de copago</h2>

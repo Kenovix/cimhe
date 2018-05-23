@@ -160,6 +160,20 @@ class Facturacion
     private $cargo;
     
     /**
+     * @var string $grupo
+     *
+     * @ORM\Column(name="grupo", type="string", length=2, nullable=true)
+     */
+    private $grupo;
+    
+    /**
+     * @var integer $user
+     *
+     * @ORM\Column(name="user", type="integer", nullable=true)
+     */
+    private $user;
+    
+    /**
      * Get id
      *
      * @return integer 
@@ -528,5 +542,45 @@ class Facturacion
     public function getCargo()
     {
         return $this->cargo;
+    }
+    
+    /**
+     * Set grupo
+     *
+     * @param string $grupo
+     */
+    public function setGrupo($grupo)
+    {
+        $this->grupo = $grupo;
+    }
+    
+    /**
+     * Get grupo
+     *
+     * @return string
+     */
+    public function getGrupo()
+    {
+        return $this->grupo;
+    }
+    
+    /**
+     * Set user
+     *
+     * @param integer $user
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
+    }
+    
+    /**
+     * Get user
+     *
+     * @return integer
+     */
+    public function getUser()
+    {
+        return $this->user;
     }
 }

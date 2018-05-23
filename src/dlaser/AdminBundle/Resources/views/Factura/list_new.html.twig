@@ -48,7 +48,7 @@
                 <td></td>
                 <td>{{ entity.cliente }}</td>
                 <td>{{ entity.concepto }}</td>
-                <td>${{ (entity.subtotal - entity.copago ) | number_format(0) }}</td>
+                <td>${{ entity.subtotal | number_format(0) }}</td>
                 <td>{{ entity.sede }}</td>
                 <td><a href="{{ path('factura_final_imprimir', {'id': entity.id}) }}" target="blank" class="button"><span class="icon icon153"></span></a></td>
             </tr>

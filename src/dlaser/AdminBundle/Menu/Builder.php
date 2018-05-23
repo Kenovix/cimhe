@@ -39,16 +39,16 @@ class Builder extends ContainerAware
 					
 			$menu->addChild('Facturación', array('uri' => '#'));
 				$menu['Facturación']->addChild('Facturas', array('uri' => '#'));
-					$menu['Facturación']['Facturas']->addChild('Listar Antiguas', array('route' => 'factura_list'));
-					$menu['Facturación']['Facturas']->addChild('Listar Clientes Nuevas', array('route' => 'factura_list_new'));
-					$menu['Facturación']['Facturas']->addChild('Listar Pacientes Nuevas', array('route' => 'factura_list_newPac'));
-					$menu['Facturación']['Facturas']->addChild('Consultar', array('route' => 'factura_list'));
-					$menu['Facturación']['Facturas']->addChild('Generar reporte', array('route' => 'factura_genera_reporte'));
+					//$menu['Facturación']['Facturas']->addChild('Listar Antiguas', array('route' => 'factura_list'));
+					$menu['Facturación']['Facturas']->addChild('De EPS', array('route' => 'factura_list_new'));
+					$menu['Facturación']['Facturas']->addChild('De Particulares', array('route' => 'factura_list_newPac'));
+					$menu['Facturación']['Facturas']->addChild('Consultar', array('route' => 'factura_admision_search'));
+					//$menu['Facturación']['Facturas']->addChild('Generar reporte', array('route' => 'factura_genera_reporte'));
 				$menu['Facturación']->addChild('Cierre de caja', array('uri' => '#'));
 					$menu['Facturación']['Cierre de caja']->addChild('Generar', array('route' => 'factura_arqueo'));
 					$menu['Facturación']['Cierre de caja']->addChild('Consultar', array('route' => 'factura_consultar_arqueo'));
-				$menu['Facturación']->addChild('Admisión', array('uri' => '#'));
-					$menu['Facturación']['Admisión']->addChild('Consultar', array('route' => 'factura_admision_search'));
+				//$menu['Facturación']->addChild('Admisión', array('uri' => '#'));
+					//$menu['Facturación']['Admisión']->addChild('Consultar', array('route' => 'factura_admision_search'));
 				$menu['Facturación']->addChild('Cliente', array('route' => 'factura_cliente_list'));
 				$menu['Facturación']->addChild('Informes', array('uri' => '#'));
 				$menu['Facturación']['Informes']->addChild('Honorarios', array('route' => 'factura_reporte_medico'));

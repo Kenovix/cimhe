@@ -81,7 +81,7 @@ class FacturaController extends Controller
 					    		WHERE
 									f.final = 1 
 					    		ORDER BY
-					    			f.id DESC");
+					    			f.fecha DESC");
 		
 	
 		$facturas = $paginador->paginate($dql->getResult())->getResult();
@@ -190,6 +190,7 @@ class FacturaController extends Controller
             $cliente = $em->getRepository('ParametrizarBundle:Cliente')->find($reserva->getCliente());
             $contrato = $em->getRepository('ParametrizarBundle:Contrato')->findOneBy(array('sede' => $reserva->getAgenda()->getSede()->getId(), 'cliente' => $reserva->getCliente()));
             $actividad = $em->getRepository('ParametrizarBundle:Actividad')->findOneBy(array('cargo' => $reserva->getCargo()->getId(), 'contrato' => $contrato->getId()));
+            $user = $this->get('security.context')->getToken()->getUser();
             
             if($actividad->getPrecio()){
                 $valor = $actividad->getPrecio();
@@ -217,9 +218,11 @@ class FacturaController extends Controller
             $doble_ops = $query->getResult();
             
             if ($doble_ops){
-            	$entity->setGrupo($doble_ops[0]->getGrupo());
+                $grupo = $doble_ops[0]->getGrupo();
+            	//$entity->setGrupo($doble_ops[0]->getGrupo());
             }else {
-            	$entity->setGrupo($reserva->getCargo()->getTipo());
+                $grupo = $reserva->getCargo()->getTipo();
+            	//$entity->setGrupo($reserva->getCargo()->getTipo());
             }
             
             $fecha = new \DateTime('now');
@@ -232,6 +235,7 @@ class FacturaController extends Controller
             $entity->setPaciente($reserva->getPaciente());
             $entity->setSede($reserva->getAgenda()->getSede());
             $entity->setCupo($reserva);
+            $entity->setGrupo($grupo);
             
             $reserva->setEstado('F');
             
@@ -269,6 +273,8 @@ class FacturaController extends Controller
                 $f_f->setSede($reserva->getAgenda()->getSede());
                 $f_f->setPaciente($reserva->getPaciente());
                 $f_f->setCargo($reserva->getCargo());
+                $f_f->setGrupo($grupo);
+                $f_f->setUser($user->getId());
                 
                 $em->persist($entity);
                 $em->persist($reserva);
@@ -300,6 +306,8 @@ class FacturaController extends Controller
                 $f_f->setCargo($reserva->getCargo());
                 $f_f->setAutorizacion($entity->getAutorizacion());
                 $f_f->setCopago($entity->getCopago());
+                $f_f->setGrupo($grupo);
+                $f_f->setUser($user->getId());
                 
                 $em->persist($entity);
                 $em->persist($reserva);
@@ -324,6 +332,7 @@ class FacturaController extends Controller
                     $f_f->setSede($reserva->getAgenda()->getSede());
                     $f_f->setPaciente($reserva->getPaciente());
                     $f_f->setFinal(0);
+                    $f_f->setUser($user->getId());
                     
                     $em->persist($f_f);
                     
@@ -442,7 +451,7 @@ class FacturaController extends Controller
     public function editAction($id)
     {
     	$em = $this->getDoctrine()->getEntityManager();    
-    	$entity = $em->getRepository('ParametrizarBundle:Factura')->find($id);
+    	$entity = $em->getRepository('ParametrizarBundle:Facturacion')->find($id);
     
     	if (!$entity) {
     		throw $this->createNotFoundException('La factura solicitada no existe');
@@ -459,7 +468,7 @@ class FacturaController extends Controller
     	$breadcrumbs = $this->get("white_october_breadcrumbs");
     	$breadcrumbs->addItem("Inicio", $this->get("router")->generate("agenda_list"));
     	$breadcrumbs->addItem("Factura", $this->get("router")->generate("factura_search"));
-    	$breadcrumbs->addItem("Detalle ",$this->get("router")->generate("factura_show",array("id" => $id)));
+    	//$breadcrumbs->addItem("Detalle ",$this->get("router")->generate("factura_show",array("id" => $id)));
     	$breadcrumbs->addItem("Modificar admisión");
     	
     	return $this->render('AdminBundle:Factura:edit.html.twig', array(
@@ -471,23 +480,25 @@ class FacturaController extends Controller
     public function updateAction($id)
         {
     	$em = $this->getDoctrine()->getEntityManager();    
-    	$entity = $em->getRepository('ParametrizarBundle:Factura')->find($id);
+    	$entity = $em->getRepository('ParametrizarBundle:Facturacion')->find($id);
     	
     	if (!$entity) {
     		throw $this->createNotFoundException('La factura solicitada no existe.');
     	}
+    	
     	$request = $this->getRequest();
     	$user = $this->get('security.context')->getToken()->getUser();
-    	if($user->getPerfil() == 'ROLE_ADMIN'){    		
+    	
+    	if($user->getPerfil() == 'ROLE_ADMIN'){
+
     		$editForm = $this->createForm(new AdmisionType(), $entity);    		
     	}else{
     		$editForm = $this->createForm(new AdmisionAuxType(), $entity);
-    	}    	
-    	$editForm->bindRequest($request);
+    	}
     	
+    	$editForm->bindRequest($request);
     
     	if ($editForm->isValid()) {
-    		
     		$cliente = $em->getRepository('ParametrizarBundle:Cliente')->find($entity->getCliente()->getId());    	
     		$contrato = $em->getRepository('ParametrizarBundle:Contrato')->findOneBy(array('sede' => $entity->getSede()->getId(), 'cliente' => $cliente->getId()));
     		
@@ -711,11 +722,11 @@ class FacturaController extends Controller
     public function arqueoAction()
     {
     	$em = $this->getDoctrine()->getEntityManager();    	
-    	$usuario = $this->get('security.context')->getToken()->getUser();
-    	$usuario = $em->getRepository('UsuarioBundle:Usuario')->find($usuario->getId());
-    	$sedes = $usuario->getSede();
+
+    	$usuarios = $em->getRepository('UsuarioBundle:Usuario')->findAll();
+    	$sedes = $em->getRepository('ParametrizarBundle:Sede')->findAll();
     	
-    	if(!$usuario)
+    	if(!$usuarios)
     	{
     		throw $this->createNotFoundException('El usuario no existe no esta identificado.'); 
     	}    	
@@ -727,19 +738,24 @@ class FacturaController extends Controller
     	
     	return $this->render('AdminBundle:Factura:arqueo.html.twig', array(
     			'sedes' => $sedes,
-    			'usuario' => $sedes
+    			'usuarios' => $usuarios
     	));
     	
     }
     
-    public function imprimirArqueoAction($sede)
+    public function imprimirArqueoAction()
     {
+        $request = $this->get('request');
+        $sede = $request->request->get('sede');
+        $usuario = $request->request->get('usuario');
+        
     	$em = $this->getDoctrine()->getEntityManager();
     	
     	$fecha=new \DateTime('now');
     	
     	$dql= " SELECT 
-    				f.id,
+    				f.prefijo,
+                    f.consecutivo,
     				c.cups,
     				f.autorizacion,
     				p.identificacion,
@@ -749,12 +765,12 @@ class FacturaController extends Controller
                     p.segApellido,
                     cli.id as cliente,
                     cli.nombre,
-                    f.valor,
+                    f.subtotal,
                     f.copago,
-                    f.descuento,
-                    f.estado
+                    f.estado,
+                    cli.particular
     			FROM 
-    				ParametrizarBundle:Factura f
+    				ParametrizarBundle:Facturacion f
     			JOIN
     				f.cargo c
     			JOIN
@@ -764,7 +780,8 @@ class FacturaController extends Controller
     			WHERE 
     				f.fecha > :inicio AND 
     				f.fecha <= :fin AND 
-    				f.sede = :id 
+    				f.sede = :sede AND
+                    f.user = :usuario
     			ORDER BY 
     				f.fecha ASC";
     	
@@ -772,7 +789,8 @@ class FacturaController extends Controller
 
     	$query->setParameter('inicio', $fecha->format('Y-m-d 00:00:00'));
     	$query->setParameter('fin', $fecha->format('Y-m-d 23:59:00'));
-    	$query->setParameter('id', $sede);
+    	$query->setParameter('sede', $sede);
+    	$query->setParameter('usuario', $usuario);
     	
     	$entity = $query->getResult();
     	 
@@ -786,9 +804,12 @@ class FacturaController extends Controller
     		return $this->redirect($this->generateUrl('factura_arqueo'));
     	}
     	
+    	$user = $em->getRepository('UsuarioBundle:Usuario')->find($usuario);
+    	
     	$html = $this->renderView('AdminBundle:Factura:imprimir_arqueo.pdf.twig', array(
     			'entity' => $entity,
-    			'sede' => $sede
+    			'sede' => $sede,
+    	        'usuario' => $user
     	));
 
     	return $this->get('io_tcpdf')->quick_pdf($html, 'Arqueo de Caja '.$fecha->format('d-m-Y').' Sede '.$sede->getNombre().'.pdf', 'I');
@@ -2544,7 +2565,7 @@ class FacturaController extends Controller
     	$breadcrumbs = $this->get("white_october_breadcrumbs");
     	$breadcrumbs->addItem("Inicio", $this->get("router")->generate("agenda_list"));
     	$breadcrumbs->addItem("Factura", $this->get("router")->generate("factura_search"));
-    	$breadcrumbs->addItem("Detalle ",$this->get("router")->generate("factura_show",array("id" => $id)));
+    	//$breadcrumbs->addItem("Detalle ",$this->get("router")->generate("factura_show",array("id" => $id)));
     	$breadcrumbs->addItem("Modificar admisión");
     	 
     	return $this->render('AdminBundle:Factura:edit.html.twig', array(
