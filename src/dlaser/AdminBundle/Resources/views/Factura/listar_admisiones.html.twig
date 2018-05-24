@@ -47,14 +47,14 @@
         
         {% for entity in entities %}
             <tr>
-                <td><a href="{{ path('factura_edit', { 'id': entity.id }) }}" title="Modificar admisión">{{ entity.id }}</a></td>
+                <td><a href="{{ path('factura_edit', { 'id': entity.id }) }}" title="Modificar admisión">{{ entity.prefijo }}{{ entity.consecutivo }}</a></td>
                 <td>{{ entity.tipoId }}</td>
                 <td>{{ entity.identificacion }}</td>
                 <td>{{ entity.fecha|date('d-m-Y') }}</td>
                 <td>{{ entity.autorizacion }}</td>
                 <td><a href="{{ path('paciente_edit', { 'id': entity.paciente }) }}" target="popup" title="Modificar admisión" onClick="popup(this.href,750,600); return false;">{{ entity.priNombre|capitalize }} {{ entity.segNombre|capitalize }} {{ entity.priApellido|capitalize }} {{ entity.segApellido|capitalize }}</a></td>
                 <td>{{ entity.cups }}</td>
-                <td>{{ entity.valor }}</td>
+                <td>{{ entity.subtotal }}</td>
                 <td>{{ entity.copago }}</td>
                 <td>{{ entity.estado }}</td>
             </tr>

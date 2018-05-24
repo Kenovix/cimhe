@@ -14,9 +14,8 @@ class AdmisionAuxType extends AbstractType
         ->add('cargo', 'entity', array('required' => true, 'class' => 'dlaser\ParametrizarBundle\Entity\Cargo', 'empty_value' => 'Elige una sede'))
         ->add('sede', 'entity', array('required' => true, 'class' => 'dlaser\ParametrizarBundle\Entity\Sede', 'empty_value' => 'Elige una sede'))
         ->add('autorizacion', 'text', array('required' => true, 'attr' => array('placeholder' => 'Número de autorización', 'autofocus' => 'autofocus')))
-        ->add('copago', 'integer', array('required' => true))
-        ->add('descuento', 'integer', array('required' => false))
-        ->add('observacion', 'text', array('property_path' => null, 'required' => false, 'attr' => array('placeholder' => 'Ingrese una observación')))
+        ->add('copago', 'integer', array('required' => true, 'attr' => array('readonly' => 'readonly')))
+        ->add('nota', 'text', array('property_path' => null, 'required' => false, 'attr' => array('placeholder' => 'Ingrese una observación')))
         ;
     }
 

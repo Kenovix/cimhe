@@ -49,16 +49,24 @@
                 <td>{{entity.cliente.razon|capitalize}}</td>
             </tr>
             <tr>
+            	<th><b>Paciente:</b></th>
+                <td>{{entity.paciente.priNombre|capitalize}} {{entity.paciente.segNombre|capitalize}} {{entity.paciente.priApellido|capitalize}} {{entity.paciente.segApellido|capitalize}}</td>
+            </tr>
+            <tr>
             	<th><b>Concepto:</b></th>
                 <td>{{ entity.concepto }}</td>
             </tr>
             <tr>
             	<th><b>Autorizacion:</b></th>
-                <td></td>
+                <td>{{ entity.autorizacion }}</td>
             </tr>
             <tr>
             	<th><b>Valor:</b></th>
-                <td>${{entity.subtotal|number_format(0)}}</td>
+                <td>${{(entity.subtotal+entity.copago)|number_format(0)}}</td>
+            </tr>
+            <tr>
+            	<th><b>Copago:</b></th>
+                <td>${{entity.copago|number_format(0)}}</td>
             </tr>
             <tr>
             	<th><b>Observacion:</b></th>

@@ -402,6 +402,8 @@ class FacturaController extends Controller
 
     		$dql= " SELECT
 			    		f.id,
+                        f.prefijo,
+                        f.consecutivo,
 			    		p.id as paciente,
 			    		p.tipoId,
 			    		p.identificacion,
@@ -412,12 +414,11 @@ class FacturaController extends Controller
 			    		p.priApellido,
 			    		p.segApellido,
 			    		c.cups,
-			    		f.valor,
+			    		f.subtotal,
 			    		f.copago,
-			    		f.descuento,
 			    		f.estado
 		    		FROM
-		    			ParametrizarBundle:Factura f
+		    			ParametrizarBundle:Facturacion f
 		    		JOIN
 		    			f.cargo c
 		    		JOIN
@@ -1049,13 +1050,17 @@ class FacturaController extends Controller
 			    	f.concepto,
 			    	f.subtotal,
 			    	f.copago,
-			    	f.estado
+			    	f.estado,
+                    f.autorizacion,
+                    c.cups
     			FROM
     				ParametrizarBundle:Facturacion f
     			JOIN
     				f.paciente p
     			JOIN
     				f.cliente cli
+                JOIN
+    				f.cargo c
     			WHERE
 			    	f.fecha > :inicio AND
 			    	f.fecha <= :fin AND
@@ -1443,6 +1448,7 @@ class FacturaController extends Controller
 			    	p.priApellido,
 			    	p.segApellido,
                     c.nombre,
+                    c.cups,
 			    	f.concepto,
 			    	f.subtotal AS valor,
 			    	f.copago,
@@ -1952,7 +1958,8 @@ class FacturaController extends Controller
             $dql= " SELECT
                       f.id,
                       f.prefijo AS pre,
-                      f.consecutivo AS idf, 
+                      f.consecutivo AS idf,
+                      f.fecha,
                       f.subtotal,
                       f.copago
                     FROM
@@ -1982,14 +1989,14 @@ class FacturaController extends Controller
                 $this->get('session')->setFlash('info', 'No se puede crear txt.');
                 return $this->redirect($this->generateUrl('factura_rips_search'));
             }
-        
-            $fecha = new \DateTime('now');
+
             $inicio = new \DateTime($f_inicio);
             $fin = new \DateTime($f_fin);
             
             $contrato = $em->getRepository("ParametrizarBundle:Contrato")->findOneBy(array('cliente' => $cliente->getId(), 'sede' => $obj_sede->getId()));
         
             foreach ($entity as $value){
+                $fecha = new \DateTime($value['fecha']);
                 fwrite($gestor, "768340706001,CENTRO DE IMAGENES Y HEMODINAMIA CIMHE IPS,NI,900225202,".$value['pre'].$value['idf'].",".$fecha->format('d/m/Y').",".$inicio->format('d/m/Y').",".$fin->format('d/m/Y').",".$cliente->getCodEps().",".$cliente->getRazon().",,ISS 2001 + ".$contrato->getPorcentaje()."%,,".$value['copago'].".00,0.00,0.00,".($value['subtotal']-$value['copago']).".00\r\n");
             }
         }
@@ -2378,9 +2385,10 @@ class FacturaController extends Controller
     	$url = 'factura_genera_reporte';
     	 
     	if(trim($f_inicio)){
-    		$desde = explode('/',$f_inicio);
-    
-    		if(!checkdate($desde[1],$desde[0],$desde[2])){
+    		
+    		$desde = explode('-',$f_inicio);
+    		
+    		if(!checkdate($desde[1],$desde[2],$desde[0])){
     			$this->get('session')->setFlash('info', 'La fecha de inicio ingresada es incorrecta.');
     			return $this->redirect($this->generateUrl($url));
     		}
@@ -2390,9 +2398,9 @@ class FacturaController extends Controller
     	}
     	 
     	if(trim($f_fin)){
-    		$hasta = explode('/',$f_fin);
+    		$hasta = explode('-',$f_fin);
     
-    		if(!checkdate($hasta[1],$hasta[0],$hasta[2])){
+    		if(!checkdate($hasta[1],$hasta[2],$hasta[0])){
     			$this->get('session')->setFlash('info', 'La fecha de finalización ingresada es incorrecta.');
     			return $this->redirect($this->generateUrl($url));
     		}
@@ -2436,22 +2444,25 @@ class FacturaController extends Controller
     	 
     	$dql= " SELECT
 			    	f.id,
+                    f.prefijo,
+                    f.consecutivo,
 			    	p.id as paciente,
 			    	p.tipoId,
 			    	p.identificacion,
 			    	f.fecha,
 			    	f.autorizacion,
+                    f.concepto,
 			    	p.priNombre,
 			    	p.segNombre,
 			    	p.priApellido,
 			    	p.segApellido,
+                    p.fN,
 			    	c.cups,
-			    	f.valor,
+			    	f.subtotal,
 			    	f.copago,
-			    	f.descuento,
 			    	f.estado
     			FROM
-    				ParametrizarBundle:Factura f
+    				ParametrizarBundle:Facturacion f
     			JOIN
     				f.cargo c
     			JOIN
@@ -2468,16 +2479,16 @@ class FacturaController extends Controller
     
     	$query = $em->createQuery($dql);
     	 
-    	$query->setParameter('inicio', $desde[2]."/".$desde[1]."/".$desde[0].' 00:00:00');
-    	$query->setParameter('fin', $hasta[2]."/".$hasta[1]."/".$hasta[0].' 23:59:00');
-    	$query->setParameter('cliente', $cliente);
+    	$query->setParameter('inicio', $desde[0]."-".$desde[1]."-".$desde[2].' 00:00:00');
+    	$query->setParameter('fin', $hasta[0]."-".$hasta[1]."-".$hasta[2].' 23:59:00');
+    	//$query->setParameter('cliente', $cliente);
     	 
     	$entity = $query->getResult();
     	 
     	$user = $this->get('security.context')->getToken()->getUser();
     	 
     	if($user->getPerfil() == 'ROLE_ADMIN') {
-    		$plantilla = 'AdminBundle:Factura:actividades_cliente.html.twig';
+    		$plantilla = 'AdminBundle:Reporte:actividades_cliente.html.twig';
     	}else {
     		$plantilla = 'AdminBundle:Reporte:actividades_cliente.html.twig';
     	}

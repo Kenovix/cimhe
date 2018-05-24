@@ -63,12 +63,13 @@
             </tr>
             <tr>
             	<td width="80%" height="120">
-            		<br /><br />{{ entity.concepto }}
+            		<br /><br />{{ entity.concepto }}<br><br>
+            		Al paciente: {{ entity.paciente.priNombre }} {{ entity.paciente.segNombre }} {{ entity.paciente.priApellido }} {{ entity.paciente.segApellido }}<br>
             		{% if entity.nota %}
             			<br /><br /><br /><br />Nota: {{ entity.nota }}
             		{% endif %}
             	</td>
-            	<td width="20%" align="center"><br /><br />${{ (entity.subtotal + entity.iva) |number_format(0) }}</td>                
+            	<td width="20%" align="center"><br /><br />${{ (entity.subtotal + entity.copago) |number_format(0) }}</td>                
             </tr>
         </tbody>             
 	</table>
@@ -78,11 +79,12 @@
             <tr>
             	<td width="30%" height="60">Recibi Conforme:</td>
             	<td width="30%" height="60">Entrega:</td>                
-            	<td width="20%" align="center" height="60">Subtotal<br /><br />IVA<br /><br />Valor Total</td>
+            	<td width="20%" align="center" height="60">Copago<br /><br />Subtotal<br /><br />IVA<br /><br />Valor Total</td>
             	<td width="20%" align="center" height="60">
-            		${{ (entity.subtotal - entity.copago)|number_format(0) }}<br /><br />
+            		${{ (entity.copago)|number_format(0) }}<br /><br />
+            		${{ (entity.subtotal)|number_format(0) }}<br /><br />
             		${{ (entity.iva)|number_format(0) }}<br /><br />
-            		${{ ((entity.subtotal - entity.copago) + entity.iva)|number_format(0) }}
+            		${{ (entity.subtotal)|number_format(0) }}
             	</td>                
             </tr>                    	       
         </tbody>             

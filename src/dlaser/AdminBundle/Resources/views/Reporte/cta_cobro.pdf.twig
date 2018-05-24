@@ -38,9 +38,10 @@
 				<td width="30">Tipo</td>
 				<td width="90">Identificación</td>
 				<td width="70">Fecha</td>
-				<td width="190">Paciente</td>
+				<td width="160">Paciente</td>
 				<td width="35">Edad</td>
-				<td width="90">Cargo</td>
+				<td width="60">Código</td>
+				<td width="120">Cargo</td>
 				<td width="50">Valor</td>
 				<td width="50">Copago</td>
 			</tr>
@@ -56,25 +57,26 @@
                 <td width="30">{{ entity.tipoId }}</td>
                 <td width="90">{{ entity.identificacion }}</td>
                 <td width="70">{{ entity.fecha|date('d-m-Y') }}</td>
-                <td width="190">{{ entity.priNombre|capitalize }} {{ entity.segNombre|capitalize }} {{ entity.priApellido|capitalize }} {{ entity.segApellido|capitalize }}</td>
+                <td width="160">{{ entity.priNombre|capitalize }} {{ entity.segNombre|capitalize }} {{ entity.priApellido|capitalize }} {{ entity.segApellido|capitalize }}</td>
                 <td width="35">{{date ('now')|date('Y-m-d') - entity.fN |  date ('Y-m-d')}}</td>
-                <td width="90">{{ entity.nombre }}</td>
-                <td width="50">{{ entity.valor }}</td>
+                <td width="60">{{ entity.cups }}</td>
+                <td width="120">{{ entity.nombre }}</td>
+                <td width="50">{{ (entity.valor + entity.copago) }}</td>
                 <td width="50">{{ entity.copago }}</td>
             </tr>
          {% else %}
          	<tr>
-         		<td colspan="8">No tenemos actividades realizadas en este periodo de tiempo.</td>
+         		<td colspan="9">No tenemos actividades realizadas en este periodo de tiempo.</td>
          	</tr>
         {% endfor %}
         	<tr>
-        		<td colspan="8"><br /><br />VALOR ACTIVIDADES: <b>${{ (valor)|number_format(0) }}</b></td>
+        		<td colspan="9"><br /><br />VALOR ACTIVIDADES: <b>${{ (valor+copago)|number_format(0) }}</b></td>
         	</tr>
         	<tr>
-        		<td colspan="8"><br /><br />COPAGOS: <b>${{ (copago)|number_format(0) }}</b></td>
+        		<td colspan="9"><br /><br />COPAGOS: <b>${{ (copago)|number_format(0) }}</b></td>
         	</tr> 
         	<tr>
-        		<td colspan="8"><br /><br />TOTAL A COBRAR: <b>${{ (valor-copago)|number_format(0) }}</b><br />Favor consignar en Banco cuenta de ahorros No.####### A Nombre de: Centro de Imagenes y Hemodinamia CIMHE IPS LTDA. - NIT. 900.225.202-2</td>
+        		<td colspan="9"><br /><br />TOTAL A COBRAR: <b>${{ (valor)|number_format(0) }}</b><br />Favor consignar en Banco cuenta de ahorros No.####### A Nombre de: Centro de Imagenes y Hemodinamia CIMHE IPS LTDA. - NIT. 900.225.202-2</td>
         	</tr>        
         </tbody>
     </table>
