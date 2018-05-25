@@ -1452,7 +1452,8 @@ class FacturaController extends Controller
 			    	f.concepto,
 			    	f.subtotal AS valor,
 			    	f.copago,
-			    	f.estado
+			    	f.estado,
+                    f.autorizacion
     			FROM
     				ParametrizarBundle:Facturacion f
                 JOIN

@@ -43,11 +43,12 @@
                 <th>No.</th>
                 <th>Tipo</th>
                 <th>Identificación</th>
-                <th>Fecha</th>
                 <th>Paciente</th>
-                <th>Código</th>
-                <th>Actividad</th>
                 <th>Edad</th>
+                <th>Fecha</th>
+                <th>Autorización</th>
+                <th>Cups</th>
+                <th>Actividad</th>
                 <th>Valor</th>
                 <th>Copago</th>
                 <th>Estado</th>
@@ -58,14 +59,15 @@
         
         {% for entity in entities %}
             <tr>
-                <td><a href="{{ path('factura_final_imprimir', { 'id': entity.id }) }}" target="popup" title="Modificar admisión" onClick="popup(this.href,750,600); return false;">{{ entity.prefijo }} {{ entity.consecutivo }}</a></td>
+                <td><a href="{{ path('factura_edit', { 'id': entity.id }) }}" target="popup" title="Modificar admisión" onClick="popup(this.href,750,600); return false;">{{ entity.prefijo }} {{ entity.consecutivo }}</a></td>
                 <td>{{ entity.tipoId }}</td>
                 <td>{{ entity.identificacion }}</td>
-                <td>{{ entity.fecha|date('d-m-Y') }}</td>
                 <td><a href="{{ path('paciente_edit', { 'id': entity.paciente }) }}" target="popup" title="Modificar admisión" onClick="popup(this.href,750,600); return false;">{{ entity.priNombre|capitalize }} {{ entity.segNombre|capitalize }} {{ entity.priApellido|capitalize }} {{ entity.segApellido|capitalize }}</a></td>
+                <td>{{date ('now')| date ('Y-m-d') - entity.fN|date('Y-m-d')}}</td>
+                <td>{{ entity.fecha|date('d-m-Y') }}</td>
+                <td>{{ entity.autorizacion }}</td>
                 <td>{{ entity.cups }}</td>
                 <td>{{ entity.concepto }}</td>
-                <td>{{date ('now')| date ('Y-m-d') - entity.fN|date('Y-m-d')}}</td>
                 <td>{{ (entity.subtotal + entity.copago) }}</td>
                 <td>{{ entity.copago }}</td>
                 <td>{{ entity.estado }}</td>
