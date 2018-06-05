@@ -1064,7 +1064,8 @@ class FacturaController extends Controller
     			WHERE
 			    	f.fecha > :inicio AND
 			    	f.fecha <= :fin AND
-                    f.final = 1 AND			    	
+                    f.final = 1 AND
+                    f.estado = :estado AND	    	
 			    	f.cliente = :cliente ".
 			    	$con_sede." ".
 			    	$con_tipo."
@@ -1076,6 +1077,7 @@ class FacturaController extends Controller
     	$query->setParameter('inicio', $desde[0]."/".$desde[1]."/".$desde[2].' 00:00:00');
     	$query->setParameter('fin', $hasta[0]."/".$hasta[1]."/".$hasta[2].' 23:59:00');
     	$query->setParameter('cliente', $cliente);
+    	$query->setParameter('estado', 'G');
     	
     	$entity = $query->getResult();
     	
@@ -1935,7 +1937,7 @@ class FacturaController extends Controller
                    $num_px++;
                 }   
          
-            fwrite($gestor, "".$value['pre'].$value['idf'].",768340706001,02,".$num_px.",0,".($val_px-$copago_px).".00\r\n");
+            fwrite($gestor, "".$factura.",768340706001,02,".$num_px.",0,".($val_px-$copago_px).".00\r\n");
            
            return 1;
            
@@ -2126,10 +2128,10 @@ class FacturaController extends Controller
     	}
     
     	$dql= " SELECT
-    				SUM(f.valor) AS valor,
+    				SUM(f.subtotal) AS valor,
     				SUM(f.copago) AS copago
     			FROM
-    				ParametrizarBundle:Factura f
+    				ParametrizarBundle:Facturacion f
     			JOIN
     				f.cargo c
     			JOIN
