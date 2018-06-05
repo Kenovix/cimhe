@@ -1028,7 +1028,7 @@ class FacturaController extends Controller
     		$con_sede = "";
     	}
     	
-    	if(trim($tipo)){
+    	if(trim($tipo) != 'N'){
     		$con_tipo = "AND f.grupo ='".$tipo."'";
     	}else{
     		$con_tipo = "";
@@ -1430,7 +1430,7 @@ class FacturaController extends Controller
     		$con_sede = "";
     	}
     	
-    	if(trim($tipo)){
+    	if(trim($tipo) != 'N'){
     		$con_tipo = "AND f.grupo ='".$tipo."'";
     	}else{
     		$con_tipo = "";
@@ -1643,7 +1643,7 @@ class FacturaController extends Controller
 
     	$em = $this->getDoctrine()->getEntityManager();
 
-    	if(trim($tipo)){
+    	if(trim($tipo) != 'N'){
     	    $con_tipo = "AND c.tipo ='".$tipo."'";
     	}else{
     	    $con_tipo = "";
@@ -1715,7 +1715,7 @@ class FacturaController extends Controller
          
         $em = $this->getDoctrine()->getEntityManager();
         
-        if(trim($tipo)){
+        if(trim($tipo) != 'N'){
             $con_tipo = "AND c.tipo ='".$tipo."'";
         }else{
             $con_tipo = "";
@@ -1854,7 +1854,7 @@ class FacturaController extends Controller
     
         $em = $this->getDoctrine()->getEntityManager();
         
-        if(trim($tipo)){
+        if(trim($tipo) != 'N'){
             $con_tipo = "AND c.tipo ='".$tipo."'";
         }else{
             $con_tipo = "";
@@ -1962,7 +1962,7 @@ class FacturaController extends Controller
     
         $em = $this->getDoctrine()->getEntityManager();
         
-        if(trim($tipo)){
+        if(trim($tipo) != 'N'){
             $con_tipo = "AND c.tipo ='".$tipo."'";
         }else{
             $con_tipo = "";
@@ -2121,7 +2121,7 @@ class FacturaController extends Controller
     		$con_sede = "";
     	}
     	
-    	if(trim($tipo)){
+    	if(trim($tipo) != 'N'){
     		$con_tipo = "AND c.tipo ='".$tipo."'";
     	}else{
     		$con_tipo = "";
