@@ -93,18 +93,33 @@
 		        <span class="label">Generar Cta. Cobro</span>
 		    </button>
     	</form>
-    	
-    	<form action="{{ path('factura_final_rips') }}" method="post">
-    		<input type="hidden" name="sede" value="{{ sede.id }}" />
-    		<input type="hidden" name="cliente" value="{{ cliente.id }}" />
-    		<input type="hidden" name="f_inicio" value="{{ f_i }}" />
-    		<input type="hidden" name="f_fin" value="{{ f_f }}" />
-
-    		<button class="action green" type="submit">
-		        <span class="label">Generar Rips</span>
-		    </button>
-    	</form>
+    	{% if rips == 'G' %}
+        	<form action="{{ path('factura_final_new') }}" method="post">
+        		<input type="hidden" name="sede" value="{{ sede.id }}" />
+        		<input type="hidden" name="cliente" value="{{ cliente.id }}" />
+        		<input type="hidden" name="f_inicio" value="{{ f_i }}" />
+        		<input type="hidden" name="f_fin" value="{{ f_f }}" />
+                <input type="hidden" name="rips" value="{{ rips }}" />
+        		<input type="hidden" name="tipo" value="{{ tipo }}" />
+    
+        		<button class="action green" type="submit">
+    		        <span class="label">Generar Factura</span>
+    		    </button>
+    		</form>
+    	{% else %}
+    		<form action="{{ path('factura_final_rips', { 'id': 0, 'tipo': tipo, 'rips': rips}) }}" method="post">
+        		<input type="hidden" name="sede" value="{{ sede.id }}" />
+        		<input type="hidden" name="cliente" value="{{ cliente.id }}" />
+        		<input type="hidden" name="f_inicio" value="{{ f_i }}" />
+        		<input type="hidden" name="f_fin" value="{{ f_f }}" />
+    
+        		<button class="action green" type="submit">
+    		        <span class="label">Generar RIPS</span>
+    		    </button>
+    		</form>
+    	{% endif %}
     {% endif %}
+    
 {% endblock %}
 
 {% block javascripts %}

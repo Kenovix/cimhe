@@ -64,7 +64,9 @@
             <tr>
             	<td width="80%" height="120">
             		<br /><br />{{ entity.concepto }}<br><br>
+            		{% if paciente %}
             		Al paciente: {{ entity.paciente.priNombre }} {{ entity.paciente.segNombre }} {{ entity.paciente.priApellido }} {{ entity.paciente.segApellido }}<br>
+            		{% endif %}
             		{% if entity.nota %}
             			<br /><br /><br /><br />Nota: {{ entity.nota }}
             		{% endif %}
