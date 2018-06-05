@@ -228,7 +228,7 @@ class FacturaController extends Controller
             $fecha = new \DateTime('now');
 
             $entity->setFecha($fecha);
-            $entity->setEstado('I');
+            $entity->setEstado('G');
             $entity->setCargo($reserva->getCargo());
             $entity->setValor($valor);
             $entity->setCliente($cliente);
@@ -1672,6 +1672,7 @@ class FacturaController extends Controller
 		    	WHERE
 			    	f.fecha > :inicio AND
 			    	f.fecha <= :fin AND
+                    f.estado = :estado AND
 			    	f.cliente = :cliente AND
     				f.sede = :sede ".
     				$con_tipo."
@@ -1684,6 +1685,7 @@ class FacturaController extends Controller
     	$query->setParameter('fin', $f_fin.' 23:59:00');
     	$query->setParameter('cliente', $cliente->getId());
     	$query->setParameter('sede', $obj_sede->getId());
+    	$query->setParameter('estado', 'G');
     	 
     	$entity = $query->getArrayResult();
     	
@@ -1736,6 +1738,7 @@ class FacturaController extends Controller
                     f.fecha > :inicio AND
                     f.fecha <= :fin AND
                     f.cliente = :cliente AND
+                    f.estado = :estado AND
                     c.cups != '890202' AND
                     f.sede = :sede ".
                     $con_tipo."
@@ -1748,6 +1751,7 @@ class FacturaController extends Controller
         $query->setParameter('fin', $f_fin.' 23:59:00');
         $query->setParameter('cliente', $cliente->getId());
         $query->setParameter('sede', $obj_sede->getId());
+        $query->setParameter('estado', 'G');
     
         $entity = $query->getArrayResult();
          
@@ -1807,6 +1811,7 @@ class FacturaController extends Controller
                     f.fecha > :inicio AND
                     f.fecha <= :fin AND
                     f.cliente = :cliente AND
+                    f.estado = :estado AND
                     c.cups = '890202'
                 ORDER BY
                     f.fecha ASC";
@@ -1816,6 +1821,7 @@ class FacturaController extends Controller
         $query->setParameter('inicio', $f_inicio.' 00:00:00');
         $query->setParameter('fin', $f_fin.' 23:59:00');
         $query->setParameter('cliente', $cliente->getId());
+        $query->setParameter('estado', 'G');
     
         $entity = $query->getArrayResult();
         
@@ -1869,6 +1875,7 @@ class FacturaController extends Controller
                     f.fecha > :inicio AND
                     f.fecha <= :fin AND
                     f.cliente = :cliente AND
+                    f.estado = :estado AND
                     c.cups != '890202' AND
                     f.sede = :sede ";     
         
@@ -1878,6 +1885,7 @@ class FacturaController extends Controller
         $query->setParameter('fin', $f_fin.' 23:59:00');
         $query->setParameter('cliente', $cliente->getId());
         $query->setParameter('sede', $obj_sede->getId());
+        $query->setParameter('estado', 'G');
         
         $entity2 = $query->getArrayResult();
 
@@ -1987,6 +1995,7 @@ class FacturaController extends Controller
                     WHERE
                         f.fecha > :inicio AND
                         f.fecha <= :fin AND
+                        f.estado = :estado AND
                         f.cliente = :cliente AND
                         f.sede = :sede ";  
     
@@ -1996,6 +2005,7 @@ class FacturaController extends Controller
             $query->setParameter('fin', $f_fin.' 23:59:00');
             $query->setParameter('cliente', $cliente->getId());
             $query->setParameter('sede', $obj_sede->getId());
+            $query->setParameter('estado', 'G');
         
             $entity = $query->getArrayResult();
     
@@ -2111,7 +2121,7 @@ class FacturaController extends Controller
     	$query->setParameter('inicio', $f_inicio.' 00:00:00');
     	$query->setParameter('fin', $f_fin.' 23:59:00');
     	$query->setParameter('cliente', $cliente);
-    	$query->setParameter('estado', 'I');
+    	$query->setParameter('estado', 'G');
     
     	$valor = $query->getSingleResult();
     	

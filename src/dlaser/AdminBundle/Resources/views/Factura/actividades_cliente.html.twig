@@ -50,6 +50,8 @@
                 <th>Cups</th>
                 <th>Actividad</th>
                 <th>Valor</th>
+                <th>Copago</th>
+                <th>Estado</th>
             </tr>
         </thead>
         <tbody>
@@ -67,6 +69,8 @@
                 <td>{{ entity.cups }}</td>
                 <td>{{ entity.concepto }}</td>
                 <td>{{ (entity.subtotal + entity.copago) }}</td>
+                <td>{{ entity.copago}}</td>
+                <td>{{ entity.estado }}</td>
             </tr>
          {% else %}
          	<tr>
