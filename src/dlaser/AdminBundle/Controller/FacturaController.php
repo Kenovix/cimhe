@@ -1641,7 +1641,7 @@ class FacturaController extends Controller
 
     	$em = $this->getDoctrine()->getEntityManager();
 
-    	if(trim($tipo) != 'N'){
+    	if(trim($tipo)){
     	    $con_tipo = "AND c.tipo ='".$tipo."'";
     	}else{
     	    $con_tipo = "";
@@ -1713,7 +1713,7 @@ class FacturaController extends Controller
          
         $em = $this->getDoctrine()->getEntityManager();
         
-        if(trim($tipo != 'N')){
+        if(trim($tipo)){
             $con_tipo = "AND c.tipo ='".$tipo."'";
         }else{
             $con_tipo = "";
@@ -1852,40 +1852,68 @@ class FacturaController extends Controller
     
         $em = $this->getDoctrine()->getEntityManager();
         
-        if(trim($tipo) != 'N'){
+        if(trim($tipo)){
             $con_tipo = "AND c.tipo ='".$tipo."'";
         }else{
             $con_tipo = "";
         }
         
-        $dql= " SELECT
-                    c.cups,
-                    f.prefijo AS pre,
-                    f.consecutivo AS idf,
-                    f.id,
-                    f.subtotal,
-                    f.copago
-                FROM
-                    ParametrizarBundle:Facturacion f
-                JOIN
-                    f.paciente p
-                JOIN
-                    f.cargo c
-                WHERE
-                    f.fecha > :inicio AND
-                    f.fecha <= :fin AND
-                    f.cliente = :cliente AND
-                    f.estado = :estado AND
-                    c.cups != '890202' AND
-                    f.sede = :sede ";     
+        if($rips=="G"){
+            $dql= " SELECT
+                        c.cups,
+                        f.prefijo AS pre,
+                        f.consecutivo AS idf,
+                        f.id,
+                        f.subtotal,
+                        f.copago
+                    FROM
+                        ParametrizarBundle:Facturacion f
+                    JOIN
+                        f.paciente p
+                    JOIN
+                        f.cargo c
+                    WHERE
+                        f.prefijo = :prefijo AND
+                        f.consecutivo = :consecutivo ";
+            
+            $query = $em->createQuery($dql);
+            
+            $prefijo = substr($factura, 0, 1);
+            $consecutivo = substr($factura, 1);
+            
+            $query->setParameter('prefijo', $prefijo);
+            $query->setParameter('consecutivo', $consecutivo);
         
-        $query = $em->createQuery($dql);
-        
-        $query->setParameter('inicio', $f_inicio.' 00:00:00');
-        $query->setParameter('fin', $f_fin.' 23:59:00');
-        $query->setParameter('cliente', $cliente->getId());
-        $query->setParameter('sede', $obj_sede->getId());
-        $query->setParameter('estado', 'G');
+        }elseif($rips=="I"){
+            $dql= " SELECT
+                        c.cups,
+                        f.prefijo AS pre,
+                        f.consecutivo AS idf,
+                        f.id,
+                        f.subtotal,
+                        f.copago
+                    FROM
+                        ParametrizarBundle:Facturacion f
+                    JOIN
+                        f.paciente p
+                    JOIN
+                        f.cargo c
+                    WHERE
+                        f.fecha > :inicio AND
+                        f.fecha <= :fin AND
+                        f.cliente = :cliente AND
+                        f.estado = :estado AND
+                        c.cups != '890202' AND
+                        f.sede = :sede ";
+            
+            $query = $em->createQuery($dql);
+            
+            $query->setParameter('inicio', $f_inicio.' 00:00:00');
+            $query->setParameter('fin', $f_fin.' 23:59:00');
+            $query->setParameter('cliente', $cliente->getId());
+            $query->setParameter('sede', $obj_sede->getId());
+            $query->setParameter('estado', 'G');
+        }
         
         $entity2 = $query->getArrayResult();
 
@@ -1902,10 +1930,10 @@ class FacturaController extends Controller
                $val_px = 0;
                $copago_px = 0;
                foreach ($entity2 as $value){
-               $val_px+=$value['subtotal'];
-               $copago_px+=$value['copago'];
-               $num_px++;
-            }   
+                   $val_px+=$value['subtotal'];
+                   $copago_px+=$value['copago'];
+                   $num_px++;
+                }   
          
             fwrite($gestor, "".$value['pre'].$value['idf'].",768340706001,02,".$num_px.",0,".($val_px-$copago_px).".00\r\n");
            
@@ -1932,7 +1960,7 @@ class FacturaController extends Controller
     
         $em = $this->getDoctrine()->getEntityManager();
         
-        if(trim($tipo) != 'N'){
+        if(trim($tipo)){
             $con_tipo = "AND c.tipo ='".$tipo."'";
         }else{
             $con_tipo = "";
@@ -2165,10 +2193,6 @@ class FacturaController extends Controller
     	$breadcrumbs->addItem("Factura", $this->get("router")->generate("factura_search"));
     	$breadcrumbs->addItem("Final nuevo");
     	
-    	if(!trim($tipo)){
-    		$tipo='N';
-    	}
-    	
     	return $this->render('AdminBundle:Factura:factura_previa.html.twig', array(
     			'valores' => $valor,
     			'cliente' => $obj_cliente,
@@ -2316,7 +2340,7 @@ class FacturaController extends Controller
             $f_fin = $entity->getFin()->format("Y-m-d");
             
             $cliente = $entity->getCliente();
-            $factura = $entity->getId();
+            $factura = $entity->getPrefijo().$entity->getConsecutivo();
             $obj_sede = $entity->getSede();
             $name_rips = $entity->getFin()->format("m_d");
         }else{

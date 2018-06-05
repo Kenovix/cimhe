@@ -12,7 +12,7 @@ class AdmisionType extends AbstractType
         $builder 
         ->add('fecha', 'datetime',  array('label' => 'Fecha:', 'required' => true))
         ->add('autorizacion', 'text', array('required' => true, 'attr' => array('placeholder' => 'Número de autorización', 'autofocus' => 'autofocus')))
-        ->add('subtotal', 'integer', array('label' => 'Valor', 'required' => true, 'attr' => array('readonly' => 'readonly')))
+        ->add('subtotal', 'integer', array('label' => 'Valor', 'required' => true))
         ->add('copago', 'integer', array('required' => true))
         ->add('cliente', 'entity', array('required' => true,'class' => 'dlaser\ParametrizarBundle\Entity\Cliente', 'empty_value' => 'Elige una aseguradora'))
         ->add('cargo', 'entity', array('required' => true, 'class' => 'dlaser\ParametrizarBundle\Entity\Cargo', 'empty_value' => 'Elige una sede'))
