@@ -18,7 +18,7 @@ class AdmisionType extends AbstractType
         ->add('cargo', 'entity', array('required' => true, 'class' => 'dlaser\ParametrizarBundle\Entity\Cargo', 'empty_value' => 'Elige una sede'))
         ->add('grupo', 'choice', array('required' => true, 'choices' => array('RX' => 'Rayos X', 'EC' => 'Ecografia')))
         ->add('sede', 'entity', array('required' => true, 'class' => 'dlaser\ParametrizarBundle\Entity\Sede', 'empty_value' => 'Elige una sede'))
-        ->add('estado', 'choice', array('choices' => array('I' => 'Informado', 'P' => 'Pendiente', 'X' => 'Anulado'), 'required' => true))
+        ->add('estado', 'choice', array('choices' => array('G' => 'Generada', 'I' => 'Informado', 'P' => 'Pendiente', 'X' => 'Anulado'), 'required' => true))
         ;
     }
 

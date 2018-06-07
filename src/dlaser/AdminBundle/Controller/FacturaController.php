@@ -2300,7 +2300,7 @@ class FacturaController extends Controller
 
     	if ($entity->getFinal() == 1){
     	    $cliente = $entity->getCliente();
-    	    $paciente = null;
+    	    $paciente = $entity->getPaciente();
     	}else{
     	    $paciente = $entity->getPaciente();
     	    $cliente = null;
