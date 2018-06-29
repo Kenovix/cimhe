@@ -507,20 +507,22 @@ class FacturaController extends Controller
     			$this->get('session')->setFlash('info', 'El cliente seleccionado no tiene contrato con la sede, por favor verifique y vuelva a intentarlo.');
     			return $this->redirect($this->generateUrl('factura_edit', array('id' => $id)));
     		} 		
-    		
+
     		$actividad = $em->getRepository('ParametrizarBundle:Actividad')->findOneBy(array('cargo' => $entity->getCargo()->getId(), 'contrato' => $contrato->getId()));
-    		
-    		if(!$user->getPerfil() == 'ROLE_ADMIN'){    		
+
+    		if(!$user->getPerfil() == 'ROLE_ADMIN'){
 	    		if($actividad->getPrecio()){
 	    			$valor = $actividad->getPrecio();
 	    		}else{
 	    			$valor = round(($entity->getCargo()->getValor()+($entity->getCargo()->getValor()*$contrato->getPorcentaje()/100)));
 	    		}
-	    		
 	    		$entity->setValor($valor);
-    		}    		
+    		}
+    		
+    		$entity->setConcepto($entity->getCargo()->getNombre());
+
     		$entity->setCliente($cliente);
-    
+
     		$em->persist($entity);
     		$em->flush();
     
