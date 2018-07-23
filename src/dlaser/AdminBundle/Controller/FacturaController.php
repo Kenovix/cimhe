@@ -2421,8 +2421,15 @@ class FacturaController extends Controller
     {
     	$em = $this->getDoctrine()->getEntityManager();
     	 
+    	//$clientes = $em->getRepository("ParametrizarBundle:Cliente")->findAll();
+    	
     	$sedes = $em->getRepository("ParametrizarBundle:Sede")->findAll();
-    	$clientes = $em->getRepository("ParametrizarBundle:Cliente")->findAll();
+    	
+    	$dql= " SELECT c FROM ParametrizarBundle:Cliente c ORDER BY c.nombre ASC";
+			    	
+        $query = $em->createQuery($dql);
+			    	
+        $clientes = $query->getResult();
     	 
     	$plantilla = 'AdminBundle:Factura:reporte_factura.html.twig';
     	 
@@ -2552,7 +2559,6 @@ class FacturaController extends Controller
     	 
     	$query->setParameter('inicio', $desde[0]."-".$desde[1]."-".$desde[2].' 00:00:00');
     	$query->setParameter('fin', $hasta[0]."-".$hasta[1]."-".$hasta[2].' 23:59:00');
-    	//$query->setParameter('cliente', $cliente);
     	 
     	$entity = $query->getResult();
     	 

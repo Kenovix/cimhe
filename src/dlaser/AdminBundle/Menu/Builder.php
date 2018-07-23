@@ -43,7 +43,6 @@ class Builder extends ContainerAware
 					$menu['Facturación']['Facturas']->addChild('De EPS', array('route' => 'factura_list_new'));
 					$menu['Facturación']['Facturas']->addChild('De Particulares', array('route' => 'factura_list_newPac'));
 					$menu['Facturación']['Facturas']->addChild('Consultar', array('route' => 'factura_admision_search'));
-					$menu['Facturación']['Facturas']->addChild('Generar reporte', array('route' => 'factura_genera_reporte'));
 				$menu['Facturación']->addChild('Cierre de caja', array('uri' => '#'));
 					$menu['Facturación']['Cierre de caja']->addChild('Generar', array('route' => 'factura_arqueo'));
 					$menu['Facturación']['Cierre de caja']->addChild('Consultar', array('route' => 'factura_consultar_arqueo'));
@@ -52,6 +51,7 @@ class Builder extends ContainerAware
 				$menu['Facturación']->addChild('Cliente', array('route' => 'factura_cliente_list'));
 				$menu['Facturación']->addChild('Informes', array('uri' => '#'));
 				$menu['Facturación']['Informes']->addChild('Honorarios', array('route' => 'factura_reporte_medico'));
+				$menu['Facturación']['Informes']->addChild('Generar reporte', array('route' => 'factura_genera_reporte'));
 							
 		
 		}elseif($securityContext->isGranted('ROLE_MEDICO')){
