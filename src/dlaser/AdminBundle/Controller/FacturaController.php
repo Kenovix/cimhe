@@ -1470,6 +1470,7 @@ class FacturaController extends Controller
 			    	f.fecha > :inicio AND
 			    	f.fecha <= :fin AND
                     f.final = 1 AND
+                    f.estado = :estado AND
 			    	f.cliente = :cliente ".
 			    	$con_sede." ".
 			    	$con_tipo."
@@ -1481,6 +1482,7 @@ class FacturaController extends Controller
 			    	$query->setParameter('inicio', $f_inicio.' 00:00:00');
 			    	$query->setParameter('fin', $f_fin.' 23:59:00');
 			    	$query->setParameter('cliente', $cliente);
+			    	$query->setParameter ('estado','G' );
     	
     	$entity = $query->getResult();
     	 

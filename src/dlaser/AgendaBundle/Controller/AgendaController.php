@@ -65,26 +65,13 @@ class AgendaController extends Controller
         $request = $this->getRequest();
         $form    = $this->createForm(new AgendaType(), $entity);
         $form->bindRequest($request);
+        
+        //$data = $request->getData();
     
         if ($form->isValid()) {
                        
             $em->persist($entity);
             $em->flush();
-                       
-            /*$ncupos = ((($entity->getFechaFin()->getTimestamp() - $entity->getFechaInicio()->getTimestamp()) / 60) / $entity->getIntervalo());
-            
-            $turno = $entity->getFechaInicio();
-            
-            for($i = 0; $i < $ncupos; $i++ ){
-
-                $cupo = new Cupo();                
-                $cupo->setHora($turno);
-                $cupo->setAgenda($entity);
-                $cupo->setEstado('L');
-                $em->persist($cupo);
-                $em->flush();
-                $turno->add(new \DateInterval('PT'.$entity->getIntervalo().'M'));                
-            }*/
     
             $this->get('session')->setFlash('ok', 'La agenda ha sido creada éxitosamente.');    
             return $this->redirect($this->generateUrl('agenda_show', array("id" => $entity->getId())));    
