@@ -64,23 +64,25 @@ class AgendaController extends Controller
         $entity  = new Agenda();
         $request = $this->getRequest();
         $form    = $this->createForm(new AgendaType(), $entity);
-        $form->bindRequest($request);
         
-        //$data = $request->getData();
+        if ($request->getMethod() == 'POST') {
+        
+            $form->bindRequest($request);
     
-        if ($form->isValid()) {
-                       
-            $em->persist($entity);
-            $em->flush();
-    
-            $this->get('session')->setFlash('ok', 'La agenda ha sido creada éxitosamente.');    
-            return $this->redirect($this->generateUrl('agenda_show', array("id" => $entity->getId())));    
+            if ($form->isValid()) {
+                           
+                $em->persist($entity);
+                $em->flush();
+        
+                $this->get('session')->setFlash('ok', 'La agenda ha sido creada éxitosamente.');    
+                return $this->redirect($this->generateUrl('agenda_show', array("id" => $entity->getId())));    
+            }
+        
+            return $this->render('AgendaBundle:Agenda:new.html.twig', array(
+                    'entity' => $entity,
+                    'form'   => $form->createView()
+            ));
         }
-    
-        return $this->render('AgendaBundle:Agenda:new.html.twig', array(
-                'entity' => $entity,
-                'form'   => $form->createView()
-        ));
     }
     
     
