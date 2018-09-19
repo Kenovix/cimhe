@@ -275,6 +275,7 @@ class FacturaController extends Controller
                 $f_f->setCargo($reserva->getCargo());
                 $f_f->setGrupo($grupo);
                 $f_f->setUser($user->getId());
+                $f_f->setFinal(0);
                 
                 $em->persist($entity);
                 $em->persist($reserva);
@@ -490,45 +491,130 @@ class FacturaController extends Controller
     	$request = $this->getRequest();
     	$user = $this->get('security.context')->getToken()->getUser();
     	
-    	if($user->getPerfil() == 'ROLE_ADMIN'){
-
-    		$editForm = $this->createForm(new AdmisionType(), $entity);    		
-    	}else{
-    		$editForm = $this->createForm(new AdmisionAuxType(), $entity);
+    	if ($request->getMethod() == 'POST') {
+    	    
+            $flag = true;
+            
+            $data = $request->request->all();
+    	
+        	$dia = ($data['editAdmision']['fecha']['date']['day'] < 10 ) ? '0'.$data['editAdmision']['fecha']['date']['day']: $data['editAdmision']['fecha']['date']['day'];
+        	$mes = ($data['editAdmision']['fecha']['date']['month'] < 10) ? '0'.$data['editAdmision']['fecha']['date']['month'] : $data['editAdmision']['fecha']['date']['month'];
+        	$ano = $data['editAdmision']['fecha']['date']['year'];
+        	
+        	$hora = ($data['editAdmision']['fecha']['time']['hour'] < 10) ? '0'.$data['editAdmision']['fecha']['time']['hour'] : $data['editAdmision']['fecha']['time']['hour'];
+        	$min = ($data['editAdmision']['fecha']['time']['minute'] < 10) ? '0'.$data['editAdmision']['fecha']['time']['minute'] : $data['editAdmision']['fecha']['time']['minute'];
+        	
+        	$f = $dia.'/'.$mes.'/'.$ano.' '.$hora.':'.$min;
+        	
+        	$fecha = date_create_from_format('d/m/Y H:i', $f);
+        	
+        	if (!is_object($fecha)){
+        	    
+                $this->get('session')->setFlash('error', 'La fecha es invalida.');
+                $flag = false;
+        	    
+        	}
+        	
+        	
+        	if (!is_numeric($data['editAdmision']['subtotal'])){
+        	    $this->get('session')->setFlash('error', 'EL valor del subtotal no es valido.');
+        	    $flag = false;
+        	}
+        	
+        	if (!is_numeric($data['editAdmision']['copago'])){
+        	    $this->get('session')->setFlash('error', 'EL valor del copago no es valido.');
+        	    $flag = false;
+        	}
+        	
+        	if (!is_numeric($data['editAdmision']['cliente'])){
+        	    $this->get('session')->setFlash('error', 'Ingrese un cliente valido.');
+        	    $flag = false;
+        	}
+        	
+        	if (!is_numeric($data['editAdmision']['cargo'])){
+        	    $this->get('session')->setFlash('error', 'Ingrese un cargo valido.');
+        	    $flag = false;
+        	}
+        	
+        	if (!trim($data['editAdmision']['grupo'])){
+        	    $this->get('session')->setFlash('error', 'Ingrese un grupo.');
+        	    $flag = false;
+        	}
+        	
+        	if (!is_numeric($data['editAdmision']['sede'])){
+        	    $this->get('session')->setFlash('error', 'Ingrese una sede valida.');
+        	    $flag = false;
+        	}
+        	
+        	if (!trim($data['editAdmision']['estado'])){
+        	    $this->get('session')->setFlash('error', 'Ingrese un estado.');
+        	    $flag = false;
+        	}
+    	
+    
+        	if ($flag) {
+        	    $cliente = $em->getRepository('ParametrizarBundle:Cliente')->find($data['editAdmision']['cliente']);    	
+        	    $contrato = $em->getRepository('ParametrizarBundle:Contrato')->findOneBy(array('sede' => $data['editAdmision']['sede'], 'cliente' => $cliente->getId()));
+        	    $cargo = $em->getRepository('ParametrizarBundle:Cargo')->find($data['editAdmision']['cargo']);
+        	    $sede = $em->getRepository('ParametrizarBundle:Sede')->find($data['editAdmision']['sede']);
+        		
+        		if(!$contrato){
+        			$this->get('session')->setFlash('info', 'El cliente seleccionado no tiene contrato con la sede, por favor verifique y vuelva a intentarlo.');
+        			return $this->redirect($this->generateUrl('factura_edit', array('id' => $id)));
+        		} 		
+    
+        		$actividad = $em->getRepository('ParametrizarBundle:Actividad')->findOneBy(array('cargo' => $cargo->getId(), 'contrato' => $contrato->getId()));
+    
+        		if(!$user->getPerfil() == 'ROLE_ADMIN'){
+    	    		if($actividad->getPrecio()){
+    	    			$valor = $actividad->getPrecio();
+    	    		}else{
+    	    		    $valor = round(($cargo->getValor()+($cargo->getValor()*$contrato->getPorcentaje()/100)));
+    	    		}
+    	    		$entity->setValor($valor);
+        		}
+        		
+        		$entity->setFecha($fecha);
+        		$entity->setAutorizacion($data['editAdmision']['autorizacion']);
+        		$entity->setSubtotal($data['editAdmision']['subtotal']);
+        		$entity->setCopago($data['editAdmision']['copago']);
+        		$entity->setCliente($cliente);
+        		$entity->setCargo($cargo);
+        		$entity->setGrupo($data['editAdmision']['grupo']);
+        		$entity->setSede($sede);
+        		$entity->setConcepto($cargo->getNombre());
+        		$entity->setEstado($data['editAdmision']['estado']);
+    
+        		$em->persist($entity);
+        		$em->flush();
+        
+        		$this->get('session')->setFlash('info', 'La información de la admisión ha sido modificada éxitosamente.');    
+        		return $this->redirect($this->generateUrl('factura_edit', array('id' => $id)));
+        	}else{
+        	    
+        	    $cliente = $em->getRepository('ParametrizarBundle:Cliente')->find($data['editAdmision']['cliente']);
+        	    $cargo = $em->getRepository('ParametrizarBundle:Cargo')->find($data['editAdmision']['cargo']);
+        	    $sede = $em->getRepository('ParametrizarBundle:Sede')->find($data['editAdmision']['sede']);
+        	    
+        	    $entity->setFecha($fecha);
+        	    $entity->setAutorizacion($data['editAdmision']['autorizacion']);
+        	    $entity->setSubtotal($data['editAdmision']['subtotal']);
+        	    $entity->setCopago($data['editAdmision']['copago']);
+        	    $entity->setCliente($cliente);
+        	    $entity->setCargo($cargo);
+        	    $entity->setGrupo($data['editAdmision']['grupo']);
+        	    $entity->setSede($sede);
+        	    $entity->setConcepto($cargo->getNombre());
+        	    $entity->setEstado($data['editAdmision']['estado']);
+        	    
+        	    if($user->getPerfil() == 'ROLE_ADMIN'){
+        	        $editForm = $this->createForm(new AdmisionType(), $entity);
+        	    }else{
+        	        $editForm = $this->createForm(new AdmisionAuxType(), $entity);
+        	    }
+        	}
     	}
     	
-    	$editForm->bindRequest($request);
-    
-    	if ($editForm->isValid()) {
-    		$cliente = $em->getRepository('ParametrizarBundle:Cliente')->find($entity->getCliente()->getId());    	
-    		$contrato = $em->getRepository('ParametrizarBundle:Contrato')->findOneBy(array('sede' => $entity->getSede()->getId(), 'cliente' => $cliente->getId()));
-    		
-    		if(!$contrato){
-    			$this->get('session')->setFlash('info', 'El cliente seleccionado no tiene contrato con la sede, por favor verifique y vuelva a intentarlo.');
-    			return $this->redirect($this->generateUrl('factura_edit', array('id' => $id)));
-    		} 		
-
-    		$actividad = $em->getRepository('ParametrizarBundle:Actividad')->findOneBy(array('cargo' => $entity->getCargo()->getId(), 'contrato' => $contrato->getId()));
-
-    		if(!$user->getPerfil() == 'ROLE_ADMIN'){
-	    		if($actividad->getPrecio()){
-	    			$valor = $actividad->getPrecio();
-	    		}else{
-	    			$valor = round(($entity->getCargo()->getValor()+($entity->getCargo()->getValor()*$contrato->getPorcentaje()/100)));
-	    		}
-	    		$entity->setValor($valor);
-    		}
-    		
-    		$entity->setConcepto($entity->getCargo()->getNombre());
-
-    		$entity->setCliente($cliente);
-
-    		$em->persist($entity);
-    		$em->flush();
-    
-    		$this->get('session')->setFlash('info', 'La información de la admisión ha sido modificada éxitosamente.');    
-    		return $this->redirect($this->generateUrl('factura_edit', array('id' => $id)));
-    	}    
     	return $this->render('AdminBundle:Factura:edit.html.twig', array(
     			'entity'      => $entity,
     			'edit_form'   => $editForm->createView(),
@@ -2638,7 +2724,7 @@ class FacturaController extends Controller
     public function facturacionPacienteEditAction($id)
     {
     	$em = $this->getDoctrine()->getEntityManager();
-    	$entity = $em->getRepository('ParametrizarBundle:Factura')->find($id);
+    	$entity = $em->getRepository('ParametrizarBundle:Facturacion')->find($id);
     
     	if (!$entity) {
     		throw $this->createNotFoundException('La factura solicitada no existe');
