@@ -63,13 +63,12 @@ class AgendaController extends Controller
                 
         $entity  = new Agenda();
         $request = $this->getRequest();
-        $form    = $this->createForm(new AgendaType(), $entity);
         
         if ($request->getMethod() == 'POST') {
         
-            $form->bindRequest($request);
+            $flag = true;
             
-            /*$data = $request->request->all();
+            $data = $request->request->all();
             
             $dia_inicio = ($data['Agenda']['fecha_inicio']['date']['day'] < 10 ) ? '0'.$data['Agenda']['fecha_inicio']['date']['day']: $data['Agenda']['fecha_inicio']['date']['day'];
             $mes_inicio = ($data['Agenda']['fecha_inicio']['date']['month'] < 10) ? '0'.$data['Agenda']['fecha_inicio']['date']['month'] : $data['Agenda']['fecha_inicio']['date']['month'];
@@ -78,26 +77,84 @@ class AgendaController extends Controller
             $hora_inicio = ($data['Agenda']['fecha_inicio']['time']['hour'] < 10) ? '0'.$data['Agenda']['fecha_inicio']['time']['hour'] : $data['Agenda']['fecha_inicio']['time']['hour'];
             $min_inicio = ($data['Agenda']['fecha_inicio']['time']['minute'] < 10) ? '0'.$data['Agenda']['fecha_inicio']['time']['minute'] : $data['Agenda']['fecha_inicio']['time']['minute']; 
 
-            $fini = $ano_inicio.'-'.$mes_inicio.'-'.$dia_inicio.' '.$hora_inicio.':'.$min_inicio;
-            echo($fini);
-            $fi = new \DateTime();
-            $fi->createFromFormat('Y-m-d H:i', $fini);
-            die(print_r($fi));*/
-    
-            if ($form->isValid()) {
+            $fini = $dia_inicio.'/'.$mes_inicio.'/'.$ano_inicio.' '.$hora_inicio.':'.$min_inicio;
+            
+            $fi = date_create_from_format('d/m/Y H:i', $fini);
+            
+            $dia_fin = ($data['Agenda']['fecha_fin']['date']['day'] < 10 ) ? '0'.$data['Agenda']['fecha_fin']['date']['day']: $data['Agenda']['fecha_fin']['date']['day'];
+            $mes_fin = ($data['Agenda']['fecha_fin']['date']['month'] < 10) ? '0'.$data['Agenda']['fecha_inicio']['date']['month'] : $data['Agenda']['fecha_fin']['date']['month'];
+            $ano_fin = $data['Agenda']['fecha_fin']['date']['year'];
+            
+            $hora_fin = ($data['Agenda']['fecha_fin']['time']['hour'] < 10) ? '0'.$data['Agenda']['fecha_fin']['time']['hour'] : $data['Agenda']['fecha_fin']['time']['hour'];
+            $min_fin = ($data['Agenda']['fecha_fin']['time']['minute'] < 10) ? '0'.$data['Agenda']['fecha_fin']['time']['minute'] : $data['Agenda']['fecha_fin']['time']['minute'];
+            
+            $ffin = $dia_fin.'/'.$mes_fin.'/'.$ano_fin.' '.$hora_fin.':'.$min_fin;
+            
+            $ff = date_create_from_format('d/m/Y H:i', $ffin);
+            
+            if (is_object($fi) && is_object($ff)){
+
+                if ($fi < new \DateTime('now')){
+                    $this->get('session')->setFlash('error', 'La fecha de inicio debe ser mayor que la fecha actual.');
+                    $flag = false;
+                }
+                
+                if ($ff < $fi){
+                    $this->get('session')->setFlash('error', 'La fecha de fin debe ser mayor que la fecha de inicio.');
+                    $flag = false;
+                }
+
+            }else{
+                $this->get('session')->setFlash('error', 'Ingresa fechas validas.');
+                $flag = false;
+            }
+            
+            if (!is_numeric($data['Agenda']['intervalo'])){
+                $this->get('session')->setFlash('error', 'El intervalo es incorrecto.');
+                $flag = false;
+            }
+            
+            if (!is_numeric($data['Agenda']['sede'])){
+                $this->get('session')->setFlash('error', 'Seleccione una sede.');
+                $flag = false;
+            }
+            
+            if (!is_numeric($data['Agenda']['usuario'])){
+                $this->get('session')->setFlash('error', 'Seleccione un usuario.');
+                $flag = false;
+            }
+
+            if ($flag) {
+                
+                $usuario = $em->getRepository('UsuarioBundle:Usuario')->find($data['Agenda']['usuario']);
+                $sede = $em->getRepository('ParametrizarBundle:Sede')->find($data['Agenda']['sede']);
+                
+                $entity->setFechaInicio($fi);
+                $entity->setFechaFin($ff);
+                $entity->setEstado($data['Agenda']['estado']);
+                $entity->setIntervalo($data['Agenda']['intervalo']);
+                $entity->setNota($data['Agenda']['nota']);
+                $entity->setSede($sede);
+                $entity->setUsuario($usuario);
                            
                 $em->persist($entity);
                 $em->flush();
         
                 $this->get('session')->setFlash('ok', 'La agenda ha sido creada éxitosamente.');    
                 return $this->redirect($this->generateUrl('agenda_show', array("id" => $entity->getId())));    
+            }else{
+                $entity->setFechaInicio($fi);
+                $entity->setFechaFin($ff);
+                
+                $form = $this->createForm(new AgendaType(), $entity);
             }
-        
-            return $this->render('AgendaBundle:Agenda:new.html.twig', array(
-                    'entity' => $entity,
-                    'form'   => $form->createView()
-            ));
         }
+        
+        return $this->render('AgendaBundle:Agenda:new.html.twig', array(
+                'entity' => $entity,
+                'form'   => $form->createView()
+        ));
+        
     }
     
     
@@ -155,18 +212,93 @@ class AgendaController extends Controller
         if (!$entity) {
             throw $this->createNotFoundException('La agenda solicitada no existe.');
         }
-    
-        $editForm   = $this->createForm(new AgendaType(), $entity);    
-        $request = $this->getRequest();    
-        $editForm->bindRequest($request);
-    
-        if ($editForm->isValid()) {
-    
-            $em->persist($entity);
-            $em->flush();
-    
-            $this->get('session')->setFlash('ok', 'La agenda ha sido modificada éxitosamente.');    
-            return $this->redirect($this->generateUrl('agenda_edit', array('id' => $id)));
+
+        $request = $this->getRequest();
+        
+        if ($request->getMethod() == 'POST') {
+            
+            $flag = true;
+            
+            $data = $request->request->all();
+            
+            $dia_inicio = ($data['Agenda']['fecha_inicio']['date']['day'] < 10 ) ? '0'.$data['Agenda']['fecha_inicio']['date']['day']: $data['Agenda']['fecha_inicio']['date']['day'];
+            $mes_inicio = ($data['Agenda']['fecha_inicio']['date']['month'] < 10) ? '0'.$data['Agenda']['fecha_inicio']['date']['month'] : $data['Agenda']['fecha_inicio']['date']['month'];
+            $ano_inicio = $data['Agenda']['fecha_inicio']['date']['year'];
+            
+            $hora_inicio = ($data['Agenda']['fecha_inicio']['time']['hour'] < 10) ? '0'.$data['Agenda']['fecha_inicio']['time']['hour'] : $data['Agenda']['fecha_inicio']['time']['hour'];
+            $min_inicio = ($data['Agenda']['fecha_inicio']['time']['minute'] < 10) ? '0'.$data['Agenda']['fecha_inicio']['time']['minute'] : $data['Agenda']['fecha_inicio']['time']['minute'];
+            
+            $fini = $dia_inicio.'/'.$mes_inicio.'/'.$ano_inicio.' '.$hora_inicio.':'.$min_inicio;
+            
+            $fi = date_create_from_format('d/m/Y H:i', $fini);
+            
+            $dia_fin = ($data['Agenda']['fecha_fin']['date']['day'] < 10 ) ? '0'.$data['Agenda']['fecha_fin']['date']['day']: $data['Agenda']['fecha_fin']['date']['day'];
+            $mes_fin = ($data['Agenda']['fecha_fin']['date']['month'] < 10) ? '0'.$data['Agenda']['fecha_inicio']['date']['month'] : $data['Agenda']['fecha_fin']['date']['month'];
+            $ano_fin = $data['Agenda']['fecha_fin']['date']['year'];
+            
+            $hora_fin = ($data['Agenda']['fecha_fin']['time']['hour'] < 10) ? '0'.$data['Agenda']['fecha_fin']['time']['hour'] : $data['Agenda']['fecha_fin']['time']['hour'];
+            $min_fin = ($data['Agenda']['fecha_fin']['time']['minute'] < 10) ? '0'.$data['Agenda']['fecha_fin']['time']['minute'] : $data['Agenda']['fecha_fin']['time']['minute'];
+            
+            $ffin = $dia_fin.'/'.$mes_fin.'/'.$ano_fin.' '.$hora_fin.':'.$min_fin;
+            
+            $ff = date_create_from_format('d/m/Y H:i', $ffin);
+            
+            if (is_object($fi) && is_object($ff)){
+                
+                if ($fi < new \DateTime('now')){
+                    $this->get('session')->setFlash('error', 'La fecha de inicio debe ser mayor que la fecha actual.');
+                    $flag = false;
+                }
+                
+                if ($ff < $fi){
+                    $this->get('session')->setFlash('error', 'La fecha de fin debe ser mayor que la fecha de inicio.');
+                    $flag = false;
+                }
+                
+            }else{
+                $this->get('session')->setFlash('error', 'Ingresa fechas validas.');
+                $flag = false;
+            }
+            
+            if (!is_numeric($data['Agenda']['intervalo'])){
+                $this->get('session')->setFlash('error', 'El intervalo es incorrecto.');
+                $flag = false;
+            }
+            
+            if (!is_numeric($data['Agenda']['sede'])){
+                $this->get('session')->setFlash('error', 'Seleccione una sede.');
+                $flag = false;
+            }
+            
+            if (!is_numeric($data['Agenda']['usuario'])){
+                $this->get('session')->setFlash('error', 'Seleccione un usuario.');
+                $flag = false;
+            }
+            
+            if ($flag) {
+                
+                $usuario = $em->getRepository('UsuarioBundle:Usuario')->find($data['Agenda']['usuario']);
+                $sede = $em->getRepository('ParametrizarBundle:Sede')->find($data['Agenda']['sede']);
+                
+                $entity->setFechaInicio($fi);
+                $entity->setFechaFin($ff);
+                $entity->setEstado($data['Agenda']['estado']);
+                $entity->setIntervalo($data['Agenda']['intervalo']);
+                $entity->setNota($data['Agenda']['nota']);
+                $entity->setSede($sede);
+                $entity->setUsuario($usuario);
+                
+                $em->persist($entity);
+                $em->flush();
+                
+                $this->get('session')->setFlash('ok', 'La agenda ha sido modificada éxitosamente.');
+                return $this->redirect($this->generateUrl('agenda_edit', array("id" => $id)));
+            }else{
+                $entity->setFechaInicio($fi);
+                $entity->setFechaFin($ff);
+
+                $editForm   = $this->createForm(new AgendaType(), $entity); 
+            }
         }
         
         $breadcrumbs = $this->get("white_october_breadcrumbs");

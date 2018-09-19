@@ -11,14 +11,8 @@ class AgendaType extends AbstractType
     public function buildForm(FormBuilder $builder, array $options)
     {
         $builder
-        ->add('fecha_inicio', 'datetime', array('label' => 'Fecha de inicio', 
-                                                'widget' => 'single_text',
-                                                'input' => 'datetime',
-                                                'required' => true))
-        ->add('fecha_fin', 'datetime', array('label' => 'Fecha de fin', 
-                                                        'widget' => 'single_text', 
-                                                        'input' => 'datetime',
-                                                        'required' => true))
+        ->add('fecha_inicio', 'datetime', array('label' => 'Fecha de inicio', 'required' => true))
+        ->add('fecha_fin', 'datetime', array('label' => 'Fecha de fin', 'required' => true))
         ->add('intervalo', 'integer', array('attr' => array('placeholder' => 'Ingrese el tiempo de atención'), 'required' => true))
         ->add('estado', 'choice', array('choices' => array('A' => 'Activa', 'I' => 'Inactiva'), 'required' => true))
         ->add('nota', 'text', array('attr' => array('placeholder' => 'Ingrese su nota'), 'required' => false))
