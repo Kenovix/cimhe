@@ -68,6 +68,21 @@ class AgendaController extends Controller
         if ($request->getMethod() == 'POST') {
         
             $form->bindRequest($request);
+            
+            /*$data = $request->request->all();
+            
+            $dia_inicio = ($data['Agenda']['fecha_inicio']['date']['day'] < 10 ) ? '0'.$data['Agenda']['fecha_inicio']['date']['day']: $data['Agenda']['fecha_inicio']['date']['day'];
+            $mes_inicio = ($data['Agenda']['fecha_inicio']['date']['month'] < 10) ? '0'.$data['Agenda']['fecha_inicio']['date']['month'] : $data['Agenda']['fecha_inicio']['date']['month'];
+            $ano_inicio = $data['Agenda']['fecha_inicio']['date']['year'];
+            
+            $hora_inicio = ($data['Agenda']['fecha_inicio']['time']['hour'] < 10) ? '0'.$data['Agenda']['fecha_inicio']['time']['hour'] : $data['Agenda']['fecha_inicio']['time']['hour'];
+            $min_inicio = ($data['Agenda']['fecha_inicio']['time']['minute'] < 10) ? '0'.$data['Agenda']['fecha_inicio']['time']['minute'] : $data['Agenda']['fecha_inicio']['time']['minute']; 
+
+            $fini = $ano_inicio.'-'.$mes_inicio.'-'.$dia_inicio.' '.$hora_inicio.':'.$min_inicio;
+            echo($fini);
+            $fi = new \DateTime();
+            $fi->createFromFormat('Y-m-d H:i', $fini);
+            die(print_r($fi));*/
     
             if ($form->isValid()) {
                            
