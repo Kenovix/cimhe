@@ -2097,7 +2097,7 @@ class FacturaController extends Controller
             
             $contrato = $em->getRepository("ParametrizarBundle:Contrato")->findOneBy(array('cliente' => $cliente->getId(), 'sede' => $obj_sede->getId()));
         
-            fwrite($gestor, "768340706001,CENTRO DE IMAGENES Y HEMODINAMIA CIMHE IPS,NI,900225202,".$factura.",".$fecha->format('d/m/Y').",".$inicio->format('d/m/Y').",".$fin->format('d/m/Y').",".$cliente->getCodEps().",".$cliente->getRazon().",,ISS 2001 + ".$contrato->getPorcentaje()."%,,".$entity[0]['copago'].".00,0.00,0.00,".($entity[0]['valor']-$entity[0]['copago']).".00\r\n");
+            fwrite($gestor, "768340706001,CENTRO DE IMAGENES Y HEMODINAMIA CIMHE IPS,NI,900225202,".$factura.",".$fecha->format('d/m/Y').",".$inicio->format('d/m/Y').",".$fin->format('d/m/Y').",".$cliente->getCodEps().",".$cliente->getRazon().",,ISS 2001 + ".$contrato->getPorcentaje()."%,,".$entity[0]['copago'].".00,0.00,0.00,".$entity[0]['valor'].".00\r\n");
     
         }elseif($rips=="I"){
         
@@ -2143,7 +2143,7 @@ class FacturaController extends Controller
         
             foreach ($entity as $value){
                 $fecha = new \DateTime($value['fecha']);
-                fwrite($gestor, "768340706001,CENTRO DE IMAGENES Y HEMODINAMIA CIMHE IPS,NI,900225202,".$value['pre'].$value['idf'].",".$fecha->format('d/m/Y').",".$inicio->format('d/m/Y').",".$fin->format('d/m/Y').",".$cliente->getCodEps().",".$cliente->getRazon().",,ISS 2001 + ".$contrato->getPorcentaje()."%,,".$value['copago'].".00,0.00,0.00,".($value['subtotal']-$value['copago']).".00\r\n");
+                fwrite($gestor, "768340706001,CENTRO DE IMAGENES Y HEMODINAMIA CIMHE IPS,NI,900225202,".$value['pre'].$value['idf'].",".$fecha->format('d/m/Y').",".$inicio->format('d/m/Y').",".$fin->format('d/m/Y').",".$cliente->getCodEps().",".$cliente->getRazon().",,ISS 2001 + ".$contrato->getPorcentaje()."%,,".$value['copago'].".00,0.00,0.00,".$value['subtotal'].".00\r\n");
             }
         }
     
